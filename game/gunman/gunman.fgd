@@ -1,0 +1,686 @@
+//
+// Gunman Chronicles game definition file (.fgd)
+// for Worldcraft 3.x and above
+// Based on information from Valve Developer Wiki and Gunman Chronicles
+//
+
+//
+// worldspawn
+//
+
+@SolidClass = worldspawn : "World entity"
+[
+	message(string) : "Map Description / Title"
+	skyname(string) : "Sky Name" : "desert"
+	sounds(integer) : "CD track to play"
+	WaveHeight(string) : "Default Wave Height"
+	MaxRange(string) : "Max viewable distance" : "4096"
+	startdark(choices) : "Level Fade In" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	gametitle(choices) : "Display game title" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	newunit(choices) : "New Level Unit" : 0 =
+	[
+		0 : "No, keep current"
+		1 : "Yes, clear previous levels"
+	]
+	chaptertitle(string) : "Chapter Title Message"
+]
+
+//
+// BaseClasses
+//
+
+@BaseClass = ZHLT
+[
+	zhlt_lightflags(choices) : "ZHLT Lightflags" : 0 =
+	[
+		0 : "Default"
+		1 : "Embedded Fix"
+		2 : "Opaque (blocks light)"
+		3 : "Opaque + Embedded fix"
+		6 : "Opaque + Concave Fix"
+	]
+	light_origin(string) : "Light Origin Target"
+]
+
+@BaseClass = ZHLT_point
+[
+	_fade(string) : "ZHLT Fade" : "1.0"
+	_falloff(choices) : "ZHLT Falloff" : 0 =
+	[
+		0 : "Default"
+		1 : "Inverse Linear"
+		2 : "Inverse Square"
+	]
+]
+
+@BaseClass = Appearflags
+[
+	spawnflags(Flags) =
+	[
+		2048 : "Not in Deathmatch" : 0
+	]
+]
+
+@BaseClass = Angles
+[
+	angles(string) : "Pitch Yaw Roll (Y Z X)" : "0 0 0"
+]
+
+@BaseClass = Targetname
+[
+	targetname(target_source) : "Name"
+]
+
+@BaseClass = Target
+[
+	target(target_destination) : "Target"
+]
+
+@BaseClass size(0 0 0, 32 32 32) color(80 0 200) base(Appearflags) = Ammo []
+@BaseClass size(-16 -16 0, 16 16 32) color(0 0 200) base(Targetname, Appearflags, Angles) = Weapon []
+@BaseClass = Global
+[
+	globalname(string) : "Global Entity Name"
+]
+
+@BaseClass base(Target) = Targetx
+[
+	delay(string) : "Delay before trigger" : "0"
+	killtarget(target_destination) : "KillTarget"
+]
+
+@BaseClass = RenderFxChoices
+[
+	renderfx(choices) :"Render FX" : 0 =
+	[
+		0: "Normal"
+		1: "Slow Pulse"
+		2: "Fast Pulse"
+		3: "Slow Wide Pulse"
+		4: "Fast Wide Pulse"
+		9: "Slow Strobe"
+		10: "Fast Strobe"
+		11: "Faster Strobe"
+		12: "Slow Flicker"
+		13: "Fast Flicker"
+		5: "Slow Fade Away"
+		6: "Fast Fade Away"
+		7: "Slow Become Solid"
+		8: "Fast Become Solid"
+		14: "Constant Glow"
+		15: "Distort"
+		16: "Hologram (Distort + fade)"
+	]
+]
+
+@BaseClass base(RenderFxChoices) = RenderFields
+[
+	rendermode(choices) : "Render Mode" : 0 =
+	[
+		0: "Normal"
+		1: "Color"
+		2: "Texture"
+		3: "Glow"
+		4: "Solid"
+		5: "Additive"
+	]
+	renderamt(integer) : "FX Amount (1 - 255)"
+	rendercolor(color255) : "FX Color (R G B)" : "0 0 0"
+]
+
+@BaseClass base(Appearflags, Angles) size(-16 -16 -36, 16 16 36) color(0 255 0) = PlayerClass []
+
+@BaseClass base(Target, Targetname, RenderFields, Angles) color(0 200 200) = Monster
+[
+	TriggerTarget(String) : "TriggerTarget"
+	TriggerCondition(Choices) : "Trigger Condition" : 0 =
+	[
+		0 : "No Trigger"
+		1 : "See Player, Mad at Player"
+		2 : "Take Damage"
+		3 : "50% Health Remaining"
+		4 : "Death"
+		7 : "Hear World"
+		8 : "Hear Player"
+		9 : "Hear Combat"
+		10: "See Player Unconditional"
+		11: "See Player, Not In Combat"
+	]
+	spawnflags(Flags) =
+	[
+		1 : "WaitTillSeen" : 0
+		2 : "Gag" : 0
+		4 : "MonsterClip" : 0
+		16: "Prisoner" : 0
+		128: "WaitForScript" : 0
+		256: "Pre-Disaster" : 0
+		512: "Fade Corpse" : 0
+	]
+]
+
+//
+// Gunman Chronicles Weapons
+//
+
+@PointClass base(Weapon) = weapon_gausspistol : "Gauss Pistol (Gunman)" []
+@PointClass base(Weapon) = weapon_shotcycler : "Shot Cycler (Gunman)" []
+@PointClass base(Weapon) = weapon_chemicalgun : "Chemical Gun (Gunman)" []
+@PointClass base(Weapon) = weapon_minigun : "Minigun (Gunman)" []
+@PointClass base(Weapon) = weapon_dml : "DML (Gunman)" []
+@PointClass base(Weapon) = weapon_beamgun : "Beam Gun (Gunman)" []
+
+// Standard Half-Life weapons (compatible)
+@PointClass base(Weapon) = weapon_crowbar : "Crowbar" []
+@PointClass base(Weapon) = weapon_9mmhandgun : "9mm Handgun" []
+@PointClass base(Weapon) = weapon_357 : "357 Magnum" []
+@PointClass base(Weapon) = weapon_9mmAR : "9mm Assault Rifle" []
+@PointClass base(Weapon) = weapon_shotgun : "Shotgun" []
+@PointClass base(Weapon) = weapon_crossbow : "Crossbow" []
+@PointClass base(Weapon) = weapon_rpg : "RPG" []
+@PointClass base(Weapon) = weapon_gauss : "Gauss Gun" []
+@PointClass base(Weapon) = weapon_egon : "Egon" []
+@PointClass base(Weapon) = weapon_hornetgun : "Hornet Gun" []
+@PointClass base(Weapon) = weapon_handgrenade : "Handgrenade" []
+@PointClass base(Weapon) = weapon_tripmine : "Tripmine" []
+@PointClass base(Weapon) = weapon_satchel : "Satchel Charge" []
+@PointClass base(Weapon) = weapon_snark : "Snark" []
+
+//
+// Gunman Chronicles Ammo
+//
+
+@PointClass base(Ammo) = ammo_gaussclip : "Gauss Pistol Ammo" []
+@PointClass base(Ammo) = ammo_shotcycler : "Shot Cycler Ammo" []
+@PointClass base(Ammo) = ammo_chemical : "Chemical Gun Ammo" []
+@PointClass base(Ammo) = ammo_minigun : "Minigun Ammo" []
+@PointClass base(Ammo) = ammo_dml : "DML Ammo" []
+@PointClass base(Ammo) = ammo_beamgun : "Beam Gun Ammo" []
+
+// Standard Half-Life ammo (compatible)
+@PointClass base(Ammo) = ammo_9mmclip : "9mm Pistol Ammo" []
+@PointClass base(Ammo) = ammo_9mmAR : "9mm Assault Rifle Ammo" []
+@PointClass base(Ammo) = ammo_ARgrenades : "AR Grenades" []
+@PointClass base(Ammo) = ammo_glockclip : "Glock Ammo" []
+@PointClass base(Ammo) = ammo_357 : "357 Ammo" []
+@PointClass base(Ammo) = ammo_buckshot : "Shotgun Ammo" []
+@PointClass base(Ammo) = ammo_crossbow : "Crossbow Ammo" []
+@PointClass base(Ammo) = ammo_rpgclip : "RPG Ammo" []
+@PointClass base(Ammo) = ammo_gaussclip : "Gauss Ammo" []
+@PointClass base(Ammo) = ammo_egonclip : "Egon Ammo" []
+
+//
+// Gunman Chronicles Monsters/NPCs
+//
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_houndeye_gm : "Houndeye (Gunman variant)"
+[
+	body(Choices) : "Body" : 0 =
+	[
+		0 : "Normal"
+		1 : "Armored"
+	]
+]
+
+@PointClass base(Monster) size(-32 -32 0, 32 32 64) = monster_dinnerjacket : "Dinnerjacket (Gunman)"
+[
+	body(Choices) : "Body" : 0 =
+	[
+		0 : "Normal"
+		1 : "Heavy"
+	]
+]
+
+@PointClass base(Monster) size(-128 -128 0, 128 128 256) = monster_geneworm : "Gene Worm (Gunman)"
+[
+	health(integer) : "Health" : 500
+]
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_xenome : "Xenome (Gunman)" []
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_shockroach : "Shock Roach (Gunman)" []
+
+@PointClass base(Monster) size(-32 -32 0, 32 32 128) = monster_massasaur : "Massasaur (Gunman)"
+[
+	body(Choices) : "Body" : 0 =
+	[
+		0 : "Normal"
+		1 : "Alpha"
+	]
+]
+
+//
+// Gunman Chronicles Environmental Effects
+//
+
+@PointClass base(Targetname, Target) size(-16 -16 -16, 16 16 16) color(255 128 0) = env_smoketrail : "Smoke Trail (Gunman)"
+[
+	spritename(string) : "Sprite Name" : "sprites/smoke.spr"
+	framerate(integer) : "Framerate" : 10
+	lifetime(string) : "Lifetime" : "5"
+	startsize(integer) : "Start Size" : 10
+	endsize(integer) : "End Size" : 30
+	rendercolor(color255) : "Color (R G B)" : "255 255 255"
+	renderamt(integer) : "Brightness (0-255)" : 255
+	spawnflags(Flags) =
+	[
+		1 : "Start On" : 0
+	]
+]
+
+@PointClass base(Targetname, Target) size(-16 -16 -16, 16 16 16) color(0 128 255) = env_electrified : "Electrified Surface (Gunman)"
+[
+	dmg(integer) : "Damage" : 10
+	wait(string) : "Damage Delay" : "1.0"
+	spawnflags(Flags) =
+	[
+		1 : "Start On" : 1
+		2 : "Toggle" : 0
+	]
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) color(255 0 0) = env_explosion_gm : "Explosion (Gunman variant)"
+[
+	iMagnitude(Integer) : "Magnitude" : 100
+	iRadiusOverride(integer) : "Radius Override" : 0
+	sprite(sprite) : "Sprite Name" : "sprites/zerogxplode.spr"
+	rendermode(choices) : "Render Mode" : 5 =
+	[
+		0: "Normal"
+		5: "Additive"
+	]
+	spawnflags(Flags) =
+	[
+		1 : "No Damage" : 0
+		2 : "Repeatable" : 0
+		4 : "No Fireball" : 0
+		8 : "No Smoke" : 0
+		16 : "No Decal" : 0
+		32 : "No Sparks" : 0
+	]
+]
+
+@PointClass base(Targetname, Angles) size(-16 -16 -16, 16 16 16) color(255 255 0) = env_xenmaker : "Xen Plant Maker (Gunman)"
+[
+	monstertype(string) : "Monster Type" : "monster_xenome"
+	monstercount(integer) : "Number of Monsters" : 1
+	m_flDelay(string) : "Delay between spawns" : "5"
+	m_iMaxLiveChildren(integer) : "Max live monsters" : 5
+	netname(target_destination) : "Target On Spawn"
+	spawnflags(Flags) =
+	[
+		1 : "Start On" : 0
+		2 : "Cyclic" : 0
+	]
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = env_warpball : "Warp Ball (Gunman)"
+[
+	target(target_destination) : "Target"
+	radius(integer) : "Radius" : 256
+	duration(string) : "Duration" : "5"
+	rendercolor(color255) : "Color (R G B)" : "0 255 0"
+]
+
+//
+// Gunman Chronicles Info Entities
+//
+
+@PointClass base(Targetname) size(-32 -32 0, 32 32 64) color(255 255 0) = info_node_gunman : "Gunman AI Node"
+[
+	spawnflags(Flags) =
+	[
+		1 : "Crouch Cover" : 0
+		2 : "Stand Cover" : 0
+		4 : "Sniper Spot" : 0
+		8 : "Combat Node" : 0
+	]
+]
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 72) color(0 255 0) = info_player_gunman : "Gunman Player Start"
+[
+	spawnflags(Flags) =
+	[
+		1 : "Master" : 0
+	]
+]
+
+//
+// Gunman Chronicles Func Entities
+//
+
+@SolidClass base(Targetname, RenderFields, ZHLT) = func_vehicle_gm : "Gunman Vehicle"
+[
+	target(target_destination) : "First stop target"
+	sounds(choices) : "Sound" : 0 =
+	[
+		0: "None"
+		1: "Vehicle 1"
+		2: "Vehicle 2"
+	]
+	speed(integer) : "Speed" : 100
+	health(integer) : "Health" : 0
+	dmg(integer) : "Damage on crush" : 0
+	volume(string) : "Volume (0-10)" : "10"
+	spawnflags(Flags) =
+	[
+		1 : "No Pitch (X-rot)" : 0
+		2 : "No User Control" : 0
+		8 : "Passable" : 0
+	]
+]
+
+@SolidClass base(Targetname, Target, RenderFields, ZHLT) = func_pushable_gm : "Pushable (Gunman variant)"
+[
+	size(choices) : "Hull Size" : 0 =
+	[
+		0: "Point Hull"
+		1: "Human Hull"
+		2: "Large Hull"
+		3: "Tiny Hull"
+	]
+	spawnflags(Flags) =
+	[
+		128: "Breakable" : 0
+		256: "Explosive" : 0
+	]
+	friction(integer) : "Friction" : 50
+	buoyancy(integer) : "Buoyancy" : 20
+	health(integer) : "Health" : 0
+]
+
+@SolidClass base(Targetname, RenderFields, ZHLT) = func_alien_growth : "Alien Growth (Gunman)"
+[
+	health(integer) : "Health" : 100
+	dmg(integer) : "Damage on touch" : 10
+	spawnflags(Flags) =
+	[
+		1 : "Start Active" : 1
+		2 : "Grow Over Time" : 0
+	]
+]
+
+//
+// Standard Half-Life entities (compatibility)
+//
+
+@PointClass base(PlayerClass) = info_player_start : "Player 1 start" []
+@PointClass base(PlayerClass) = info_player_deathmatch : "Player deathmatch start" []
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 72) color(255 0 255) = info_player_coop : "Player cooperative start" []
+
+@PointClass base(Targetname) color(128 255 128) = info_target : "Target" []
+@PointClass base(Targetname) color(200 100 50) = info_null : "Null entity" []
+@PointClass base(Targetname) = info_notnull : "Not null entity" []
+
+@PointClass size(-24 -24 -24, 24 24 24) color(255 0 0) = info_intermission : "Intermission camera" []
+
+@PointClass base(Targetname) = info_landmark : "Landmark"
+[
+	spawnflags(Flags) =
+	[
+		1 : "Persistent" : 0
+	]
+]
+
+//
+// Trigger Entities
+//
+
+@SolidClass base(Targetname) = trigger_auto : "Trigger Auto"
+[
+	spawnflags(Flags) =
+	[
+		1 : "Remove On fire" : 1
+	]
+	globalstate(string) : "Global State to Read"
+	triggerstate(choices) : "Trigger State" : 0 =
+	[
+		0 : "Off"
+		1 : "On"
+		2 : "Toggle"
+	]
+]
+
+@SolidClass base(Targetname, Target) = trigger_relay : "Trigger Relay"
+[
+	spawnflags(Flags) =
+	[
+		1 : "Remove On fire" : 0
+	]
+	triggerstate(choices) : "Trigger State" : 0 =
+	[
+		0 : "Off"
+		1 : "On"
+		2 : "Toggle"
+	]
+]
+
+@SolidClass base(Targetname, Target) = trigger_changelevel : "Change Level"
+[
+	map(string) : "New map name"
+	landmark(string) : "Landmark name"
+	changetarget(target_destination) : "Change Target"
+	changedelay(string) : "Delay before change" : "0"
+	spawnflags(Flags) =
+	[
+		1: "No Intermission" : 0
+		2: "USE Only" : 0
+	]
+]
+
+@SolidClass base(Targetname) = trigger_multiple : "Trigger Multiple"
+[
+	target(target_destination) : "Target"
+	killtarget(target_destination) : "Kill Target"
+	wait(integer) : "Delay before reset" : 10
+	sounds(choices) : "Sound" : 0 =
+	[
+		0 : "None"
+	]
+	spawnflags(Flags) =
+	[
+		1: "Monsters" : 0
+		2: "No Clients" : 0
+		4: "Pushables" : 0
+	]
+]
+
+@SolidClass base(Targetname) = trigger_once : "Trigger Once"
+[
+	target(target_destination) : "Target"
+	killtarget(target_destination) : "Kill Target"
+	sounds(choices) : "Sound" : 0 =
+	[
+		0 : "None"
+	]
+	spawnflags(Flags) =
+	[
+		1: "Monsters" : 0
+		2: "No Clients" : 0
+		4: "Pushables" : 0
+	]
+]
+
+@SolidClass base(Targetname, Target) = trigger_push : "Trigger Push"
+[
+	spawnflags(Flags) =
+	[
+		1: "Once Only" : 0
+		2: "Start Off" : 0
+	]
+	speed(integer) : "Speed" : 40
+]
+
+@SolidClass base(Targetname) = trigger_hurt : "Trigger Hurt"
+[
+	dmg(integer) : "Damage" : 10
+	damagetype(choices) : "Damage Type" : 0 =
+	[
+		0 : "Generic"
+		1 : "Crush"
+		2 : "Bullet"
+		4 : "Slash"
+		8 : "Burn"
+		16 : "Freeze"
+		32 : "Fall"
+		64 : "Blast"
+		128 : "Club"
+		256 : "Shock"
+		512 : "Sonic"
+		1024 : "Energy Beam"
+		16384: "Drown"
+		32768 : "Paralyse"
+		65536 : "Nerve Gas"
+		131072 : "Poison"
+		262144 : "Radiation"
+		524288 : "Drown Recover"
+		1048576 : "Chemical"
+		2097152 : "Slowburn"
+		4194304 : "Slowfreeze"
+	]
+	spawnflags(Flags) =
+	[
+		1: "Target Once" : 0
+		2: "Start Off" : 0
+		8: "No clients" : 0
+		16: "Fire Once" : 0
+		32: "Touch Client Only" : 0
+	]
+]
+
+//
+// Light Entities
+//
+
+@PointClass base(Targetname, Target, ZHLT_point) iconsprite("sprites/lightbulb.spr") color(255 255 128) = light : "Light"
+[
+	_light(color255) : "Brightness" : "255 255 128 200"
+	style(choices) : "Appearance" : 0 =
+	[
+		0 : "Normal"
+		10: "Fluorescent flicker"
+		2 : "Slow strong pulse"
+		11: "Slow pulse noblack"
+		5 : "Gentle pulse"
+		1 : "Flicker A"
+		6 : "Flicker B"
+		3 : "Candle A"
+		7 : "Candle B"
+		8 : "Candle C"
+		4 : "Fast strobe"
+		9 : "Slow strobe"
+	]
+	pattern(string) : "Custom Appearance"
+	spawnflags(Flags) =
+	[
+		1 : "Initially dark" : 0
+	]
+]
+
+@PointClass base(Targetname, ZHLT_point) iconsprite("sprites/lightbulb.spr") = light_spot : "Spotlight"
+[
+	_light(color255) : "Brightness" : "255 255 128 200"
+	style(choices) : "Appearance" : 0 =
+	[
+		0 : "Normal"
+		10: "Fluorescent flicker"
+		2 : "Slow strong pulse"
+		11: "Slow pulse noblack"
+		5 : "Gentle pulse"
+		1 : "Flicker A"
+		6 : "Flicker B"
+		3 : "Candle A"
+		7 : "Candle B"
+		8 : "Candle C"
+		4 : "Fast strobe"
+		9 : "Slow strobe"
+	]
+	pattern(string) : "Custom Appearance"
+	pitch(integer) : "Pitch" : -90
+	_cone(integer) : "Inner (bright) angle" : 30
+	_cone2(integer) : "Outer (fading) angle" : 45
+	_sky(choices) : "Is Sky" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	spawnflags(Flags) =
+	[
+		1 : "Initially dark" : 0
+	]
+]
+
+@PointClass base(Targetname, ZHLT_point) iconsprite("sprites/lightbulb.spr") = light_environment : "Environment"
+[
+	pitch(integer) : "Pitch" : 0
+	_light(color255) : "Brightness" : "255 255 128 200"
+]
+
+//
+// Ambient Generic
+//
+
+@PointClass base(Targetname) iconsprite("sprites/speaker.spr") = ambient_generic : "Ambient Sound"
+[
+	message(sound) : "WAV Name"
+	health(integer) : "Volume (10 = loudest)" : 10
+	preset(choices) :"Dynamic Presets" : 0 =
+	[
+		0: "None"
+		1: "Huge Machine"
+		2: "Big Machine"
+		3: "Machine"
+		4: "Slow Fade in"
+		5: "Fade in"
+		6: "Quick Fade in"
+		7: "Slow Pulse"
+		8: "Pulse"
+		9: "Quick pulse"
+		10: "Slow Oscillator"
+		11: "Oscillator"
+		12: "Quick Oscillator"
+		13: "Grunge pitch"
+		14: "Very low pitch"
+		15: "Low pitch"
+		16: "High pitch"
+		17: "Very high pitch"
+		18: "Screaming pitch"
+		19: "Oscillate spinup/down"
+		20: "Pulse spinup/down"
+		21: "Random pitch"
+		22: "Random pitch fast"
+		23: "Incremental Spinup"
+		24: "Alien"
+		25: "Bizzare"
+		26: "Planet X"
+		27: "Haunted"
+	]
+	volstart(integer) : "Start Volume" : 0
+	fadein(integer) : "Fade in time (0-100)" : 0
+	fadeout(integer) : "Fade out time (0-100)" : 0
+	pitch(integer) : "Pitch (> 100 = higher)" : 100
+	pitchstart(integer) : "Start Pitch" : 100
+	spinup(integer) : "Spin up time (0-100)" : 0
+	spindown(integer) : "Spin down time (0-100)" : 0
+	lfotype(integer) : "LFO type 0)off 1)sqr 2)tri 3)rnd" : 0
+	lforate(integer) : "LFO rate (0-1000)" : 0
+	lfomodpitch(integer) : "LFO mod pitch (0-100)" : 0
+	lfomodvol(integer) : "LFO mod vol (0-100)" : 0
+	cspinup(integer) : "Incremental Spinup Count" : 0
+	spawnflags(flags) =
+	[
+		1: "Play Everywhere" : 0
+		2: "Small Radius" : 0
+		4: "Medium Radius" : 1
+		8: "Large Radius" : 0
+		16: "Start Silent": 1
+		32: "Not Toggled": 0
+	]
+]

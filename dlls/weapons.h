@@ -79,6 +79,14 @@ public:
 #define	WEAPON_SATCHEL			14
 #define	WEAPON_SNARK			15
 
+// Gunman Chronicles weapons
+#define WEAPON_GAUSSPISTOL		16
+#define WEAPON_SHOTCYCLER		17
+#define WEAPON_CHEMICALGUN		18
+#define WEAPON_MINIGUN			19
+#define WEAPON_DML				20
+#define WEAPON_BEAMGUN			21
+
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
 
 #define WEAPON_SUIT				31	// ?????
@@ -105,6 +113,14 @@ public:
 #define SATCHEL_WEIGHT		-10
 #define TRIPMINE_WEIGHT		-10
 
+// Gunman Chronicles weapon weights
+#define GAUSSPISTOL_WEIGHT	12
+#define SHOTCYCLER_WEIGHT	18
+#define CHEMICALGUN_WEIGHT	16
+#define MINIGUN_WEIGHT		22
+#define DML_WEIGHT			25
+#define BEAMGUN_WEIGHT		20
+
 
 // weapon clip/carry ammo capacities
 #define URANIUM_MAX_CARRY		100
@@ -118,6 +134,14 @@ public:
 #define TRIPMINE_MAX_CARRY		5
 #define SNARK_MAX_CARRY			15
 #define HORNET_MAX_CARRY		8
+
+// Gunman Chronicles ammo capacities
+#define GAUSS_PISTOL_MAX_CARRY	200
+#define SHOTCYCLER_MAX_CARRY	100
+#define CHEMICAL_MAX_CARRY		150
+#define MINIGUN_MAX_CARRY		500
+#define DML_MAX_CARRY			30
+#define BEAMGUN_MAX_CARRY		100
 #define M203_GRENADE_MAX_CARRY	10
 
 // the maximum amount of ammo each weapon's clip can hold
@@ -1022,6 +1046,97 @@ public:
 
 private:
 	unsigned short m_usSnarkFire;
+};
+
+//
+// Gunman Chronicles Weapons
+//
+
+class CGaussPistol : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 2; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void Reload( void );
+	void WeaponIdle( void );
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	unsigned short m_usGaussPistol;
+};
+
+class CShotCycler : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 3; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void Reload( void );
+	void WeaponIdle( void );
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	unsigned short m_usShotCycler;
+};
+
+class CChemicalGun : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 4; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void Reload( void );
+	void WeaponIdle( void );
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	unsigned short m_usChemicalGun;
 };
 
 
