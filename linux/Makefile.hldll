@@ -63,6 +63,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/gamerules.o \
 	$(HLDLL_OBJ_DIR)/gargantua.o \
 	$(HLDLL_OBJ_DIR)/gauss.o \
+	$(HLDLL_OBJ_DIR)/gausspistol.o \
 	$(HLDLL_OBJ_DIR)/genericmonster.o \
 	$(HLDLL_OBJ_DIR)/ggrenade.o \
 	$(HLDLL_OBJ_DIR)/globals.o \

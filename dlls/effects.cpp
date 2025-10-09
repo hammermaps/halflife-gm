@@ -2266,3 +2266,294 @@ void CItemSoda::CanTouch ( CBaseEntity *pOther )
 	SetThink ( &CItemSoda::SUB_Remove );
 	pev->nextthink = gpGlobals->time;
 }
+
+
+//=========================================================
+// Gunman Chronicles - Smoke Trail
+//=========================================================
+#define SF_SMOKETRAIL_STARTON 1
+
+class CEnvSmokeTrail : public CBaseEntity
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	void KeyValue( KeyValueData *pkvd );
+	void EXPORT SmokeThink( void );
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+
+	virtual int Save( CSave &save );
+	virtual int Restore( CRestore &restore );
+	static TYPEDESCRIPTION m_SaveData[];
+
+	int m_iSprite;
+	int m_iFramerate;
+	float m_flLifetime;
+	int m_iStartSize;
+	int m_iEndSize;
+	BOOL m_bActive;
+};
+
+LINK_ENTITY_TO_CLASS( env_smoketrail, CEnvSmokeTrail );
+
+TYPEDESCRIPTION CEnvSmokeTrail::m_SaveData[] = 
+{
+	DEFINE_FIELD( CEnvSmokeTrail, m_iSprite, FIELD_INTEGER ),
+	DEFINE_FIELD( CEnvSmokeTrail, m_iFramerate, FIELD_INTEGER ),
+	DEFINE_FIELD( CEnvSmokeTrail, m_flLifetime, FIELD_FLOAT ),
+	DEFINE_FIELD( CEnvSmokeTrail, m_iStartSize, FIELD_INTEGER ),
+	DEFINE_FIELD( CEnvSmokeTrail, m_iEndSize, FIELD_INTEGER ),
+	DEFINE_FIELD( CEnvSmokeTrail, m_bActive, FIELD_BOOLEAN ),
+};
+
+IMPLEMENT_SAVERESTORE( CEnvSmokeTrail, CBaseEntity );
+
+void CEnvSmokeTrail::KeyValue( KeyValueData *pkvd )
+{
+	if (FStrEq(pkvd->szKeyName, "spritename"))
+	{
+		pev->message = ALLOC_STRING(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "framerate"))
+	{
+		m_iFramerate = atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "lifetime"))
+	{
+		m_flLifetime = atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "startsize"))
+	{
+		m_iStartSize = atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "endsize"))
+	{
+		m_iEndSize = atoi(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CBaseEntity::KeyValue( pkvd );
+}
+
+void CEnvSmokeTrail::Spawn( void )
+{
+	Precache();
+	
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_NONE;
+	pev->effects = 0;
+	pev->frame = 0;
+	
+	if (!m_iFramerate)
+		m_iFramerate = 10;
+	if (m_flLifetime <= 0)
+		m_flLifetime = 5;
+	if (!m_iStartSize)
+		m_iStartSize = 10;
+	if (!m_iEndSize)
+		m_iEndSize = 30;
+	
+	m_bActive = (pev->spawnflags & SF_SMOKETRAIL_STARTON) ? TRUE : FALSE;
+	
+	if (m_bActive)
+	{
+		SetThink( &CEnvSmokeTrail::SmokeThink );
+		pev->nextthink = gpGlobals->time + 0.1;
+	}
+}
+
+void CEnvSmokeTrail::Precache( void )
+{
+	if (pev->message)
+		m_iSprite = PRECACHE_MODEL( (char *)STRING(pev->message) );
+	else
+		m_iSprite = PRECACHE_MODEL( "sprites/steam1.spr" );
+}
+
+void CEnvSmokeTrail::SmokeThink( void )
+{
+	if (m_bActive)
+	{
+		MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
+			WRITE_BYTE( TE_SMOKE );
+			WRITE_COORD( pev->origin.x );
+			WRITE_COORD( pev->origin.y );
+			WRITE_COORD( pev->origin.z );
+			WRITE_SHORT( m_iSprite );
+			WRITE_BYTE( m_iStartSize );
+			WRITE_BYTE( m_iFramerate );
+		MESSAGE_END();
+		
+		pev->nextthink = gpGlobals->time + 0.5;
+	}
+}
+
+void CEnvSmokeTrail::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	if (useType == USE_ON)
+	{
+		m_bActive = TRUE;
+		SetThink( &CEnvSmokeTrail::SmokeThink );
+		pev->nextthink = gpGlobals->time + 0.1;
+	}
+	else if (useType == USE_OFF)
+	{
+		m_bActive = FALSE;
+		SetThink( NULL );
+	}
+	else if (useType == USE_TOGGLE)
+	{
+		if (m_bActive)
+		{
+			m_bActive = FALSE;
+			SetThink( NULL );
+		}
+		else
+		{
+			m_bActive = TRUE;
+			SetThink( &CEnvSmokeTrail::SmokeThink );
+			pev->nextthink = gpGlobals->time + 0.1;
+		}
+	}
+}
+
+
+//=========================================================
+// Gunman Chronicles - Electrified Surface
+//=========================================================
+#define SF_ELECTRIFIED_STARTON 1
+#define SF_ELECTRIFIED_TOGGLE 2
+
+class CEnvElectrified : public CBaseEntity
+{
+public:
+	void Spawn( void );
+	void KeyValue( KeyValueData *pkvd );
+	void EXPORT ElectrifyThink( void );
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void EXPORT ElectrifyTouch( CBaseEntity *pOther );
+
+	virtual int Save( CSave &save );
+	virtual int Restore( CRestore &restore );
+	static TYPEDESCRIPTION m_SaveData[];
+
+	float m_flDamage;
+	float m_flWait;
+	BOOL m_bActive;
+	float m_flLastDamageTime;
+};
+
+LINK_ENTITY_TO_CLASS( env_electrified, CEnvElectrified );
+
+TYPEDESCRIPTION CEnvElectrified::m_SaveData[] = 
+{
+	DEFINE_FIELD( CEnvElectrified, m_flDamage, FIELD_FLOAT ),
+	DEFINE_FIELD( CEnvElectrified, m_flWait, FIELD_FLOAT ),
+	DEFINE_FIELD( CEnvElectrified, m_bActive, FIELD_BOOLEAN ),
+	DEFINE_FIELD( CEnvElectrified, m_flLastDamageTime, FIELD_TIME ),
+};
+
+IMPLEMENT_SAVERESTORE( CEnvElectrified, CBaseEntity );
+
+void CEnvElectrified::KeyValue( KeyValueData *pkvd )
+{
+	if (FStrEq(pkvd->szKeyName, "dmg"))
+	{
+		m_flDamage = atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else if (FStrEq(pkvd->szKeyName, "wait"))
+	{
+		m_flWait = atof(pkvd->szValue);
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CBaseEntity::KeyValue( pkvd );
+}
+
+void CEnvElectrified::Spawn( void )
+{
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_NONE;
+	
+	if (m_flDamage <= 0)
+		m_flDamage = 10;
+	if (m_flWait <= 0)
+		m_flWait = 1.0;
+	
+	m_bActive = (pev->spawnflags & SF_ELECTRIFIED_STARTON) ? TRUE : FALSE;
+	m_flLastDamageTime = 0;
+	
+	if (m_bActive)
+	{
+		SetThink( &CEnvElectrified::ElectrifyThink );
+		pev->nextthink = gpGlobals->time + 0.1;
+	}
+}
+
+void CEnvElectrified::ElectrifyThink( void )
+{
+	if (m_bActive)
+	{
+		// Create electric effect
+		MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
+			WRITE_BYTE( TE_SPARKS );
+			WRITE_COORD( pev->origin.x );
+			WRITE_COORD( pev->origin.y );
+			WRITE_COORD( pev->origin.z );
+		MESSAGE_END();
+		
+		pev->nextthink = gpGlobals->time + 0.3;
+	}
+}
+
+void CEnvElectrified::ElectrifyTouch( CBaseEntity *pOther )
+{
+	if (!m_bActive || !pOther)
+		return;
+	
+	if (gpGlobals->time < m_flLastDamageTime + m_flWait)
+		return;
+	
+	if (pOther->pev->takedamage != DAMAGE_NO)
+	{
+		pOther->TakeDamage( pev, pev, m_flDamage, DMG_SHOCK );
+		m_flLastDamageTime = gpGlobals->time;
+	}
+}
+
+void CEnvElectrified::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	if (pev->spawnflags & SF_ELECTRIFIED_TOGGLE)
+	{
+		if (useType == USE_ON)
+		{
+			m_bActive = TRUE;
+			SetThink( &CEnvElectrified::ElectrifyThink );
+			pev->nextthink = gpGlobals->time + 0.1;
+		}
+		else if (useType == USE_OFF)
+		{
+			m_bActive = FALSE;
+			SetThink( NULL );
+		}
+		else if (useType == USE_TOGGLE)
+		{
+			if (m_bActive)
+			{
+				m_bActive = FALSE;
+				SetThink( NULL );
+			}
+			else
+			{
+				m_bActive = TRUE;
+				SetThink( &CEnvElectrified::ElectrifyThink );
+				pev->nextthink = gpGlobals->time + 0.1;
+			}
+		}
+	}
+}

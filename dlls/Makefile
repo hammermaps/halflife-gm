@@ -96,6 +96,7 @@ OBJ = \
 	$(DLL_OBJDIR)/gamerules.o \
 	$(DLL_OBJDIR)/gargantua.o \
 	$(DLL_OBJDIR)/gauss.o \
+	$(DLL_OBJDIR)/gausspistol.o \
 	$(DLL_OBJDIR)/genericmonster.o \
 	$(DLL_OBJDIR)/ggrenade.o \
 	$(DLL_OBJDIR)/globals.o \
