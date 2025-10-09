@@ -91,6 +91,11 @@ Added `gausspistol.cpp` to the Visual Studio 2019 project file.
 - `monster_xenome` - Xenome creature
 - `monster_shockroach` - Shock Roach creature
 - `monster_massasaur` - Massasaur dinosaur creature with alpha variant
+- `monster_rustbot` - Rustbot enemy NPC
+- `monster_trainingbot` - Training bot NPC
+- `monster_human_unarmed` - Unarmed human NPC
+- `monster_human_gunman` - Gunman human NPC
+- `monster_gunner_friendly` - Friendly gunner NPC
 
 ### Environmental Effects
 - `env_smoketrail` - Creates smoke trail effects (implemented)
@@ -98,15 +103,32 @@ Added `gausspistol.cpp` to the Visual Studio 2019 project file.
 - `env_explosion_gm` - Gunman variant explosion entity
 - `env_warpball` - Warp ball effect entity
 - `env_xenmaker` - Spawns Xen-based creatures
+- `sphere_explosion` - Sphere-shaped explosion effect
+- `meteor_god` - Meteor effect entity
 
 ### Info Entities
 - `info_node_gunman` - AI navigation node with Gunman-specific flags
 - `info_player_gunman` - Gunman player spawn point
+- `player_speaker` - Player-triggered speaker entity
+- `random_speaker` - Randomly triggered speaker entity
+
+### Cycler Entities
+- `gunman_cycler` - Model cycler for displaying animated models
 
 ### Func Entities
 - `func_vehicle_gm` - Drivable vehicle entity
 - `func_pushable_gm` - Enhanced pushable entity with breakable/explosive options
 - `func_alien_growth` - Alien infestation growth entity
+- `vehicle_tank` - Drivable tank vehicle with optional turret
+
+### Decoration Entities
+- `decore_chair` - Decorative chair prop
+- `decore_table` - Decorative table prop
+- `decore_lamp` - Decorative lamp prop
+- `decore_plant` - Decorative plant prop
+- `decore_barrel` - Decorative barrel prop
+- `decore_crate` - Decorative crate prop
+- `decore_prop` - Generic decorative prop
 
 ## Implementation Status
 

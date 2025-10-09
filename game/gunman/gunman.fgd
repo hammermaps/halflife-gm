@@ -256,6 +256,16 @@
 	]
 ]
 
+@PointClass base(Monster) size(-32 -32 0, 32 32 72) = monster_rustbot : "Rustbot (Gunman)" []
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_trainingbot : "Training Bot (Gunman)" []
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_human_unarmed : "Human Unarmed (Gunman)" []
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_human_gunman : "Human Gunman (Gunman)" []
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_gunner_friendly : "Friendly Gunner (Gunman)" []
+
 //
 // Gunman Chronicles Environmental Effects
 //
@@ -329,6 +339,27 @@
 	rendercolor(color255) : "Color (R G B)" : "0 255 0"
 ]
 
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) color(255 0 0) = sphere_explosion : "Sphere Explosion (Gunman)"
+[
+	iMagnitude(Integer) : "Magnitude" : 100
+	radius(integer) : "Radius" : 256
+	sprite(sprite) : "Sprite Name" : "sprites/zerogxplode.spr"
+	rendercolor(color255) : "Color (R G B)" : "255 255 255"
+	spawnflags(Flags) =
+	[
+		1 : "No Damage" : 0
+		2 : "Repeatable" : 0
+	]
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) color(255 128 0) = meteor_god : "Meteor Entity (Gunman)"
+[
+	target(target_destination) : "Target"
+	speed(integer) : "Speed" : 100
+	dmg(integer) : "Damage" : 100
+	sprite(sprite) : "Sprite Name" : "sprites/meteor.spr"
+]
+
 //
 // Gunman Chronicles Info Entities
 //
@@ -349,6 +380,74 @@
 	spawnflags(Flags) =
 	[
 		1 : "Master" : 0
+	]
+]
+
+@PointClass base(Targetname) iconsprite("sprites/speaker.spr") = player_speaker : "Player Speaker (Gunman)"
+[
+	message(sound) : "WAV/Sentence Name"
+	health(integer) : "Volume (0-10)" : 10
+	preset(choices) : "Preset" : 0 =
+	[
+		0 : "None"
+		1 : "C1A0 (labs)"
+		2 : "C1A1 (tunnel)"
+		3 : "C1A2 (plant)"
+		4 : "C1A3 (canal)"
+		5 : "C1A4 (tunnels)"
+		6 : "C2A1 (reactor)"
+		7 : "C2A2 (train)"
+		8 : "C2A3 (crater)"
+		9 : "C2A4 (waste)"
+		10 : "C2A5 (tele)"
+		11 : "C3A1 (lift)"
+		12 : "C3A2 (portal)"
+	]
+	spawnflags(Flags) =
+	[
+		1 : "Start Silent" : 0
+	]
+]
+
+@PointClass base(Targetname) iconsprite("sprites/speaker.spr") = random_speaker : "Random Speaker (Gunman)"
+[
+	message(sound) : "Sentence Group Prefix"
+	health(integer) : "Volume (0-10)" : 10
+	minwait(string) : "Min Wait" : "5"
+	maxwait(string) : "Max Wait" : "15"
+	preset(choices) : "Preset" : 0 =
+	[
+		0 : "None"
+		1 : "C1A0 (labs)"
+		2 : "C1A1 (tunnel)"
+		3 : "C1A2 (plant)"
+		4 : "C1A3 (canal)"
+		5 : "C1A4 (tunnels)"
+		6 : "C2A1 (reactor)"
+		7 : "C2A2 (train)"
+		8 : "C2A3 (crater)"
+		9 : "C2A4 (waste)"
+		10 : "C2A5 (tele)"
+		11 : "C3A1 (lift)"
+		12 : "C3A2 (portal)"
+	]
+	spawnflags(Flags) =
+	[
+		1 : "Start Silent" : 0
+	]
+]
+
+//
+// Gunman Chronicles Cycler Entities
+//
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 72) studio() = gunman_cycler : "Gunman Model Cycler"
+[
+	model(studio) : "Model"
+	framerate(string) : "Frames per second" : "10.0"
+	spawnflags(Flags) =
+	[
+		1 : "Not Solid" : 0
 	]
 ]
 
@@ -404,6 +503,90 @@
 	[
 		1 : "Start Active" : 1
 		2 : "Grow Over Time" : 0
+	]
+]
+
+@SolidClass base(Targetname, RenderFields, ZHLT) = vehicle_tank : "Tank Vehicle (Gunman)"
+[
+	target(target_destination) : "First stop target"
+	sounds(choices) : "Sound" : 0 =
+	[
+		0: "None"
+		1: "Tank Engine 1"
+		2: "Tank Engine 2"
+	]
+	speed(integer) : "Speed" : 100
+	health(integer) : "Health" : 1000
+	dmg(integer) : "Damage on crush" : 50
+	volume(string) : "Volume (0-10)" : "10"
+	turret(choices) : "Has Turret" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	spawnflags(Flags) =
+	[
+		1 : "No Pitch (X-rot)" : 0
+		2 : "No User Control" : 0
+		8 : "Passable" : 0
+		16 : "Destructible" : 1
+	]
+]
+
+//
+// Gunman Chronicles Decoration Entities
+//
+
+@PointClass base(Targetname, Angles, RenderFields) size(-16 -16 0, 16 16 32) studio() = decore_chair : "Decorative Chair"
+[
+	model(studio) : "Model" : "models/chair.mdl"
+	body(integer) : "Body" : 0
+	skin(integer) : "Skin" : 0
+]
+
+@PointClass base(Targetname, Angles, RenderFields) size(-16 -16 0, 16 16 32) studio() = decore_table : "Decorative Table"
+[
+	model(studio) : "Model" : "models/table.mdl"
+	body(integer) : "Body" : 0
+	skin(integer) : "Skin" : 0
+]
+
+@PointClass base(Targetname, Angles, RenderFields) size(-16 -16 0, 16 16 32) studio() = decore_lamp : "Decorative Lamp"
+[
+	model(studio) : "Model" : "models/lamp.mdl"
+	body(integer) : "Body" : 0
+	skin(integer) : "Skin" : 0
+]
+
+@PointClass base(Targetname, Angles, RenderFields) size(-8 -8 0, 8 8 16) studio() = decore_plant : "Decorative Plant"
+[
+	model(studio) : "Model" : "models/plant.mdl"
+	body(integer) : "Body" : 0
+	skin(integer) : "Skin" : 0
+]
+
+@PointClass base(Targetname, Angles, RenderFields) size(-16 -16 0, 16 16 64) studio() = decore_barrel : "Decorative Barrel"
+[
+	model(studio) : "Model" : "models/barrel.mdl"
+	body(integer) : "Body" : 0
+	skin(integer) : "Skin" : 0
+]
+
+@PointClass base(Targetname, Angles, RenderFields) size(-32 -32 0, 32 32 32) studio() = decore_crate : "Decorative Crate"
+[
+	model(studio) : "Model" : "models/crate.mdl"
+	body(integer) : "Body" : 0
+	skin(integer) : "Skin" : 0
+]
+
+@PointClass base(Targetname, Angles, RenderFields) size(-16 -16 0, 16 16 32) studio() = decore_prop : "Generic Decorative Prop"
+[
+	model(studio) : "Model"
+	body(integer) : "Body" : 0
+	skin(integer) : "Skin" : 0
+	spawnflags(Flags) =
+	[
+		1 : "Not Solid" : 0
 	]
 ]
 

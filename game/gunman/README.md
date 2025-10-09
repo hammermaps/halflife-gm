@@ -32,19 +32,26 @@ The FGD includes:
 - Custom ammo types for Gunman weapons
 - Compatible with Half-Life ammo types
 
-### Monsters/NPCs (6 types)
+### Monsters/NPCs (11 types)
 - Houndeye (Gunman variant), Dinnerjacket, Gene Worm
 - Xenome, Shock Roach, Massasaur
+- Rustbot, Training Bot, Human Unarmed, Human Gunman, Friendly Gunner
 
-### Environmental Effects (5 types)
+### Environmental Effects (7 types)
 - Smoke Trail, Electrified Surface, Explosion (Gunman variant)
-- Warp Ball, Xen Maker
+- Warp Ball, Xen Maker, Sphere Explosion, Meteor
 
 ### Info Entities
-- AI nodes, player spawns
+- AI nodes, player spawns, speaker entities (player_speaker, random_speaker)
+
+### Cycler Entities
+- gunman_cycler - Model display and animation
 
 ### Func Entities
-- Vehicles, enhanced pushables, alien growth
+- Vehicles (func_vehicle_gm, vehicle_tank), enhanced pushables, alien growth
+
+### Decoration Entities
+- Chair, Table, Lamp, Plant, Barrel, Crate, Generic Prop (decore_*)
 
 ### Standard Entities
 - All base Half-Life entities (triggers, lights, etc.)
