@@ -1078,6 +1078,7 @@ public:
 	}
 
 private:
+	int m_iShell;
 	unsigned short m_usGaussPistol;
 };
 
