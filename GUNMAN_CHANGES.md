@@ -16,117 +16,109 @@ A comprehensive Forge Game Data file for Gunman Chronicles that includes:
 - Modified trigger entities
 - Vehicle and pushable entities with Gunman features
 
-### 2. dlls/gausspistol.cpp
-Implementation of the Gauss Pistol weapon, a signature weapon from Gunman Chronicles. Features:
-- Primary fire: Single shot gauss projectile
-- Secondary fire: Placeholder for charged shot
-- Magazine capacity: 20 rounds
-- Maximum ammo: 200 rounds
+### Weapon Implementations
+
+| File | Entity | Class | Description |
+|------|--------|-------|-------------|
+| `dlls/gausspistol.cpp` | `weapon_gausspistol` | `CGaussPistol` | Gauss Pistol - primary sidearm (20 rounds, 0.3s fire rate) |
+| `dlls/shotcycler.cpp` | `weapon_shotcycler` | `CShotCycler` | Shot Cycler - shotgun variant (8 rounds, 6 pellets/shot) |
+| `dlls/chemicalgun.cpp` | `weapon_chemicalgun` | `CChemicalGun` | Chemical Gun - rapid-fire chemical weapon (30 rounds, 0.1s fire rate) |
+| `dlls/minigun.cpp` | `weapon_minigun` | `CMinigun` | Minigun - heavy weapon with spin-up (100 rounds, 0.05s fire rate) |
+| `dlls/dml.cpp` | `weapon_dml` | `CDML` | DML - Dual Missile Launcher (4 rounds, rocket projectiles) |
+| `dlls/beamgun.cpp` | `weapon_beamgun` | `CBeamGun` | Beam Gun - continuous beam weapon (no clip, drains ammo) |
+
+### Monster Implementations
+
+| File | Entity | Class | Description |
+|------|--------|-------|-------------|
+| `dlls/gm_houndeye.cpp` | `monster_houndeye_gm` | `CHoundeyeGM` | Houndeye variant with armor (120hp, sonic attack) |
+| `dlls/gm_dinnerjacket.cpp` | `monster_dinnerjacket` | `CDinnerjacket` | Dinnerjacket creature (200hp, melee attacks) |
+| `dlls/gm_geneworm.cpp` | `monster_geneworm` | `CGeneworm` | Gene Worm boss (500hp, melee+ranged) |
+| `dlls/gm_xenome.cpp` | `monster_xenome` | `CXenome` | Xenome creature (80hp, leap attack) |
+| `dlls/gm_shockroach.cpp` | `monster_shockroach` | `CShockroach` | Shock Roach (30hp, electric shock attack) |
+| `dlls/gm_massasaur.cpp` | `monster_massasaur` | `CMassasaur` | Massasaur dinosaur (300hp, bite+tail whip) |
+
+### Environmental Effects
+
+| File | Entity | Class | Description |
+|------|--------|-------|-------------|
+| `dlls/gm_explosion.cpp` | `env_explosion_gm` | `CEnvExplosionGM` | Custom explosion with radius override and custom sprite |
+| `dlls/gm_warpball.cpp` | `env_warpball` | `CEnvWarpBall` | Warp ball energy effect (green energy cylinder) |
+| `dlls/gm_xenmaker.cpp` | `env_xenmaker` | `CEnvXenMaker` | Xen creature spawner (configurable type, count, delay) |
+
+### Info Entities
+
+| File | Entity | Class | Description |
+|------|--------|-------|-------------|
+| `dlls/gm_info.cpp` | `info_node_gunman` | `CInfoNodeGunman` | AI navigation node with combat/sniper flags |
+| `dlls/gm_info.cpp` | `info_player_gunman` | `CInfoPlayerGunman` | Gunman player spawn point with master flag |
+
+### Func Entities
+
+| File | Entity | Class | Description |
+|------|--------|-------|-------------|
+| `dlls/gm_func_vehicle.cpp` | `func_vehicle_gm` | `CFuncVehicleGM` | Drivable vehicle along path |
+| `dlls/gm_func_pushable.cpp` | `func_pushable_gm` | `CFuncPushableGM` | Enhanced pushable with breakable/explosive options |
+| `dlls/gm_func_aliengrowth.cpp` | `func_alien_growth` | `CFuncAlienGrowth` | Alien infestation that damages on touch |
+
+### Ammo Entities
+
+| File | Entity | Class | Description |
+|------|--------|-------|-------------|
+| `dlls/gm_ammo.cpp` | `ammo_gaussclip` | `CGaussClipAmmo` | Gauss Pistol ammo (gives 20 rounds) |
+| `dlls/gm_ammo.cpp` | `ammo_shotcycler` | `CShotCyclerAmmo` | Shot Cycler ammo (gives 8 rounds) |
+| `dlls/gm_ammo.cpp` | `ammo_chemical` | `CChemicalAmmo` | Chemical Gun ammo (gives 30 rounds) |
+| `dlls/gm_ammo.cpp` | `ammo_minigun` | `CMinigunAmmo` | Minigun ammo (gives 100 rounds) |
+| `dlls/gm_ammo.cpp` | `ammo_dml` | `CDMLAmmo` | DML ammo (gives 4 rounds) |
+| `dlls/gm_ammo.cpp` | `ammo_beamgun` | `CBeamGunAmmo` | Beam Gun ammo (gives 20 rounds) |
 
 ## Files Modified
 
 ### 1. dlls/weapons.h
-Added weapon IDs and constants for Gunman Chronicles weapons:
-- `WEAPON_GAUSSPISTOL` (16)
-- `WEAPON_SHOTCYCLER` (17)
-- `WEAPON_CHEMICALGUN` (18)
-- `WEAPON_MINIGUN` (19)
-- `WEAPON_DML` (20)
-- `WEAPON_BEAMGUN` (21)
-
-Added weapon weight constants and ammo capacity definitions.
-
-Added weapon class declarations:
-- `CGaussPistol`
-- `CShotCycler`
-- `CChemicalGun`
+- Added weapon IDs: `WEAPON_GAUSSPISTOL` (16) through `WEAPON_BEAMGUN` (21)
+- Added weapon weight constants for auto-switching
+- Added ammo capacity definitions (max carry amounts)
+- Added clip size definitions for all Gunman weapons
+- Added default give amounts for weapon pickups
+- Added ammo give amounts for ammo pickups
+- Added class declarations for all 6 weapon classes
 
 ### 2. dlls/effects.cpp
-Added two new Gunman Chronicles environmental effect entities:
+Added two environmental effect entities:
+- **CEnvSmokeTrail** (`env_smoketrail`) - Configurable smoke trail effect
+- **CEnvElectrified** (`env_electrified`) - Electrified surface with damage
 
-#### CEnvSmokeTrail
-Creates a smoke trail effect at the entity's position.
-- Configurable sprite, framerate, lifetime, start/end size
-- Can be toggled on/off
-- Useful for damaged machinery, fires, or atmospheric effects
-
-#### CEnvElectrified
-Creates an electrified surface that damages entities on contact.
-- Configurable damage and damage interval
-- Creates electric spark effects
-- Can be toggled on/off
-- Useful for hazardous electrical areas
-
-### 3. dlls/Makefile
-Added `gausspistol.o` to the build targets for Linux compilation.
-
-### 4. linux/Makefile.hldll
-Added `$(HLDLL_OBJ_DIR)/gausspistol.o` to the Linux build system.
-
-### 5. projects/vs2019/hldll.vcxproj
-Added `gausspistol.cpp` to the Visual Studio 2019 project file.
-
-## Gunman Chronicles Entities (FGD)
-
-### Weapons
-- `weapon_gausspistol` - Gauss Pistol (implemented)
-- `weapon_shotcycler` - Shot Cycler shotgun variant
-- `weapon_chemicalgun` - Chemical sprayer weapon
-- `weapon_minigun` - Minigun/chaingun
-- `weapon_dml` - DML rocket launcher
-- `weapon_beamgun` - Beam weapon
-
-### Ammo
-- `ammo_gaussclip` - Gauss Pistol ammunition
-- `ammo_shotcycler` - Shot Cycler ammunition
-- `ammo_chemical` - Chemical Gun ammunition
-- `ammo_minigun` - Minigun ammunition
-- `ammo_dml` - DML ammunition
-- `ammo_beamgun` - Beam Gun ammunition
-
-### Monsters/NPCs
-- `monster_houndeye_gm` - Gunman Chronicles variant of Houndeye with armor options
-- `monster_dinnerjacket` - Dinnerjacket creature from Gunman
-- `monster_geneworm` - Large boss creature Gene Worm
-- `monster_xenome` - Xenome creature
-- `monster_shockroach` - Shock Roach creature
-- `monster_massasaur` - Massasaur dinosaur creature with alpha variant
-
-### Environmental Effects
-- `env_smoketrail` - Creates smoke trail effects (implemented)
-- `env_electrified` - Electrified surface entity (implemented)
-- `env_explosion_gm` - Gunman variant explosion entity
-- `env_warpball` - Warp ball effect entity
-- `env_xenmaker` - Spawns Xen-based creatures
-
-### Info Entities
-- `info_node_gunman` - AI navigation node with Gunman-specific flags
-- `info_player_gunman` - Gunman player spawn point
-
-### Func Entities
-- `func_vehicle_gm` - Drivable vehicle entity
-- `func_pushable_gm` - Enhanced pushable entity with breakable/explosive options
-- `func_alien_growth` - Alien infestation growth entity
+### 3. Build System
+All new source files added to:
+- `dlls/Makefile` - Linux compilation (dlls directory)
+- `linux/Makefile.hldll` - Linux build system
+- `projects/vs2019/hldll.vcxproj` - Visual Studio 2019 project
 
 ## Implementation Status
 
-✅ **Completed:**
+✅ **Completed (Foundation):**
+- All 25 Gunman Chronicles entities have foundation implementations
 - Gunman Chronicles FGD file with full entity definitions
-- Gauss Pistol weapon implementation
-- Smoke Trail environmental effect
-- Electrified surface effect
-- Build system updates (Makefile, VS2019 project)
-- Syntax verification of all new code
+- All weapons: spawn, precache, primary/secondary attack, reload, deploy, holster, idle
+- All monsters: spawn, precache, AI classification, attack handlers, sound arrays, save/restore
+- All environmental effects: spawn, use/trigger, think functions, save/restore
+- All info entities: spawn, node type handling
+- All func entities: spawn, use, touch, save/restore
+- All ammo pickups: spawn, precache, AddAmmo
+- Build system integration for all platforms
 
-🔄 **Partial/Placeholder:**
-- Other weapon implementations (use existing models as placeholders)
-- Monster implementations would require additional model and AI work
+🔄 **Uses Placeholder Assets:**
+- Weapons use existing Half-Life models (v_9mmhandgun.mdl, v_shotgun.mdl, etc.)
+- Weapons use existing Half-Life sounds (weapons/pl_gun*.wav, etc.)
+- Monsters use existing Half-Life models (houndeye.mdl, zombie.mdl, etc.)
+- Monsters use existing Half-Life sounds (zombie/, headcrab/, bullchicken/)
 
-❌ **Not Implemented (would require additional assets):**
-- Custom models for Gunman weapons
-- Custom sounds for Gunman weapons
-- Monster AI behaviors specific to Gunman creatures
-- Custom textures and sprites
+❌ **Requires Custom Assets for Full Implementation:**
+- Custom models for Gunman weapons, monsters, and entities
+- Custom sounds for Gunman weapons and creatures
+- Custom sprites for environmental effects
+- Full monster AI behaviors (custom schedules, tasks, activities)
+- Monster animation event integration with custom models
 
 ## Building
 
@@ -150,10 +142,11 @@ To use Gunman Chronicles entities in your maps:
 
 ## Notes
 
-- The current implementation uses placeholder models from standard Half-Life for weapons
+- The current implementation uses placeholder models from standard Half-Life
 - Full Gunman Chronicles functionality would require the original game assets
-- This implementation provides the code framework and entity definitions
-- Monster implementations are defined in the FGD but would need additional C++ code for full functionality
+- This implementation provides the complete code framework and entity definitions
+- All entities support save/restore for proper game saving
+- Monster variants (armored houndeye, alpha massasaur, etc.) are supported via KeyValue body types
 
 ## References
 

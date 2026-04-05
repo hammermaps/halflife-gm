@@ -73,18 +73,21 @@ OBJ = \
 	$(DLL_OBJDIR)/apache.o \
 	$(DLL_OBJDIR)/barnacle.o \
 	$(DLL_OBJDIR)/barney.o \
+	$(DLL_OBJDIR)/beamgun.o \
 	$(DLL_OBJDIR)/bigmomma.o \
 	$(DLL_OBJDIR)/bloater.o \
 	$(DLL_OBJDIR)/bmodels.o \
 	$(DLL_OBJDIR)/bullsquid.o \
 	$(DLL_OBJDIR)/buttons.o \
 	$(DLL_OBJDIR)/cbase.o \
+	$(DLL_OBJDIR)/chemicalgun.o \
 	$(DLL_OBJDIR)/client.o \
 	$(DLL_OBJDIR)/combat.o \
 	$(DLL_OBJDIR)/controller.o \
 	$(DLL_OBJDIR)/crossbow.o \
 	$(DLL_OBJDIR)/crowbar.o \
 	$(DLL_OBJDIR)/defaultai.o \
+	$(DLL_OBJDIR)/dml.o \
 	$(DLL_OBJDIR)/doors.o \
 	$(DLL_OBJDIR)/effects.o \
 	$(DLL_OBJDIR)/egon.o \
@@ -98,6 +101,20 @@ OBJ = \
 	$(DLL_OBJDIR)/gauss.o \
 	$(DLL_OBJDIR)/gausspistol.o \
 	$(DLL_OBJDIR)/genericmonster.o \
+	$(DLL_OBJDIR)/gm_ammo.o \
+	$(DLL_OBJDIR)/gm_dinnerjacket.o \
+	$(DLL_OBJDIR)/gm_explosion.o \
+	$(DLL_OBJDIR)/gm_func_aliengrowth.o \
+	$(DLL_OBJDIR)/gm_func_pushable.o \
+	$(DLL_OBJDIR)/gm_func_vehicle.o \
+	$(DLL_OBJDIR)/gm_geneworm.o \
+	$(DLL_OBJDIR)/gm_houndeye.o \
+	$(DLL_OBJDIR)/gm_info.o \
+	$(DLL_OBJDIR)/gm_massasaur.o \
+	$(DLL_OBJDIR)/gm_shockroach.o \
+	$(DLL_OBJDIR)/gm_warpball.o \
+	$(DLL_OBJDIR)/gm_xenmaker.o \
+	$(DLL_OBJDIR)/gm_xenome.o \
 	$(DLL_OBJDIR)/ggrenade.o \
 	$(DLL_OBJDIR)/globals.o \
 	$(DLL_OBJDIR)/gman.o \
@@ -120,6 +137,7 @@ OBJ = \
 	$(DLL_OBJDIR)/leech.o \
 	$(DLL_OBJDIR)/lights.o \
 	$(DLL_OBJDIR)/maprules.o \
+	$(DLL_OBJDIR)/minigun.o \
 	$(DLL_OBJDIR)/monstermaker.o \
 	$(DLL_OBJDIR)/monsters.o \
 	$(DLL_OBJDIR)/monsterstate.o \
@@ -141,6 +159,7 @@ OBJ = \
 	$(DLL_OBJDIR)/schedule.o \
 	$(DLL_OBJDIR)/scientist.o \
 	$(DLL_OBJDIR)/scripted.o \
+	$(DLL_OBJDIR)/shotcycler.o \
 	$(DLL_OBJDIR)/shotgun.o \
 	$(DLL_OBJDIR)/singleplay_gamerules.o \
 	$(DLL_OBJDIR)/skill.o \

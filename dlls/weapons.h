@@ -163,6 +163,14 @@ public:
 #define TRIPMINE_MAX_CLIP		WEAPON_NOCLIP
 #define SNARK_MAX_CLIP			WEAPON_NOCLIP
 
+// Gunman Chronicles weapon clip sizes
+#define GAUSSPISTOL_MAX_CLIP	20
+#define SHOTCYCLER_MAX_CLIP		8
+#define CHEMICALGUN_MAX_CLIP	30
+#define MINIGUN_MAX_CLIP		100
+#define DML_MAX_CLIP			4
+#define BEAMGUN_MAX_CLIP		WEAPON_NOCLIP
+
 
 // the default amount of ammo that comes with each gun when it spawns
 #define GLOCK_DEFAULT_GIVE			17
@@ -181,6 +189,14 @@ public:
 #define SNARK_DEFAULT_GIVE			5
 #define HIVEHAND_DEFAULT_GIVE		8
 
+// Gunman Chronicles weapon default give amounts
+#define GAUSSPISTOL_DEFAULT_GIVE	20
+#define SHOTCYCLER_DEFAULT_GIVE		8
+#define CHEMICALGUN_DEFAULT_GIVE	30
+#define MINIGUN_DEFAULT_GIVE		100
+#define DML_DEFAULT_GIVE			4
+#define BEAMGUN_DEFAULT_GIVE		20
+
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE	20
 #define AMMO_GLOCKCLIP_GIVE		GLOCK_MAX_CLIP
@@ -193,6 +209,14 @@ public:
 #define AMMO_RPGCLIP_GIVE		RPG_MAX_CLIP
 #define AMMO_URANIUMBOX_GIVE	20
 #define AMMO_SNARKBOX_GIVE		5
+
+// Gunman Chronicles ammo give amounts
+#define AMMO_GAUSSCLIP_GIVE		20
+#define AMMO_SHOTCYCLER_GIVE	8
+#define AMMO_CHEMICAL_GIVE		30
+#define AMMO_MINIGUN_GIVE		100
+#define AMMO_DML_GIVE			4
+#define AMMO_BEAMGUN_GIVE		20
 
 // bullet types
 typedef	enum
@@ -1108,6 +1132,7 @@ public:
 	}
 
 private:
+	int m_iShell;
 	unsigned short m_usShotCycler;
 };
 
@@ -1137,7 +1162,98 @@ public:
 	}
 
 private:
+	int m_iShell;
 	unsigned short m_usChemicalGun;
+};
+
+class CMinigun : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 5; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void Reload( void );
+	void WeaponIdle( void );
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	int m_iShell;
+	unsigned short m_usMinigun;
+	BOOL m_bSpinning;
+};
+
+class CDML : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 6; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void Reload( void );
+	void WeaponIdle( void );
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	unsigned short m_usDML;
+};
+
+class CBeamGun : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 6; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void Reload( void );
+	void WeaponIdle( void );
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	unsigned short m_usBeamGun;
+	float m_flAmmoUseTime;
 };
 
 

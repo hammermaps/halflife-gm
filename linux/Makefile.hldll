@@ -40,18 +40,21 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/apache.o \
 	$(HLDLL_OBJ_DIR)/barnacle.o \
 	$(HLDLL_OBJ_DIR)/barney.o \
+	$(HLDLL_OBJ_DIR)/beamgun.o \
 	$(HLDLL_OBJ_DIR)/bigmomma.o \
 	$(HLDLL_OBJ_DIR)/bloater.o \
 	$(HLDLL_OBJ_DIR)/bmodels.o \
 	$(HLDLL_OBJ_DIR)/bullsquid.o \
 	$(HLDLL_OBJ_DIR)/buttons.o \
 	$(HLDLL_OBJ_DIR)/cbase.o \
+	$(HLDLL_OBJ_DIR)/chemicalgun.o \
 	$(HLDLL_OBJ_DIR)/client.o \
 	$(HLDLL_OBJ_DIR)/combat.o \
 	$(HLDLL_OBJ_DIR)/controller.o \
 	$(HLDLL_OBJ_DIR)/crossbow.o \
 	$(HLDLL_OBJ_DIR)/crowbar.o \
 	$(HLDLL_OBJ_DIR)/defaultai.o \
+	$(HLDLL_OBJ_DIR)/dml.o \
 	$(HLDLL_OBJ_DIR)/doors.o \
 	$(HLDLL_OBJ_DIR)/effects.o \
 	$(HLDLL_OBJ_DIR)/egon.o \
@@ -68,6 +71,20 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/ggrenade.o \
 	$(HLDLL_OBJ_DIR)/globals.o \
 	$(HLDLL_OBJ_DIR)/gman.o \
+	$(HLDLL_OBJ_DIR)/gm_ammo.o \
+	$(HLDLL_OBJ_DIR)/gm_dinnerjacket.o \
+	$(HLDLL_OBJ_DIR)/gm_explosion.o \
+	$(HLDLL_OBJ_DIR)/gm_func_aliengrowth.o \
+	$(HLDLL_OBJ_DIR)/gm_func_pushable.o \
+	$(HLDLL_OBJ_DIR)/gm_func_vehicle.o \
+	$(HLDLL_OBJ_DIR)/gm_geneworm.o \
+	$(HLDLL_OBJ_DIR)/gm_houndeye.o \
+	$(HLDLL_OBJ_DIR)/gm_info.o \
+	$(HLDLL_OBJ_DIR)/gm_massasaur.o \
+	$(HLDLL_OBJ_DIR)/gm_shockroach.o \
+	$(HLDLL_OBJ_DIR)/gm_warpball.o \
+	$(HLDLL_OBJ_DIR)/gm_xenmaker.o \
+	$(HLDLL_OBJ_DIR)/gm_xenome.o \
 	$(HLDLL_OBJ_DIR)/h_ai.o \
 	$(HLDLL_OBJ_DIR)/h_battery.o \
 	$(HLDLL_OBJ_DIR)/h_cine.o \
@@ -92,6 +109,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/monsterstate.o \
 	$(HLDLL_OBJ_DIR)/mortar.o \
 	$(HLDLL_OBJ_DIR)/mp5.o \
+	$(HLDLL_OBJ_DIR)/minigun.o \
 	$(HLDLL_OBJ_DIR)/nihilanth.o \
 	$(HLDLL_OBJ_DIR)/nodes.o \
 	$(HLDLL_OBJ_DIR)/observer.o \
@@ -109,6 +127,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/scientist.o \
 	$(HLDLL_OBJ_DIR)/scripted.o \
 	$(HLDLL_OBJ_DIR)/shotgun.o \
+	$(HLDLL_OBJ_DIR)/shotcycler.o \
 	$(HLDLL_OBJ_DIR)/skill.o \
 	$(HLDLL_OBJ_DIR)/sound.o \
 	$(HLDLL_OBJ_DIR)/soundent.o \
