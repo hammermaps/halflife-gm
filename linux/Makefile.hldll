@@ -68,6 +68,14 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/ggrenade.o \
 	$(HLDLL_OBJ_DIR)/globals.o \
 	$(HLDLL_OBJ_DIR)/gman.o \
+	$(HLDLL_OBJ_DIR)/gm_ammo.o \
+	$(HLDLL_OBJ_DIR)/gm_explosion.o \
+	$(HLDLL_OBJ_DIR)/gm_func_aliengrowth.o \
+	$(HLDLL_OBJ_DIR)/gm_func_pushable.o \
+	$(HLDLL_OBJ_DIR)/gm_func_vehicle.o \
+	$(HLDLL_OBJ_DIR)/gm_info.o \
+	$(HLDLL_OBJ_DIR)/gm_warpball.o \
+	$(HLDLL_OBJ_DIR)/gm_xenmaker.o \
 	$(HLDLL_OBJ_DIR)/h_ai.o \
 	$(HLDLL_OBJ_DIR)/h_battery.o \
 	$(HLDLL_OBJ_DIR)/h_cine.o \
