@@ -101,6 +101,20 @@ OBJ = \
 	$(DLL_OBJDIR)/gauss.o \
 	$(DLL_OBJDIR)/gausspistol.o \
 	$(DLL_OBJDIR)/genericmonster.o \
+	$(DLL_OBJDIR)/gm_ammo.o \
+	$(DLL_OBJDIR)/gm_dinnerjacket.o \
+	$(DLL_OBJDIR)/gm_explosion.o \
+	$(DLL_OBJDIR)/gm_func_aliengrowth.o \
+	$(DLL_OBJDIR)/gm_func_pushable.o \
+	$(DLL_OBJDIR)/gm_func_vehicle.o \
+	$(DLL_OBJDIR)/gm_geneworm.o \
+	$(DLL_OBJDIR)/gm_houndeye.o \
+	$(DLL_OBJDIR)/gm_info.o \
+	$(DLL_OBJDIR)/gm_massasaur.o \
+	$(DLL_OBJDIR)/gm_shockroach.o \
+	$(DLL_OBJDIR)/gm_warpball.o \
+	$(DLL_OBJDIR)/gm_xenmaker.o \
+	$(DLL_OBJDIR)/gm_xenome.o \
 	$(DLL_OBJDIR)/ggrenade.o \
 	$(DLL_OBJDIR)/globals.o \
 	$(DLL_OBJDIR)/gman.o \

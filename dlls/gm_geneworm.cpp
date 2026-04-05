@@ -43,6 +43,10 @@ public:
 
 	void KeyValue( KeyValueData *pkvd );
 
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
 	float m_flNextFlinch;
 	int m_iCustomHealth;	// configurable via KeyValue
 
@@ -66,6 +70,14 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( monster_geneworm, CGeneworm );
+
+TYPEDESCRIPTION CGeneworm::m_SaveData[] = 
+{
+	DEFINE_FIELD( CGeneworm, m_flNextFlinch, FIELD_TIME ),
+	DEFINE_FIELD( CGeneworm, m_iCustomHealth, FIELD_INTEGER ),
+};
+
+IMPLEMENT_SAVERESTORE( CGeneworm, CBaseMonster );
 
 const char *CGeneworm::pAttackHitSounds[] =
 {

@@ -44,6 +44,10 @@ public:
 
 	void KeyValue( KeyValueData *pkvd );
 
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
 	float m_flNextFlinch;
 	int m_iBodyType;		// 0 = Normal, 1 = Alpha (+200 health)
 
@@ -67,6 +71,14 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( monster_massasaur, CMassasaur );
+
+TYPEDESCRIPTION CMassasaur::m_SaveData[] = 
+{
+	DEFINE_FIELD( CMassasaur, m_flNextFlinch, FIELD_TIME ),
+	DEFINE_FIELD( CMassasaur, m_iBodyType, FIELD_INTEGER ),
+};
+
+IMPLEMENT_SAVERESTORE( CMassasaur, CBaseMonster );
 
 const char *CMassasaur::pAttackHitSounds[] =
 {

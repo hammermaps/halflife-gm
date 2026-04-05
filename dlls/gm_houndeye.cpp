@@ -46,6 +46,10 @@ public:
 
 	void KeyValue( KeyValueData *pkvd );
 
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
 	void PainSound( void );
 	void AlertSound( void );
 	void IdleSound( void );
@@ -67,6 +71,14 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( monster_houndeye_gm, CHoundeyeGM );
+
+TYPEDESCRIPTION CHoundeyeGM::m_SaveData[] = 
+{
+	DEFINE_FIELD( CHoundeyeGM, m_iArmorBody, FIELD_INTEGER ),
+	DEFINE_FIELD( CHoundeyeGM, m_flNextFlinch, FIELD_TIME ),
+};
+
+IMPLEMENT_SAVERESTORE( CHoundeyeGM, CSquadMonster );
 
 const char *CHoundeyeGM::pIdleSounds[] =
 {

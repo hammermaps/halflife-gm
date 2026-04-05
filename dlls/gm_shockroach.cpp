@@ -40,6 +40,10 @@ public:
 	void HandleAnimEvent( MonsterEvent_t *pEvent );
 	int  IgnoreConditions( void );
 
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
 	float m_flNextFlinch;
 
 	void PainSound( void );
@@ -59,6 +63,13 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( monster_shockroach, CShockroach );
+
+TYPEDESCRIPTION CShockroach::m_SaveData[] = 
+{
+	DEFINE_FIELD( CShockroach, m_flNextFlinch, FIELD_TIME ),
+};
+
+IMPLEMENT_SAVERESTORE( CShockroach, CBaseMonster );
 
 const char *CShockroach::pIdleSounds[] =
 {

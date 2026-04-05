@@ -41,6 +41,10 @@ public:
 
 	void KeyValue( KeyValueData *pkvd );
 
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
 	float m_flNextFlinch;
 	int m_iBodyType;		// 0 = Normal, 1 = Heavy (+100 health)
 
@@ -65,6 +69,14 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( monster_dinnerjacket, CDinnerjacket );
+
+TYPEDESCRIPTION CDinnerjacket::m_SaveData[] = 
+{
+	DEFINE_FIELD( CDinnerjacket, m_flNextFlinch, FIELD_TIME ),
+	DEFINE_FIELD( CDinnerjacket, m_iBodyType, FIELD_INTEGER ),
+};
+
+IMPLEMENT_SAVERESTORE( CDinnerjacket, CBaseMonster );
 
 const char *CDinnerjacket::pAttackHitSounds[] =
 {

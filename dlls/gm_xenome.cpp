@@ -43,6 +43,10 @@ public:
 
 	void EXPORT LeapTouch( CBaseEntity *pOther );
 
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
 	float m_flNextFlinch;
 
 	void PainSound( void );
@@ -63,6 +67,13 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( monster_xenome, CXenome );
+
+TYPEDESCRIPTION CXenome::m_SaveData[] = 
+{
+	DEFINE_FIELD( CXenome, m_flNextFlinch, FIELD_TIME ),
+};
+
+IMPLEMENT_SAVERESTORE( CXenome, CBaseMonster );
 
 const char *CXenome::pIdleSounds[] =
 {
