@@ -26,7 +26,7 @@
 LINK_ENTITY_TO_CLASS( weapon_beamgun, CBeamGun );
 
 // Animations from the original GC Beam Gun
-enum beamgun_e
+enum beamgun_anim_e
 {
 	BEAMGUN_ARM			= 0,
 	BEAMGUN_IDLESUBDUEL,
