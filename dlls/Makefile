@@ -104,12 +104,15 @@ OBJ = \
 	$(DLL_OBJDIR)/gm_ammo.o \
 	$(DLL_OBJDIR)/gm_dinnerjacket.o \
 	$(DLL_OBJDIR)/gm_explosion.o \
+	$(DLL_OBJDIR)/gm_fists.o \
 	$(DLL_OBJDIR)/gm_func_aliengrowth.o \
 	$(DLL_OBJDIR)/gm_func_pushable.o \
 	$(DLL_OBJDIR)/gm_func_vehicle.o \
+	$(DLL_OBJDIR)/gm_gcshotgun.o \
 	$(DLL_OBJDIR)/gm_geneworm.o \
 	$(DLL_OBJDIR)/gm_houndeye.o \
 	$(DLL_OBJDIR)/gm_info.o \
+	$(DLL_OBJDIR)/gm_mapents.o \
 	$(DLL_OBJDIR)/gm_massasaur.o \
 	$(DLL_OBJDIR)/gm_shockroach.o \
 	$(DLL_OBJDIR)/gm_warpball.o \

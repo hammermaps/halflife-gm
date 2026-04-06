@@ -147,12 +147,15 @@ call ..\..\filecopy.bat $(TargetDir)\$(TargetName).pdb ..\..\..\game\mod\dlls\$(
     <ClCompile Include="..\..\dlls\gm_ammo.cpp" />
     <ClCompile Include="..\..\dlls\gm_dinnerjacket.cpp" />
     <ClCompile Include="..\..\dlls\gm_explosion.cpp" />
+    <ClCompile Include="..\..\dlls\gm_fists.cpp" />
     <ClCompile Include="..\..\dlls\gm_func_aliengrowth.cpp" />
     <ClCompile Include="..\..\dlls\gm_func_pushable.cpp" />
     <ClCompile Include="..\..\dlls\gm_func_vehicle.cpp" />
+    <ClCompile Include="..\..\dlls\gm_gcshotgun.cpp" />
     <ClCompile Include="..\..\dlls\gm_geneworm.cpp" />
     <ClCompile Include="..\..\dlls\gm_houndeye.cpp" />
     <ClCompile Include="..\..\dlls\gm_info.cpp" />
+    <ClCompile Include="..\..\dlls\gm_mapents.cpp" />
     <ClCompile Include="..\..\dlls\gm_massasaur.cpp" />
     <ClCompile Include="..\..\dlls\gm_shockroach.cpp" />
     <ClCompile Include="..\..\dlls\gm_warpball.cpp" />

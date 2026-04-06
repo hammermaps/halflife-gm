@@ -25,38 +25,49 @@
 
 LINK_ENTITY_TO_CLASS( weapon_dml, CDML );
 
-enum dml_e
+// Animations from the original GC DML (Dual Missile Launcher)
+enum dml_anim_e
 {
-	DML_IDLE = 0,
-	DML_FIDGET,
-	DML_SHOOT,
-	DML_RELOAD,
-	DML_DRAW,
-	DML_HOLSTER
+	DML_IDLE		= 0,
+	DML_IDLEFIDGET,
+	DML_RELOADBOTH,
+	DML_RELOADLEFT,
+	DML_RELOADRIGHT,
+	DML_FIRE,
+	DML_CUSTOMIZE,
+	DML_DRAW
 };
+
+// Kept for legacy weapon idle logic alias
+#define DML_HOLSTER DML_DRAW
 
 void CDML::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_DML;
-	SET_MODEL(ENT(pev), "models/w_rpg.mdl"); // Using existing model as placeholder
+	SET_MODEL(ENT(pev), "models/gunmanchronicles/w_dml.mdl");
 
-	m_iDefaultAmmo = 4;
+	m_iDefaultAmmo = DML_DEFAULT_GIVE;
 
-	FallInit();// get ready to fall down.
+	FallInit();
 }
 
 
 void CDML::Precache( void )
 {
-	PRECACHE_MODEL("models/v_rpg.mdl"); // Using existing models as placeholders
-	PRECACHE_MODEL("models/w_rpg.mdl");
-	PRECACHE_MODEL("models/p_rpg.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/v_dml.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/w_dml.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/p_crossbow.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/dmlrocket.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/dmlcluster.mdl");
 
-	PRECACHE_MODEL("models/rpgrocket.mdl"); // rocket model
-
-	PRECACHE_SOUND ("weapons/rocketfire1.wav");
-	PRECACHE_SOUND ("weapons/glauncher.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/dml_fire.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/dml_reload.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/dml_dualreload.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/DryFire.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/grenade_hit1.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/grenade_hit2.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/grenade_hit3.wav");
 
 	m_usDML = PRECACHE_EVENT( 1, "events/rpg.sc" );
 }
@@ -92,7 +103,7 @@ int CDML::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CDML::Deploy( )
 {
-	return DefaultDeploy( "models/v_rpg.mdl", "models/p_rpg.mdl", DML_DRAW, "rpg" );
+	return DefaultDeploy( "models/gunmanchronicles/v_dml.mdl", "models/gunmanchronicles/p_crossbow.mdl", DML_DRAW, "rpg" );
 }
 
 void CDML::SecondaryAttack( void )
@@ -127,7 +138,7 @@ void CDML::PrimaryAttack( void )
 	TraceResult tr;
 	UTIL_TraceLine( vecSrc, vecSrc + gpGlobals->v_forward * 4096, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr );
 
-	EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/rocketfire1.wav", 1.0, ATTN_NORM );
+	EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/dml_fire.wav", 1.0, ATTN_NORM );
 
 	// Create explosion at impact point
 	if (tr.flFraction != 1.0)
@@ -138,7 +149,7 @@ void CDML::PrimaryAttack( void )
 		::RadiusDamage( tr.vecEndPos, pev, m_pPlayer->pev, 100, 150, CLASS_NONE, DMG_BLAST );
 	}
 
-	SendWeaponAnim( DML_SHOOT );
+	SendWeaponAnim( DML_FIRE );
 
 	m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.8;
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.8;
@@ -160,7 +171,7 @@ void CDML::Reload( void )
 
 	int iResult;
 
-	iResult = DefaultReload( 4, DML_RELOAD, 3.0 );
+	iResult = DefaultReload( DML_MAX_CLIP, DML_RELOADBOTH, 3.0 );
 
 	if (iResult)
 	{
@@ -176,23 +187,18 @@ void CDML::WeaponIdle( void )
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 
-	int iAnim;
 	float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0.0, 1.0 );
+	int iAnim;
 
-	if (flRand <= 0.3 + 0 * 0.75)
+	if ( flRand <= 0.6f )
 	{
 		iAnim = DML_IDLE;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 49.0 / 16;
-	}
-	else if (flRand <= 0.6 + 0 * 0.875)
-	{
-		iAnim = DML_FIDGET;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0 / 16.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 49.0f / 16.0f;
 	}
 	else
 	{
-		iAnim = DML_IDLE;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 40.0 / 16.0;
+		iAnim = DML_IDLEFIDGET;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0f / 16.0f;
 	}
 	SendWeaponAnim( iAnim, 1 );
 }

@@ -39,25 +39,25 @@ void CChemicalGun::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_CHEMICALGUN;
-	SET_MODEL(ENT(pev), "models/w_9mmAR.mdl"); // Using existing model as placeholder
+	SET_MODEL(ENT(pev), "models/gunmanchronicles/w_chemicalgun.mdl");
 
-	m_iDefaultAmmo = 30;
+	m_iDefaultAmmo = CHEMICALGUN_DEFAULT_GIVE;
 
-	FallInit();// get ready to fall down.
+	FallInit();
 }
 
 
 void CChemicalGun::Precache( void )
 {
-	PRECACHE_MODEL("models/v_9mmAR.mdl"); // Using existing models as placeholders
-	PRECACHE_MODEL("models/w_9mmAR.mdl");
-	PRECACHE_MODEL("models/p_9mmAR.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/v_chemicalgun.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/w_chemicalgun.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/p_chemicalgun.mdl");
 
-	m_iShell = PRECACHE_MODEL ("models/shell.mdl");// brass shell
+	m_iShell = PRECACHE_MODEL("models/shell.mdl");
 
-	PRECACHE_SOUND ("weapons/hks1.wav");
-	PRECACHE_SOUND ("weapons/hks2.wav");
-	PRECACHE_SOUND ("weapons/hks3.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/ChemicalGun_fire1.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/ChemicalGun_reload.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/DryFire.wav");
 
 	m_usChemicalGun = PRECACHE_EVENT( 1, "events/mp51.sc" );
 }
@@ -93,7 +93,7 @@ int CChemicalGun::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CChemicalGun::Deploy( )
 {
-	return DefaultDeploy( "models/v_9mmAR.mdl", "models/p_9mmAR.mdl", CHEMICALGUN_DRAW, "mp5" );
+	return DefaultDeploy( "models/gunmanchronicles/v_chemicalgun.mdl", "models/gunmanchronicles/p_chemicalgun.mdl", CHEMICALGUN_DRAW, "mp5" );
 }
 
 void CChemicalGun::SecondaryAttack( void )
@@ -138,6 +138,10 @@ void CChemicalGun::PrimaryAttack( void )
 
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
+
+	EMIT_SOUND_DYN( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/ChemicalGun_fire1.wav", 1.0, ATTN_NORM, 0, 100 );
+
+	SendWeaponAnim( CHEMICALGUN_SHOOT );
 
 	Vector vecDir;
 	vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_6DEGREES, 8192, BULLET_PLAYER_MP5, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );

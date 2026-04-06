@@ -86,6 +86,8 @@ public:
 #define WEAPON_MINIGUN			19
 #define WEAPON_DML				20
 #define WEAPON_BEAMGUN			21
+#define WEAPON_FISTS			22
+#define WEAPON_GCSHOTGUN		23
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
 
@@ -120,6 +122,8 @@ public:
 #define MINIGUN_WEIGHT		22
 #define DML_WEIGHT			25
 #define BEAMGUN_WEIGHT		20
+#define FISTS_WEIGHT		0
+#define GCSHOTGUN_WEIGHT	15
 
 
 // weapon clip/carry ammo capacities
@@ -143,6 +147,7 @@ public:
 #define DML_MAX_CARRY			30
 #define BEAMGUN_MAX_CARRY		100
 #define M203_GRENADE_MAX_CARRY	10
+#define GC_BUCKSHOT_MAX_CARRY	90
 
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP			-1
@@ -170,6 +175,7 @@ public:
 #define MINIGUN_MAX_CLIP		100
 #define DML_MAX_CLIP			4
 #define BEAMGUN_MAX_CLIP		WEAPON_NOCLIP
+#define GCSHOTGUN_MAX_CLIP		WEAPON_NOCLIP
 
 
 // the default amount of ammo that comes with each gun when it spawns
@@ -196,6 +202,7 @@ public:
 #define MINIGUN_DEFAULT_GIVE		100
 #define DML_DEFAULT_GIVE			4
 #define BEAMGUN_DEFAULT_GIVE		20
+#define GC_BUCKSHOT_GIVE			16
 
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE	20
@@ -217,6 +224,7 @@ public:
 #define AMMO_MINIGUN_GIVE		100
 #define AMMO_DML_GIVE			4
 #define AMMO_BEAMGUN_GIVE		20
+#define AMMO_GCBUCKSHOT_GIVE	16
 
 // bullet types
 typedef	enum
@@ -1254,6 +1262,71 @@ public:
 private:
 	unsigned short m_usBeamGun;
 	float m_flAmmoUseTime;
+};
+
+// Gunman Chronicles fists / knife melee weapon
+class CGCFists : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 1; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void WeaponIdle( void );
+
+	void EXPORT Smack( void );
+	int Swing( int fFirst );
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+	int m_iSwing;
+	int m_iWeaponMode; // 0 = fists, 1 = knife
+	TraceResult m_trHit;
+};
+
+// Gunman Chronicles shotgun with configurable spread and shell count
+class CGCShotgun : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 3; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void WeaponIdle( void );
+
+	void FireShotgun( void );
+	void ShotgunReconfigure( void );
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+	int m_iSpreadMode;  // 0=shotgun, 1=riotgun, 2=rifle
+	int m_iShellCount;  // 1-4 shells per shot
 };
 
 
