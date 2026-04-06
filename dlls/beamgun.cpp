@@ -25,38 +25,45 @@
 
 LINK_ENTITY_TO_CLASS( weapon_beamgun, CBeamGun );
 
-enum beamgun_e
+// Animations from the original GC Beam Gun
+enum beamgun_anim_e
 {
-	BEAMGUN_IDLE = 0,
-	BEAMGUN_FIDGET,
-	BEAMGUN_SHOOT,
-	BEAMGUN_RELOAD,
-	BEAMGUN_DRAW,
-	BEAMGUN_HOLSTER
+	BEAMGUN_ARM			= 0,
+	BEAMGUN_IDLESUBDUEL,
+	BEAMGUN_IDLEBLADE,
+	BEAMGUN_IDLEINSPECT,
+	BEAMGUN_FIRE,
+	BEAMGUN_SHOOTSINGLE,
+	BEAMGUN_CONFIG,
+	BEAMGUN_CHARGE
 };
 
 void CBeamGun::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_BEAMGUN;
-	SET_MODEL(ENT(pev), "models/w_egon.mdl"); // Using existing model as placeholder
+	SET_MODEL(ENT(pev), "models/gunmanchronicles/w_beam.mdl");
 
-	m_iDefaultAmmo = 100;
+	m_iDefaultAmmo = BEAMGUN_DEFAULT_GIVE;
 	m_flAmmoUseTime = 0;
 
-	FallInit();// get ready to fall down.
+	FallInit();
 }
 
 
 void CBeamGun::Precache( void )
 {
-	PRECACHE_MODEL("models/v_egon.mdl"); // Using existing models as placeholders
-	PRECACHE_MODEL("models/w_egon.mdl");
-	PRECACHE_MODEL("models/p_egon.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/v_beam.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/w_beam.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/p_egon.mdl");
 
-	PRECACHE_SOUND ("weapons/egon_windup2.wav");
-	PRECACHE_SOUND ("weapons/egon_run3.wav");
-	PRECACHE_SOUND ("weapons/egon_off1.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/dml_fire.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/DryFire.wav");
+
+	// Fallback to Egon sounds if Gunman assets are absent
+	PRECACHE_SOUND("weapons/egon_windup2.wav");
+	PRECACHE_SOUND("weapons/egon_run3.wav");
+	PRECACHE_SOUND("weapons/egon_off1.wav");
 
 	m_usBeamGun = PRECACHE_EVENT( 1, "events/egon.sc" );
 }
@@ -93,7 +100,7 @@ int CBeamGun::AddToPlayer( CBasePlayer *pPlayer )
 BOOL CBeamGun::Deploy( )
 {
 	m_flAmmoUseTime = 0;
-	return DefaultDeploy( "models/v_egon.mdl", "models/p_egon.mdl", BEAMGUN_DRAW, "egon" );
+	return DefaultDeploy( "models/gunmanchronicles/v_beam.mdl", "models/gunmanchronicles/p_egon.mdl", BEAMGUN_ARM, "egon" );
 }
 
 void CBeamGun::SecondaryAttack( void )
@@ -175,23 +182,23 @@ void CBeamGun::WeaponIdle( void )
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 
-	int iAnim;
 	float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0.0, 1.0 );
+	int iAnim;
 
-	if (flRand <= 0.3 + 0 * 0.75)
+	if ( flRand <= 0.4f )
 	{
-		iAnim = BEAMGUN_IDLE;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 49.0 / 16;
+		iAnim = BEAMGUN_IDLESUBDUEL;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 49.0f / 16.0f;
 	}
-	else if (flRand <= 0.6 + 0 * 0.875)
+	else if ( flRand <= 0.7f )
 	{
-		iAnim = BEAMGUN_FIDGET;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0 / 16.0;
+		iAnim = BEAMGUN_IDLEBLADE;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0f / 16.0f;
 	}
 	else
 	{
-		iAnim = BEAMGUN_IDLE;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 40.0 / 16.0;
+		iAnim = BEAMGUN_IDLEINSPECT;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 40.0f / 16.0f;
 	}
 	SendWeaponAnim( iAnim, 1 );
 }
@@ -204,5 +211,6 @@ void CBeamGun::Holster( int skiplocal /* = 0 */ )
 	m_flAmmoUseTime = 0;
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 
-	SendWeaponAnim( BEAMGUN_HOLSTER );
+	// Use arm/draw animation reversed as holster (no dedicated holster animation in GC beam gun)
+	SendWeaponAnim( BEAMGUN_ARM );
 }

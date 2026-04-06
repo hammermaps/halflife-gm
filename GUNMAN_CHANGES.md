@@ -21,11 +21,13 @@ A comprehensive Forge Game Data file for Gunman Chronicles that includes:
 | File | Entity | Class | Description |
 |------|--------|-------|-------------|
 | `dlls/gausspistol.cpp` | `weapon_gausspistol` | `CGaussPistol` | Gauss Pistol - primary sidearm (20 rounds, 0.3s fire rate) |
-| `dlls/shotcycler.cpp` | `weapon_shotcycler` | `CShotCycler` | Shot Cycler - shotgun variant (8 rounds, 6 pellets/shot) |
+| `dlls/shotcycler.cpp` | `weapon_shotcycler` | `CShotCycler` | Shot Cycler - cyclic magazine shotgun (8 rounds, 6 pellets/shot) |
 | `dlls/chemicalgun.cpp` | `weapon_chemicalgun` | `CChemicalGun` | Chemical Gun - rapid-fire chemical weapon (30 rounds, 0.1s fire rate) |
 | `dlls/minigun.cpp` | `weapon_minigun` | `CMinigun` | Minigun - heavy weapon with spin-up (100 rounds, 0.05s fire rate) |
 | `dlls/dml.cpp` | `weapon_dml` | `CDML` | DML - Dual Missile Launcher (4 rounds, rocket projectiles) |
 | `dlls/beamgun.cpp` | `weapon_beamgun` | `CBeamGun` | Beam Gun - continuous beam weapon (no clip, drains ammo) |
+| `dlls/gm_fists.cpp` | `weapon_fists` | `CGCFists` | Fists / Knife - melee weapon with toggle between punch and knife |
+| `dlls/gm_gcshotgun.cpp` | `weapon_gcshotgun` | `CGCShotgun` | GC Shotgun - configurable spread (shotgun/riotgun/rifle) and 1-4 shells/shot |
 
 ### Monster Implementations
 
@@ -65,23 +67,31 @@ A comprehensive Forge Game Data file for Gunman Chronicles that includes:
 
 | File | Entity | Class | Description |
 |------|--------|-------|-------------|
-| `dlls/gm_ammo.cpp` | `ammo_gaussclip` | `CGaussClipAmmo` | Gauss Pistol ammo (gives 20 rounds) |
+| `dlls/gm_ammo.cpp` | `ammo_gaussclip` | `CGaussClipAmmo` | Gauss Pistol ammo (gives 20 rounds, uses Gunman model) |
 | `dlls/gm_ammo.cpp` | `ammo_shotcycler` | `CShotCyclerAmmo` | Shot Cycler ammo (gives 8 rounds) |
-| `dlls/gm_ammo.cpp` | `ammo_chemical` | `CChemicalAmmo` | Chemical Gun ammo (gives 30 rounds) |
+| `dlls/gm_ammo.cpp` | `ammo_chemical` | `CChemicalAmmo` | Chemical Gun ammo (gives 30 rounds, uses Gunman chem_ammo.mdl) |
 | `dlls/gm_ammo.cpp` | `ammo_minigun` | `CMinigunAmmo` | Minigun ammo (gives 100 rounds) |
-| `dlls/gm_ammo.cpp` | `ammo_dml` | `CDMLAmmo` | DML ammo (gives 4 rounds) |
+| `dlls/gm_ammo.cpp` | `ammo_dml` | `CDMLAmmo` | DML ammo (gives 4 rounds, uses Gunman mechammo.mdl) |
 | `dlls/gm_ammo.cpp` | `ammo_beamgun` | `CBeamGunAmmo` | Beam Gun ammo (gives 20 rounds) |
+| `dlls/gm_ammo.cpp` | `ammo_gcbuckshot` | `CGCBuckshotAmmo` | GC Shotgun buckshot (gives 16 rounds, uses Gunman shotgunammo.mdl) |
+
+### Map Utility Entities
+
+| File | Entity | Class | Description |
+|------|--------|-------|-------------|
+| `dlls/gm_mapents.cpp` | `random_speaker` | `CRandomSpeaker` | Ambient speaker that plays a sound on a configurable periodic timer; supports USE toggle |
+| `dlls/gm_mapents.cpp` | `gunman_cycler` | `CGunmanCycler` | Animated model prop with support for up to three bodygroup overrides (cyc_submodel1-3) |
 
 ## Files Modified
 
 ### 1. dlls/weapons.h
-- Added weapon IDs: `WEAPON_GAUSSPISTOL` (16) through `WEAPON_BEAMGUN` (21)
+- Added weapon IDs: `WEAPON_GAUSSPISTOL` (16) through `WEAPON_BEAMGUN` (21), `WEAPON_FISTS` (22), `WEAPON_GCSHOTGUN` (23)
 - Added weapon weight constants for auto-switching
-- Added ammo capacity definitions (max carry amounts)
-- Added clip size definitions for all Gunman weapons
-- Added default give amounts for weapon pickups
-- Added ammo give amounts for ammo pickups
-- Added class declarations for all 6 weapon classes
+- Added ammo capacity definitions (max carry amounts), including `GC_BUCKSHOT_MAX_CARRY`
+- Added clip size definitions for all Gunman weapons, including `GCSHOTGUN_MAX_CLIP`
+- Added default give amounts for weapon pickups, including `GC_BUCKSHOT_GIVE`
+- Added ammo give amounts for ammo pickups, including `AMMO_GCBUCKSHOT_GIVE`
+- Added class declarations for all 8 weapon classes (`CGCFists`, `CGCShotgun` added)
 
 ### 2. dlls/effects.cpp
 Added two environmental effect entities:
@@ -97,9 +107,15 @@ All new source files added to:
 ## Implementation Status
 
 ✅ **Completed (Foundation):**
-- All 25 Gunman Chronicles entities have foundation implementations
+- All 27 Gunman Chronicles entities have foundation implementations
 - Gunman Chronicles FGD file with full entity definitions
 - All weapons: spawn, precache, primary/secondary attack, reload, deploy, holster, idle
+- All weapons now reference proper Gunman Chronicles model paths (`models/gunmanchronicles/...`)
+- `weapon_fists`: full fists/knife melee with toggle, punch/stab animations, alternating sounds
+- `weapon_gcshotgun`: configurable spread (shotgun/riotgun/rifle) and shell count (1-4)
+- `ammo_gcbuckshot`: GC buckshot ammo pickup using `models/gunmanchronicles/shotgunammo.mdl`
+- `random_speaker`: ambient sound trigger entity with timer, volume, randomness and USE toggle
+- `gunman_cycler`: animated model prop with bodygroup support (cyc_submodel1-3)
 - All monsters: spawn, precache, AI classification, attack handlers, sound arrays, save/restore
 - All environmental effects: spawn, use/trigger, think functions, save/restore
 - All info entities: spawn, node type handling

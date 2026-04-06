@@ -40,12 +40,12 @@ class CGaussClipAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/w_9mmclip.mdl" );
+		SET_MODEL( ENT( pev ), "models/gunmanchronicles/w_gausspistolclip.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/w_9mmclip.mdl" );
+		PRECACHE_MODEL( "models/gunmanchronicles/w_gausspistolclip.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -96,12 +96,12 @@ class CChemicalAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/w_9mmARclip.mdl" );
+		SET_MODEL( ENT( pev ), "models/gunmanchronicles/chem_ammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/w_9mmARclip.mdl" );
+		PRECACHE_MODEL( "models/gunmanchronicles/chem_ammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -152,12 +152,12 @@ class CDMLAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/w_rpgammo.mdl" );
+		SET_MODEL( ENT( pev ), "models/gunmanchronicles/mechammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/w_rpgammo.mdl" );
+		PRECACHE_MODEL( "models/gunmanchronicles/mechammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -199,3 +199,31 @@ class CBeamGunAmmo : public CBasePlayerAmmo
 	}
 };
 LINK_ENTITY_TO_CLASS( ammo_beamgun, CBeamGunAmmo );
+
+//=========================================================
+// GC Buckshot ammo (for weapon_gcshotgun)
+//=========================================================
+class CGCBuckshotAmmo : public CBasePlayerAmmo
+{
+	void Spawn( void )
+	{
+		Precache();
+		SET_MODEL( ENT( pev ), "models/gunmanchronicles/shotgunammo.mdl" );
+		CBasePlayerAmmo::Spawn();
+	}
+	void Precache( void )
+	{
+		PRECACHE_MODEL( "models/gunmanchronicles/shotgunammo.mdl" );
+		PRECACHE_SOUND( "items/9mmclip1.wav" );
+	}
+	BOOL AddAmmo( CBaseEntity *pOther )
+	{
+		if ( pOther->GiveAmmo( AMMO_GCBUCKSHOT_GIVE, "buckshot", GC_BUCKSHOT_MAX_CARRY ) != -1 )
+		{
+			EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM );
+			return TRUE;
+		}
+		return FALSE;
+	}
+};
+LINK_ENTITY_TO_CLASS( ammo_gcbuckshot, CGCBuckshotAmmo );

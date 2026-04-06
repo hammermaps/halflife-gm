@@ -27,7 +27,7 @@ LINK_ENTITY_TO_CLASS( weapon_shotcycler, CShotCycler );
 
 enum shotcycler_e
 {
-	SHOTCYCLER_IDLE = 0,
+	SHOTCYCLER_IDLE		= 0,
 	SHOTCYCLER_FIDGET,
 	SHOTCYCLER_SHOOT,
 	SHOTCYCLER_RELOAD,
@@ -39,25 +39,24 @@ void CShotCycler::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_SHOTCYCLER;
-	SET_MODEL(ENT(pev), "models/w_shotgun.mdl"); // Using existing model as placeholder
+	SET_MODEL(ENT(pev), "models/gunmanchronicles/w_shotcycler.mdl");
 
-	m_iDefaultAmmo = 8;
+	m_iDefaultAmmo = SHOTCYCLER_DEFAULT_GIVE;
 
-	FallInit();// get ready to fall down.
+	FallInit();
 }
 
 
 void CShotCycler::Precache( void )
 {
-	PRECACHE_MODEL("models/v_shotgun.mdl"); // Using existing models as placeholders
-	PRECACHE_MODEL("models/w_shotgun.mdl");
-	PRECACHE_MODEL("models/p_shotgun.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/v_shotcycler.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/w_shotcycler.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/p_shotgun.mdl");
 
-	m_iShell = PRECACHE_MODEL ("models/shotgunshell.mdl");// brass shell
+	m_iShell = PRECACHE_MODEL("models/shotgunshell.mdl");
 
-	PRECACHE_SOUND ("weapons/sbarrel1.wav");
-	PRECACHE_SOUND ("weapons/reload1.wav");
-	PRECACHE_SOUND ("weapons/reload3.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/sbarrel1.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/shotgun_cock_heavy.wav");
 
 	m_usShotCycler = PRECACHE_EVENT( 1, "events/shotgun1.sc" );
 }
@@ -93,7 +92,7 @@ int CShotCycler::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CShotCycler::Deploy( )
 {
-	return DefaultDeploy( "models/v_shotgun.mdl", "models/p_shotgun.mdl", SHOTCYCLER_DRAW, "shotgun" );
+	return DefaultDeploy( "models/gunmanchronicles/v_shotcycler.mdl", "models/gunmanchronicles/p_shotgun.mdl", SHOTCYCLER_DRAW, "shotgun" );
 }
 
 void CShotCycler::SecondaryAttack( void )
@@ -139,8 +138,12 @@ void CShotCycler::PrimaryAttack( void )
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 
+	EMIT_SOUND_DYN( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/sbarrel1.wav", 1.0, ATTN_NORM, 0, 100 );
+
+	SendWeaponAnim( SHOTCYCLER_SHOOT );
+
 	Vector vecDir;
-	// 6 pellets per shot
+	// 6 pellets per shot (buckshot)
 	vecDir = m_pPlayer->FireBulletsPlayer( 6, vecSrc, vecAiming, VECTOR_CONE_10DEGREES, 8192, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 
 	m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.75;

@@ -74,12 +74,15 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/gm_ammo.o \
 	$(HLDLL_OBJ_DIR)/gm_dinnerjacket.o \
 	$(HLDLL_OBJ_DIR)/gm_explosion.o \
+	$(HLDLL_OBJ_DIR)/gm_fists.o \
 	$(HLDLL_OBJ_DIR)/gm_func_aliengrowth.o \
 	$(HLDLL_OBJ_DIR)/gm_func_pushable.o \
 	$(HLDLL_OBJ_DIR)/gm_func_vehicle.o \
+	$(HLDLL_OBJ_DIR)/gm_gcshotgun.o \
 	$(HLDLL_OBJ_DIR)/gm_geneworm.o \
 	$(HLDLL_OBJ_DIR)/gm_houndeye.o \
 	$(HLDLL_OBJ_DIR)/gm_info.o \
+	$(HLDLL_OBJ_DIR)/gm_mapents.o \
 	$(HLDLL_OBJ_DIR)/gm_massasaur.o \
 	$(HLDLL_OBJ_DIR)/gm_shockroach.o \
 	$(HLDLL_OBJ_DIR)/gm_warpball.o \

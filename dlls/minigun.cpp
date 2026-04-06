@@ -39,26 +39,26 @@ void CMinigun::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_MINIGUN;
-	SET_MODEL(ENT(pev), "models/w_9mmAR.mdl"); // Using existing model as placeholder
+	SET_MODEL(ENT(pev), "models/gunmanchronicles/w_minigun.mdl");
 
-	m_iDefaultAmmo = 100;
+	m_iDefaultAmmo = MINIGUN_DEFAULT_GIVE;
 	m_bSpinning = FALSE;
 
-	FallInit();// get ready to fall down.
+	FallInit();
 }
 
 
 void CMinigun::Precache( void )
 {
-	PRECACHE_MODEL("models/v_9mmAR.mdl"); // Using existing models as placeholders
-	PRECACHE_MODEL("models/w_9mmAR.mdl");
-	PRECACHE_MODEL("models/p_9mmAR.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/v_minigun.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/w_minigun.mdl");
+	PRECACHE_MODEL("models/gunmanchronicles/p_minigun.mdl");
 
-	m_iShell = PRECACHE_MODEL ("models/shell.mdl");// brass shell
+	m_iShell = PRECACHE_MODEL("models/shell.mdl");
 
-	PRECACHE_SOUND ("weapons/hks1.wav");
-	PRECACHE_SOUND ("weapons/hks2.wav");
-	PRECACHE_SOUND ("weapons/hks3.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/Minigun_fire1.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/Minigun_spinup.wav");
+	PRECACHE_SOUND("gunmanchronicles/weapons/Minigun_spindown.wav");
 
 	m_usMinigun = PRECACHE_EVENT( 1, "events/mp51.sc" );
 }
@@ -95,7 +95,7 @@ int CMinigun::AddToPlayer( CBasePlayer *pPlayer )
 BOOL CMinigun::Deploy( )
 {
 	m_bSpinning = FALSE;
-	return DefaultDeploy( "models/v_9mmAR.mdl", "models/p_9mmAR.mdl", MINIGUN_DRAW, "mp5" );
+	return DefaultDeploy( "models/gunmanchronicles/v_minigun.mdl", "models/gunmanchronicles/p_minigun.mdl", MINIGUN_DRAW, "mp5" );
 }
 
 void CMinigun::SecondaryAttack( void )
@@ -105,7 +105,7 @@ void CMinigun::SecondaryAttack( void )
 
 	if (m_bSpinning)
 	{
-		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/hks1.wav", 1.0, ATTN_NORM );
+		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/Minigun_spinup.wav", 1.0, ATTN_NORM );
 	}
 
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
@@ -150,6 +150,10 @@ void CMinigun::PrimaryAttack( void )
 
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
+
+	EMIT_SOUND_DYN( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/Minigun_fire1.wav", 1.0, ATTN_NORM, 0, 100 );
+
+	SendWeaponAnim( MINIGUN_SHOOT );
 
 	Vector vecDir;
 	// 2 bullets per shot at high fire rate
