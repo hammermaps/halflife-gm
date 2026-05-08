@@ -714,7 +714,7 @@ void CEntitySpriteGod::KeyValue( KeyValueData *pkvd )
 	}
 	else if ( FStrEq( pkvd->szKeyName, "spritez" ) )
 	{
-		pev->movedir.x = (float)atof( pkvd->szValue );
+		pev->movedir.z = (float)atof( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
 	else if ( FStrEq( pkvd->szKeyName, "spritey" ) )
@@ -724,7 +724,7 @@ void CEntitySpriteGod::KeyValue( KeyValueData *pkvd )
 	}
 	else if ( FStrEq( pkvd->szKeyName, "spritex" ) )
 	{
-		pev->movedir.z = (float)atof( pkvd->szValue );
+		pev->movedir.x = (float)atof( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
 	else
