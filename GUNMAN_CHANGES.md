@@ -75,12 +75,36 @@ A comprehensive Forge Game Data file for Gunman Chronicles that includes:
 | `dlls/gm_ammo.cpp` | `ammo_beamgun` | `CBeamGunAmmo` | Beam Gun ammo (gives 20 rounds) |
 | `dlls/gm_ammo.cpp` | `ammo_gcbuckshot` | `CGCBuckshotAmmo` | GC Shotgun buckshot (gives 16 rounds, uses Gunman shotgunammo.mdl) |
 
+### Ammo Entity Aliases (AngelScript name → C++ entity)
+
+| File | Entity | Class | Notes |
+|------|--------|-------|-------|
+| `dlls/gm_ammo.cpp` | `ammo_gcgaussclip` | `CGCGaussClipAmmo` | Alternative name for gauss pistol ammo; uses guassammo.mdl |
+| `dlls/gm_ammo.cpp` | `ammo_gcminigunclip` | `CGCMinigunClipAmmo` | Alternative name for minigun ammo; uses mechammo.mdl |
+| `dlls/gm_ammo.cpp` | `ammo_dmlsingle` | `CDMLSingleAmmo` | Single-rocket DML ammo; uses dmlrocket.mdl (gives 2 rounds) |
+| `dlls/gm_ammo.cpp` | `ammo_beamgunclip` | `CBeamGunClipAmmo` | Alternative name for beam gun ammo; uses beamgunammo.mdl |
+
+### Item Entities
+
+| File | Entity | Class | Description |
+|------|--------|-------|-------------|
+| `dlls/gm_ammo.cpp` | `item_gascan` | `CItemGasCan` | Gas canister pickup; restores 25 rounds of Gauss Pistol ammo (gastank.mdl) |
+| `dlls/gm_ammo.cpp` | `item_armor` | `CItemArmor` | Armor pickup; restores 75 points of suit charge (w_armor.mdl) |
+
 ### Map Utility Entities
 
 | File | Entity | Class | Description |
 |------|--------|-------|-------------|
 | `dlls/gm_mapents.cpp` | `random_speaker` | `CRandomSpeaker` | Ambient speaker that plays a sound on a configurable periodic timer; supports USE toggle |
 | `dlls/gm_mapents.cpp` | `gunman_cycler` | `CGunmanCycler` | Animated model prop with support for up to three bodygroup overrides (cyc_submodel1-3) |
+| `dlls/gm_mapents.cpp` | `decore_asteroid` | `CDecoreAsteroid` | Rotating asteroid prop (extends gunman_cycler); configurable size, min/max rotation speed |
+| `dlls/gm_mapents.cpp` | `decore_spacedebris` | `CDecoreSpaceDebris` | Space debris launched on Use(); configurable direction, speed, and spin rate |
+| `dlls/gm_mapents.cpp` | `decore_butterflyflock` | `CDecoreButterflyFlock` | Butterfly flock animated prop; random skin, hidden on spawn, revealed via Use() |
+| `dlls/gm_mapents.cpp` | `decore_gutspile` | `CDecoreGutspile` | Guts pile static animated prop |
+| `dlls/gm_mapents.cpp` | `entity_spritegod` | `CEntitySpriteGod` | Directional sprite spray emitter (TE_SPRITE_SPRAY); toggleable via Use() |
+| `dlls/gm_mapents.cpp` | `trigger_tank` | `CTriggerTank` | Invisible trigger; fires targets and removes itself when touched by vehicle_tank_body |
+| `dlls/gm_mapents.cpp` | `player_gcweaponstrip` | `CPlayerGCWeaponStrip` | Strips weapons from activator, all players, or all except activator; re-arms with crowbar |
+| `dlls/gm_mapents.cpp` | `entity_digitgod` | `CEntityDigitGod` | Three-digit damage counter; spawns three env_sprite digit displays; fires targets at maxdamage |
 
 ## Files Modified
 

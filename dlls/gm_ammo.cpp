@@ -227,3 +227,224 @@ class CGCBuckshotAmmo : public CBasePlayerAmmo
 	}
 };
 LINK_ENTITY_TO_CLASS( ammo_gcbuckshot, CGCBuckshotAmmo );
+
+// =========================================================
+// Aliased ammo entity names
+//
+// The AngelScript scripts used different entity names for
+// several ammo pickups.  Registering them here ensures maps
+// that reference the original GC entity names also work.
+// =========================================================
+
+//=========================================================
+// ammo_gcgaussclip  (alias for gauss pistol ammo)
+// Uses the alternate model path from the Sven Co-op scripts.
+//=========================================================
+class CGCGaussClipAmmo : public CBasePlayerAmmo
+{
+	void Spawn( void )
+	{
+		Precache();
+		SET_MODEL( ENT( pev ), "models/gunmanchronicles/guassammo.mdl" );
+		CBasePlayerAmmo::Spawn();
+	}
+	void Precache( void )
+	{
+		PRECACHE_MODEL( "models/gunmanchronicles/guassammo.mdl" );
+		PRECACHE_SOUND( "items/9mmclip1.wav" );
+	}
+	BOOL AddAmmo( CBaseEntity *pOther )
+	{
+		if ( pOther->GiveAmmo( AMMO_GAUSSCLIP_GIVE, "gausspistol_ammo", GAUSS_PISTOL_MAX_CARRY ) != -1 )
+		{
+			EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM );
+			return TRUE;
+		}
+		return FALSE;
+	}
+};
+LINK_ENTITY_TO_CLASS( ammo_gcgaussclip, CGCGaussClipAmmo );
+
+//=========================================================
+// ammo_gcminigunclip  (alias for minigun ammo)
+// Uses the Gunman mechammo model.
+//=========================================================
+class CGCMinigunClipAmmo : public CBasePlayerAmmo
+{
+	void Spawn( void )
+	{
+		Precache();
+		SET_MODEL( ENT( pev ), "models/gunmanchronicles/mechammo.mdl" );
+		CBasePlayerAmmo::Spawn();
+	}
+	void Precache( void )
+	{
+		PRECACHE_MODEL( "models/gunmanchronicles/mechammo.mdl" );
+		PRECACHE_SOUND( "items/9mmclip1.wav" );
+	}
+	BOOL AddAmmo( CBaseEntity *pOther )
+	{
+		if ( pOther->GiveAmmo( AMMO_MINIGUN_GIVE, "minigun_ammo", MINIGUN_MAX_CARRY ) != -1 )
+		{
+			EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM );
+			return TRUE;
+		}
+		return FALSE;
+	}
+};
+LINK_ENTITY_TO_CLASS( ammo_gcminigunclip, CGCMinigunClipAmmo );
+
+//=========================================================
+// ammo_dmlsingle  (alias for DML / rocket ammo)
+// Uses the Gunman dmlrocket model; gives a single reload
+// worth of DML rockets (2 rounds).
+//=========================================================
+#define AMMO_DMLSINGLE_GIVE		2
+
+class CDMLSingleAmmo : public CBasePlayerAmmo
+{
+	void Spawn( void )
+	{
+		Precache();
+		SET_MODEL( ENT( pev ), "models/gunmanchronicles/dmlrocket.mdl" );
+		CBasePlayerAmmo::Spawn();
+	}
+	void Precache( void )
+	{
+		PRECACHE_MODEL( "models/gunmanchronicles/dmlrocket.mdl" );
+		PRECACHE_SOUND( "items/9mmclip1.wav" );
+	}
+	BOOL AddAmmo( CBaseEntity *pOther )
+	{
+		if ( pOther->GiveAmmo( AMMO_DMLSINGLE_GIVE, "dml_ammo", DML_MAX_CARRY ) != -1 )
+		{
+			EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM );
+			return TRUE;
+		}
+		return FALSE;
+	}
+};
+LINK_ENTITY_TO_CLASS( ammo_dmlsingle, CDMLSingleAmmo );
+
+//=========================================================
+// ammo_beamgunclip  (alias for beam gun ammo)
+// Uses the Gunman beamgunammo model.
+//=========================================================
+class CBeamGunClipAmmo : public CBasePlayerAmmo
+{
+	void Spawn( void )
+	{
+		Precache();
+		SET_MODEL( ENT( pev ), "models/gunmanchronicles/beamgunammo.mdl" );
+		CBasePlayerAmmo::Spawn();
+	}
+	void Precache( void )
+	{
+		PRECACHE_MODEL( "models/gunmanchronicles/beamgunammo.mdl" );
+		PRECACHE_SOUND( "items/9mmclip1.wav" );
+	}
+	BOOL AddAmmo( CBaseEntity *pOther )
+	{
+		if ( pOther->GiveAmmo( AMMO_BEAMGUN_GIVE, "beamgun_ammo", BEAMGUN_MAX_CARRY ) != -1 )
+		{
+			EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM );
+			return TRUE;
+		}
+		return FALSE;
+	}
+};
+LINK_ENTITY_TO_CLASS( ammo_beamgunclip, CBeamGunClipAmmo );
+
+// =========================================================
+// Gunman Chronicles item pickups
+// =========================================================
+
+//=========================================================
+// item_gascan
+//
+// Gas canister pickup – replenishes Gauss Pistol ammunition.
+// Model: models/gunmanchronicles/gastank.mdl
+//=========================================================
+#define ITEM_GASCAN_GIVE	25
+
+class CItemGasCan : public CBasePlayerAmmo
+{
+	void Spawn( void )
+	{
+		Precache();
+		SET_MODEL( ENT( pev ), "models/gunmanchronicles/gastank.mdl" );
+		CBasePlayerAmmo::Spawn();
+	}
+	void Precache( void )
+	{
+		PRECACHE_MODEL( "models/gunmanchronicles/gastank.mdl" );
+		PRECACHE_SOUND( "items/9mmclip1.wav" );
+	}
+	BOOL AddAmmo( CBaseEntity *pOther )
+	{
+		if ( pOther->GiveAmmo( ITEM_GASCAN_GIVE, "gausspistol_ammo", GAUSS_PISTOL_MAX_CARRY ) != -1 )
+		{
+			EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM );
+			return TRUE;
+		}
+		return FALSE;
+	}
+};
+LINK_ENTITY_TO_CLASS( item_gascan, CItemGasCan );
+
+//=========================================================
+// item_armor
+//
+// Gunman Chronicles armor pickup.  Restores suit charge
+// (armour value) to the player, capped at MAX_NORMAL_BATTERY.
+// Model: models/gunmanchronicles/w_armor.mdl
+//=========================================================
+#define ITEM_ARMOR_CHARGE	75
+
+class CItemArmor : public CBaseEntity
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	void EXPORT ArmorTouch( CBaseEntity *pOther );
+
+	virtual int ObjectCaps( void ) { return ( CBaseEntity::ObjectCaps() | FCAP_IMPULSE_USE ); }
+};
+
+LINK_ENTITY_TO_CLASS( item_armor, CItemArmor );
+
+void CItemArmor::Precache( void )
+{
+	PRECACHE_MODEL( "models/gunmanchronicles/w_armor.mdl" );
+	PRECACHE_SOUND( "items/gunpickup2.wav" );
+}
+
+void CItemArmor::Spawn( void )
+{
+	Precache();
+
+	pev->solid    = SOLID_TRIGGER;
+	pev->movetype = MOVETYPE_TOSS;
+
+	SET_MODEL( ENT( pev ), "models/gunmanchronicles/w_armor.mdl" );
+	UTIL_SetSize( pev, Vector( -16, -16, 0 ), Vector( 16, 16, 16 ) );
+	UTIL_SetOrigin( pev, pev->origin );
+
+	SetTouch( &CItemArmor::ArmorTouch );
+}
+
+void CItemArmor::ArmorTouch( CBaseEntity *pOther )
+{
+	if ( !pOther->IsPlayer() ) return;
+
+	if ( pOther->pev->armorvalue >= MAX_NORMAL_BATTERY ) return;
+
+	pOther->pev->armorvalue += (float)ITEM_ARMOR_CHARGE;
+	if ( pOther->pev->armorvalue > MAX_NORMAL_BATTERY )
+		pOther->pev->armorvalue = MAX_NORMAL_BATTERY;
+
+	EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM );
+
+	SetTouch( NULL );
+	UTIL_Remove( this );
+}
