@@ -408,6 +408,111 @@
 ]
 
 //
+// Gunman Chronicles map utility / decoration entities
+//
+
+@PointClass base(Targetname, Target) size(-16 -16 -16, 16 16 16) = random_speaker : "Random Speaker (Gunman)"
+[
+	rsnoise(sound)   : "Sound file"
+	volume(float)    : "Volume (0.0–1.0)" : 1.0
+	wait(float)      : "Base wait time (s)" : 5.0
+	random(integer)  : "Random multiplier %" : 100
+]
+
+@PointClass base(Targetname, Angles, RenderFields) size(-16 -16 -16, 16 16 16) = gunman_cycler : "Gunman Cycler (animated prop)"
+[
+	model(studio)       : "Model"
+	sequence(integer)   : "Sequence" : 0
+	cyc_submodel1(integer) : "Body group 1 variant" : 0
+	cyc_submodel2(integer) : "Body group 2 variant" : 0
+	cyc_submodel3(integer) : "Body group 3 variant" : 0
+]
+
+@PointClass base(Targetname, Angles) size(-32 -32 -32, 32 32 32) = decore_asteroid : "Asteroid decoration (Gunman)"
+[
+	model(studio)        : "Model"
+	asteroidsize(choices) : "Asteroid size" : 2 =
+	[
+		0 : "Big"
+		1 : "Medium"
+		2 : "Small"
+	]
+	maxrotation(float) : "Max rotation per tick" : 0.5
+	minrotation(float) : "Min rotation per tick" : 0.1
+]
+
+@PointClass base(Targetname, Angles) size(-16 -16 -16, 16 16 16) = decore_spacedebris : "Space debris (Gunman)"
+[
+	modelname(studio)    : "Model"
+	dirx(float)          : "Direction X" : 0
+	diry(float)          : "Direction Y" : 0
+	dirz(float)          : "Direction Z" : 1
+	forwardspeed(float)  : "Launch speed" : 200
+	anglespeed(float)    : "Rotation speed" : 3.0
+]
+
+@PointClass base(Targetname, Angles) size(-16 -16 -16, 16 16 16) = decore_butterflyflock : "Butterfly Flock (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-32 -32 0, 32 32 32) = decore_gutspile : "Guts Pile (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-8 -8 -8, 8 8 8) = entity_spritegod : "Sprite Spray Emitter (Gunman)"
+[
+	spritename(sprite) : "Sprite file"
+	spritespeed(integer) : "Sprite speed" : 16
+	spritecount(integer) : "Base sprite count" : 8
+	spritefreq(integer)  : "Random extra sprites" : 0
+	spritenoise(integer) : "Speed noise (0-255)" : 100
+	spritex(float) : "Direction X" : 0
+	spritey(float) : "Direction Y" : 0
+	spritez(float) : "Direction Z" : 1
+]
+
+@SolidClass base(Targetname, Target) = trigger_tank : "Trigger Tank (Gunman)"
+[
+	// Fires targets when vehicle_tank_body touches this brush;
+	// the vehicle entity is passed as the activator.
+]
+
+@PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = player_gcweaponstrip : "Weapon Strip (Gunman)"
+[
+	m_iAffected(choices) : "Affects" : 0 =
+	[
+		0 : "Activator only"
+		1 : "All players"
+		2 : "All except activator"
+	]
+]
+
+@PointClass base(Targetname, Target, Angles) size(-8 -8 -8, 8 8 8) = entity_digitgod : "Digit Counter (Gunman)"
+[
+	maxdamage(float) : "Damage threshold to fire target" : 100
+]
+
+//
+// Gunman Chronicles ammo entity aliases (AngelScript names)
+//
+
+@PointClass base(Ammo) = ammo_gcgaussclip   : "Gauss Pistol Ammo (GC name)" []
+@PointClass base(Ammo) = ammo_gcminigunclip  : "Minigun Ammo (GC name)" []
+@PointClass base(Ammo) = ammo_dmlsingle      : "DML Single Rocket Ammo (GC name)" []
+@PointClass base(Ammo) = ammo_beamgunclip    : "Beam Gun Ammo (GC name)" []
+@PointClass base(Ammo) = ammo_gcbuckshot     : "GC Shotgun Buckshot" []
+
+//
+// Gunman Chronicles item pickups
+//
+
+@PointClass base(Targetname) size(-16 -16 0, 16 16 32) = item_gascan : "Gas Canister (Gunman)"
+[
+	// Gives 25 rounds of Gauss Pistol ammo.
+]
+
+@PointClass base(Targetname) size(-16 -16 0, 16 16 32) = item_armor : "Armor Pickup (Gunman)"
+[
+	// Restores 75 points of suit charge.
+]
+
+//
 // Standard Half-Life entities (compatibility)
 //
 
