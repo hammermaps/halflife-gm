@@ -407,8 +407,6 @@ public:
 	void Spawn( void );
 	void Precache( void );
 	void EXPORT ArmorTouch( CBaseEntity *pOther );
-
-	virtual int ObjectCaps( void ) { return ( CBaseEntity::ObjectCaps() | FCAP_IMPULSE_USE ); }
 };
 
 LINK_ENTITY_TO_CLASS( item_armor, CItemArmor );

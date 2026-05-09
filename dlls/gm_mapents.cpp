@@ -405,13 +405,16 @@ void CDecoreAsteroid::Spawn( void )
 		switch ( m_iAsteroidSize )
 		{
 		case ASTEROID_SIZE_BIG:
-		case ASTEROID_SIZE_MEDIUM:
 			pev->body  = 1;
 			pev->scale = 5.0f;
 			break;
+		case ASTEROID_SIZE_MEDIUM:
+			pev->body  = 1;
+			pev->scale = 3.0f;
+			break;
 		default: // ASTEROID_SIZE_SMALL
 			pev->body  = 0;
-			pev->scale = 5.0f;
+			pev->scale = 1.5f;
 			break;
 		}
 	}
@@ -568,13 +571,15 @@ void CDecoreSpaceDebris::SpaceDebrisThink( void )
 //
 // Butterfly flock animated prop.  Uses a fixed model
 // (models/gunmanchronicles/butterfly.mdl) with a random
-// skin selection and starts hidden in-world.
+// skin selection.  Starts hidden (EF_NODRAW); firing Use()
+// toggles visibility so map triggers can reveal the flock.
 //=========================================================
 class CDecoreButterflyFlock : public CGunmanCycler
 {
 public:
 	void Spawn( void );
 	void Precache( void );
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 };
 
 LINK_ENTITY_TO_CLASS( decore_butterflyflock, CDecoreButterflyFlock );
@@ -618,6 +623,15 @@ void CDecoreButterflyFlock::Spawn( void )
 
 	SetThink( &CGunmanCycler::CyclerThink );
 	pev->nextthink = gpGlobals->time + 0.1f;
+}
+
+void CDecoreButterflyFlock::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	// Toggle visibility each time the entity is fired
+	if ( pev->effects & EF_NODRAW )
+		pev->effects &= ~EF_NODRAW;
+	else
+		pev->effects |= EF_NODRAW;
 }
 
 
@@ -744,6 +758,14 @@ void CEntitySpriteGod::Spawn( void )
 	pev->solid    = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
 
+	// Apply FGD defaults for any key that was not set by KeyValue
+	if ( pev->speed  == 0.0f )  pev->speed  = 16.0f;  // spritespeed default
+	if ( pev->iuser1 == 0 )     pev->iuser1 = 8;       // spritecount default
+	if ( pev->iuser3 == 0 )     pev->iuser3 = 100;     // spritenoise default
+	// If no direction was set, default to "straight up" (+Z)
+	if ( pev->movedir == Vector( 0.0f, 0.0f, 0.0f ) )
+		pev->movedir = Vector( 0.0f, 0.0f, 1.0f );
+
 	// Start inactive; Use() activates it
 	pev->nextthink = 0.0f;
 }
@@ -854,20 +876,14 @@ void CTriggerTank::Touch( CBaseEntity *pOther )
 // player_gcweaponstrip
 //
 // Strips all weapons from one or all players when Use() is
-// called, then optionally gives back a crowbar and the
-// Gunman fists weapon.
+// called, then gives back a crowbar so the player is not
+// left completely empty-handed.
 //
 // Key/values:
 //   m_iAffected <int> - 0 = activator only (default)
 //                       1 = all players
 //                       2 = all players except the activator
-//
-// Spawnflags:
-//   1 (SF_GCWEAPONSTRIP_NORESPAWN) - stripped weapons do not
-//     respawn (mirrors the AngelScript behaviour).
 //=========================================================
-#define SF_GCWEAPONSTRIP_NORESPAWN	1
-
 #define WEAPONSTRIP_AFFECTED_ACTIVATOR		0
 #define WEAPONSTRIP_AFFECTED_ALL			1
 #define WEAPONSTRIP_AFFECTED_NOTACTIVATOR	2
@@ -1036,6 +1052,10 @@ void CEntityDigitGod::Spawn( void )
 	pev->solid    = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
 
+	// Default threshold to 100 if not set via KeyValue
+	if ( m_flMaxDmg <= 0.0f )
+		m_flMaxDmg = 100.0f;
+
 	CreateSprites();
 }
 
@@ -1062,12 +1082,13 @@ void CEntityDigitGod::CreateSprites( void )
 {
 	DestroySprites();
 
-	// Build right/left offsets using the entity's own angles
+	// Build left/right offsets using the entity's own angles
 	MAKE_VECTORS( pev->angles );
-	Vector vecRight = gpGlobals->v_right * -16.0f;
-	Vector vecLeft  = gpGlobals->v_right *  16.0f;
+	// Sprite 0 = hundreds (left), sprite 1 = tens (center), sprite 2 = ones (right)
+	Vector vecLeft  = gpGlobals->v_right * -16.0f;
+	Vector vecRight = gpGlobals->v_right *  16.0f;
 
-	Vector offsets[3] = { vecRight, Vector(0,0,0), vecLeft };
+	Vector offsets[3] = { vecLeft, Vector(0,0,0), vecRight };
 
 	for ( int i = 0; i < 3; i++ )
 	{
@@ -1077,7 +1098,7 @@ void CEntityDigitGod::CreateSprites( void )
 		if ( !pSprite ) break;
 
 		pSprite->pev->angles = pev->angles;
-		pSprite->pev->skin   = 0;  // start showing "0"
+		pSprite->pev->frame  = 0;  // start showing "0"
 
 		m_hSprite[i] = pSprite;
 	}
@@ -1085,19 +1106,20 @@ void CEntityDigitGod::CreateSprites( void )
 
 void CEntityDigitGod::UpdateCounter( void )
 {
+	// Extract digits most-significant-first so
+	// m_hSprite[0] = hundreds (left), [1] = tens, [2] = ones (right)
 	int digits[3] = { 0, 0, 0 };
 	int n = (int)m_flCountedDmg;
-	for ( int place = 0; place < 3 && n > 0; place++ )
-	{
-		digits[place] = n % 10;
-		n /= 10;
-	}
+
+	digits[2] = n % 10;  n /= 10;  // ones
+	digits[1] = n % 10;  n /= 10;  // tens
+	digits[0] = n % 10;             // hundreds (capped at 999)
 
 	for ( int i = 0; i < 3; i++ )
 	{
 		CBaseEntity *pEnt = m_hSprite[i];
 		if ( pEnt )
-			pEnt->pev->skin = digits[i];
+			pEnt->pev->frame = (float)digits[i];
 	}
 }
 

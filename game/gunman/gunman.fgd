@@ -481,10 +481,6 @@
 		1 : "All players"
 		2 : "All except activator"
 	]
-	spawnflags(Flags) =
-	[
-		1 : "No respawn (stripped weapons removed)" : 0
-	]
 ]
 
 @PointClass base(Targetname, Target, Angles) size(-8 -8 -8, 8 8 8) = entity_digitgod : "Digit Counter (Gunman)"
