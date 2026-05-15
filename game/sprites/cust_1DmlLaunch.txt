@@ -1,0 +1,6 @@
+4
+weapon			320 dmlhud	0	0	62	17
+weapon_s		320 dmlhud	0	0	62	17
+weapon			640 dmlhud	0	0	62	17
+weapon_s		640 dmlhud	0	0	62	17
+

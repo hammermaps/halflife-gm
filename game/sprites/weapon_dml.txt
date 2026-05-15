@@ -1,0 +1,7 @@
+6
+crosshair		320 crosshairs	149	1	63	31
+autoaim			320 crosshairs	148	33	64	32
+zoom			320 crosshairs  0	0	1	1
+crosshair		640 crosshairs	149	1	63	31
+autoaim			640 crosshairs	148	33	64	32
+zoom			640 crosshairs  0	0	1	1

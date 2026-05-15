@@ -1,0 +1,19 @@
+More breaking sounds .
+Put in \sound\debris
+
+METAL2   WAV        17,070  05-22-99  6:36p metal2.wav
+METAL1   WAV         9,738  05-22-99  6:41p metal1.wav
+METAL3   WAV        19,626  05-22-99  6:39p metal3.wav
+METAL4   WAV        18,474  05-22-99  6:44p metal4.wav
+METAL5   WAV        17,206  05-22-99  6:41p metal5.wav
+METAL6   WAV        12,656  05-22-99  6:42p metal6.wav
+PUSHBOX3 WAV        28,834  05-22-99  8:10p pushbox3.wav
+PUSHBOX2 WAV        22,186  05-22-99  8:12p pushbox2.wav
+BUSTMETAL1WAV       44,934  05-22-99  8:13p bustmetal2.wav
+BUSTMETAL2WAV       17,060  05-22-99  8:14p bustmetal1.wav
+PUSHBOX1 WAV        33,790  05-22-99  8:17p pushbox1.wav
+GLASS2   WAV        19,450  05-22-99  8:43p glass2.wav
+GLASS1   WAV        38,406  05-22-99  8:47p glass1.wav
+GLASS3   WAV        22,066  05-22-99  8:48p glass3.wav
+GLASS4   WAV        27,350  05-22-99  8:49p glass4.wav
+

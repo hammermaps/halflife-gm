@@ -1,0 +1,5 @@
+slider is 24x24
+so, 0 to 24 in both x and y
+
+bar is 160x24
+so, 0 to 160 on x, 0 to 24 on y

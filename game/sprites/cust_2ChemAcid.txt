@@ -1,0 +1,6 @@
+4
+weapon			320 gunmantext  172	0	41	10
+weapon_s		320 gunmantext  172	0	41	10
+weapon			640 gunmantext  0	0	79	21
+weapon_s		640 gunmantext  0	0	79	21
+

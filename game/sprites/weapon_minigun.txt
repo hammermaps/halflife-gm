@@ -1,0 +1,6 @@
+// mp5
+4
+crosshair		320 crosshairs	67	1	47	31
+autoaim			320 crosshairs	66	33	48	32
+crosshair		640 crosshairs	67	1	47	31
+autoaim			640 crosshairs	66	33	48	32

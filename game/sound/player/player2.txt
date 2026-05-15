@@ -1,0 +1,7 @@
+10 MAY 99
+
+DONE.
+
+pl_wood1-4.wav	Hollow wooden floor
+
+pl_metal1-4.wav	Boots on crunchy tin/metal.

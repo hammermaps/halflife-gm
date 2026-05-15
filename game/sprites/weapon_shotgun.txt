@@ -1,0 +1,5 @@
+4
+crosshair		320 crosshairs	34	1	31	31
+autoaim			320 crosshairs	33	33 	32	32
+crosshair		640 crosshairs	34	1	31	31
+autoaim			640 crosshairs	33	33	32	32

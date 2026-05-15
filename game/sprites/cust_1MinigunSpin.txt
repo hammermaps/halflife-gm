@@ -1,0 +1,5 @@
+4
+weapon_s			320 mechswit_small	0	0	64	32
+weapon				320 mechswit_small	0	32	64	32
+weapon_s			640 mechswit	0	0	128	65
+weapon				640 mechswit	0	65	128	65

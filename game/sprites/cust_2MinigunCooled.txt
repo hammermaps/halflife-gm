@@ -1,0 +1,5 @@
+4
+weapon			320 small_mechacoolers	0	0	96	38
+weapon_s		320 small_mechacoolers	0	0	96	38
+weapon			640 mechacooler	0	0	192	66
+weapon_s		640 mechacooler	0	0	192	66
