@@ -299,6 +299,7 @@ public:
 	float m_flNextChainSpawn;
 	int   m_iSubCount;
 	int   m_iChainCount;
+	BOOL  m_bExploded;		// guard against re-entrant Explode() / BallTouch()
 };
 
 LINK_ENTITY_TO_CLASS( beamgun_ball, CBeamGunBall );
@@ -324,6 +325,7 @@ void CBeamGunBall::Spawn( void )
 	m_flNextChainSpawn = gpGlobals->time + 0.25f;
 	m_iSubCount        = 0;
 	m_iChainCount      = 0;
+	m_bExploded        = FALSE;
 
 	EMIT_SOUND( ENT(pev), CHAN_AUTO, "weapons/ball-fly.wav", 0.8f, ATTN_NORM );
 }
@@ -343,9 +345,9 @@ void CBeamGunBall::BallTouch( CBaseEntity *pOther )
 {
 	if ( pOther && pOther->edict() == pev->owner )
 		return;
-	if ( pev->dmgtime == 1 )		// already exploding
+	if ( m_bExploded )
 		return;
-	pev->dmgtime = 1;
+	m_bExploded = TRUE;
 
 	entvars_t *pevAttacker = pev->owner ? VARS( pev->owner ) : pev;
 
@@ -433,6 +435,7 @@ void CBeamGun::Spawn( )
 	m_iRange            = BG_DEFAULT_RANGE;
 	m_iPowerAndAccuracy = BG_DEFAULT_POWER;
 	m_iLightning        = BG_DEFAULT_LIGHTNING;
+	m_iMenuAxis         = 0;
 	m_iFireState        = BGFIRE_OFF;
 	m_flChargeStartTime = 0;
 	m_bBallWasLaunched  = FALSE;
@@ -511,8 +514,11 @@ int CBeamGun::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CBeamGun::Deploy( )
 {
+	// Reset transient fire-state on every draw; menu axes are preserved
+	// across deploy/holster through save/restore.
 	m_iFireState        = BGFIRE_OFF;
 	m_flChargeStartTime = 0;
+	m_flNextChainTime   = 0;
 	m_bBallWasLaunched  = FALSE;
 	m_flBeamTemp        = 0.0f;
 	m_bMalfunction      = FALSE;
@@ -527,19 +533,15 @@ BOOL CBeamGun::Deploy( )
 //   press 2: Power/Accuracy 1→2→3→4→1
 //   press 3: Lightning 1→2→3→1
 // Each press advances current axis and plays the "config" animation.
+// m_iMenuAxis (0-2) is persisted through save/restore so the cycle
+// position is preserved across save/load and map changes.
 // -----------------------------------------------------------------------
 void CBeamGun::SecondaryAttack( void )
 {
 	if ( m_iFireState != BGFIRE_OFF )
 		return;
 
-	// Cycle axes in order: Range → Power/Accuracy → Lightning → Range
-	// Determine which axis to advance based on a small tap counter encoded
-	// in a single integer: we advance Range first, then P/A, then Lightning,
-	// cycling the value and looping back.
-	static int s_iAxis = 0;
-
-	switch ( s_iAxis % 3 )
+	switch ( m_iMenuAxis % 3 )
 	{
 	case 0:
 		m_iRange = ( m_iRange % 4 ) + 1;
@@ -551,7 +553,7 @@ void CBeamGun::SecondaryAttack( void )
 		m_iLightning = ( m_iLightning % 3 ) + 1;
 		break;
 	}
-	s_iAxis++;
+	m_iMenuAxis++;
 
 	SendWeaponAnim( BEAMGUN_CONFIG );
 	EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,

@@ -1316,19 +1316,24 @@ public:
 	int     m_iRange;               // 1-4, default 3
 	int     m_iPowerAndAccuracy;    // 1-4, default 2
 	int     m_iLightning;           // 1-3, default 1
+	int     m_iMenuAxis;            // 0-2: which axis SecondaryAttack advances next
 
-	// Windup / charge state
+	// Windup / charge state (intentionally transient — not persisted;
+	// Deploy() resets these to safe defaults on every weapon draw)
 	int     m_iFireState;           // BGFIRE_* constant
 	float   m_flChargeStartTime;    // gpGlobals->time when windup began
-	BOOL    m_bBallWasLaunched;     // PowerBall mode: prevents re-launch
+	float   m_flNextChainTime;      // throttle for chain-arc spawning
 
 	// Temperature ramp & malfunction
 	float   m_flBeamTemp;           // 0-140; rises while firing
 	BOOL    m_bMalfunction;         // TRUE while weapon is locked out
 	float   m_flMalfunctionReset;   // time malfunction clears
 
-	// Chain spawn throttle
-	float   m_flNextChainTime;
+	// PowerBall mode: set when ball is in flight, cleared on button release
+	BOOL    m_bBallWasLaunched;
+
+	// Chain spawn throttle (transient — see note on m_iFireState above)
+	// m_flNextChainTime declared with fire-state fields above
 
 private:
 	unsigned short m_usBeamGun;

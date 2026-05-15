@@ -1618,13 +1618,21 @@ IMPLEMENT_SAVERESTORE( CGaussPistol, CBasePlayerWeapon );
 
 TYPEDESCRIPTION	CBeamGun::m_SaveData[] =
 {
+	// 3-axis menu state (persisted so configuration survives save/load)
 	DEFINE_FIELD( CBeamGun, m_iRange,            FIELD_INTEGER ),
 	DEFINE_FIELD( CBeamGun, m_iPowerAndAccuracy, FIELD_INTEGER ),
 	DEFINE_FIELD( CBeamGun, m_iLightning,        FIELD_INTEGER ),
+	DEFINE_FIELD( CBeamGun, m_iMenuAxis,         FIELD_INTEGER ),
+
+	// Temperature / malfunction state (persisted)
 	DEFINE_FIELD( CBeamGun, m_flBeamTemp,        FIELD_FLOAT   ),
 	DEFINE_FIELD( CBeamGun, m_bMalfunction,      FIELD_INTEGER ),
 	DEFINE_FIELD( CBeamGun, m_flMalfunctionReset,FIELD_TIME    ),
 	DEFINE_FIELD( CBeamGun, m_bBallWasLaunched,  FIELD_INTEGER ),
+
+	// NOTE: m_iFireState, m_flChargeStartTime, m_flNextChainTime are
+	// intentionally transient — Deploy() resets them to safe defaults
+	// on every weapon draw, so persisting them is unnecessary.
 };
 IMPLEMENT_SAVERESTORE( CBeamGun, CBasePlayerWeapon );
 
