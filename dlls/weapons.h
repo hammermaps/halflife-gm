@@ -88,6 +88,7 @@ public:
 #define WEAPON_BEAMGUN			21
 #define WEAPON_FISTS			22
 #define WEAPON_GCSHOTGUN		23
+#define WEAPON_AICORE			24
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
 
@@ -124,6 +125,7 @@ public:
 #define BEAMGUN_WEIGHT		20
 #define FISTS_WEIGHT		0
 #define GCSHOTGUN_WEIGHT	15
+#define AICORE_WEIGHT		5
 
 
 // weapon clip/carry ammo capacities
@@ -1327,6 +1329,37 @@ public:
 
 	int m_iSpreadMode;  // 0=shotgun, 1=riotgun, 2=rifle
 	int m_iShellCount;  // 1-4 shells per shot
+};
+
+
+// Gunman Chronicles "AI Core" / Wrench puzzle weapon.
+// Stub implementation — exists so that the entity is spawnable and
+// `weapon_aicore` map references (see GUNMAN_BSP_ANALYSIS.md) load
+// without error.  Full behaviour (single 100-hp hitscan, plug/unplug
+// interaction with `button_aiwallplug`) is tracked in
+// docs/GUNMAN_LUA_PORT_PLAN.md and is out of scope for the current pass.
+class CAICore : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 1; }
+	int GetItemInfo( ItemInfo *p );
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void WeaponIdle( void );
+
+	virtual BOOL UseDecrement( void )
+	{
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
 };
 
 

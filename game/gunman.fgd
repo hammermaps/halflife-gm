@@ -176,6 +176,7 @@
 @PointClass base(Weapon) = weapon_minigun : "Minigun (Gunman)" []
 @PointClass base(Weapon) = weapon_dml : "DML (Gunman)" []
 @PointClass base(Weapon) = weapon_beamgun : "Beam Gun (Gunman)" []
+@PointClass base(Weapon) = weapon_aicore : "AI Core / Wrench (Gunman)" []
 
 // Standard Half-Life weapons (compatible)
 @PointClass base(Weapon) = weapon_crowbar : "Crowbar" []

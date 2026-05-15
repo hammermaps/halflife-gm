@@ -42,7 +42,7 @@ void CBeamGun::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_BEAMGUN;
-	SET_MODEL(ENT(pev), "models/gunmanchronicles/w_beam.mdl");
+	SET_MODEL(ENT(pev), "models/W_beam.mdl");
 
 	m_iDefaultAmmo = BEAMGUN_DEFAULT_GIVE;
 	m_flAmmoUseTime = 0;
@@ -53,9 +53,9 @@ void CBeamGun::Spawn( )
 
 void CBeamGun::Precache( void )
 {
-	PRECACHE_MODEL("models/gunmanchronicles/v_beam.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/w_beam.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/p_egon.mdl");
+	PRECACHE_MODEL("models/v_beam.mdl");
+	PRECACHE_MODEL("models/W_beam.mdl");
+	PRECACHE_MODEL("models/p_egon.mdl");
 
 	PRECACHE_SOUND("gunmanchronicles/weapons/dml_fire.wav");
 	PRECACHE_SOUND("gunmanchronicles/weapons/DryFire.wav");
@@ -100,7 +100,7 @@ int CBeamGun::AddToPlayer( CBasePlayer *pPlayer )
 BOOL CBeamGun::Deploy( )
 {
 	m_flAmmoUseTime = 0;
-	return DefaultDeploy( "models/gunmanchronicles/v_beam.mdl", "models/gunmanchronicles/p_egon.mdl", BEAMGUN_ARM, "egon" );
+	return DefaultDeploy( "models/v_beam.mdl", "models/p_egon.mdl", BEAMGUN_ARM, "egon" );
 }
 
 void CBeamGun::SecondaryAttack( void )

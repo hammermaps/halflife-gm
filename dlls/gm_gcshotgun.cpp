@@ -62,7 +62,7 @@ void CGCShotgun::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_GCSHOTGUN;
-	SET_MODEL( ENT(pev), "models/gunmanchronicles/w_shotgun.mdl" );
+	SET_MODEL( ENT(pev), "models/w_shotgun.mdl" );
 
 	m_iDefaultAmmo = GC_BUCKSHOT_GIVE;
 	m_iSpreadMode  = GCSHOTGUN_MODE_SHOTGUN;
@@ -73,9 +73,9 @@ void CGCShotgun::Spawn( )
 
 void CGCShotgun::Precache( void )
 {
-	PRECACHE_MODEL( "models/gunmanchronicles/v_gcshotgun.mdl" );
-	PRECACHE_MODEL( "models/gunmanchronicles/w_shotgun.mdl" );
-	PRECACHE_MODEL( "models/gunmanchronicles/p_shotgun.mdl" );
+	PRECACHE_MODEL( "models/v_shotgun.mdl" );
+	PRECACHE_MODEL( "models/w_shotgun.mdl" );
+	PRECACHE_MODEL( "models/p_shotgun.mdl" );
 
 	PRECACHE_MODEL( "models/shotgunshell.mdl" );
 
@@ -119,8 +119,8 @@ int CGCShotgun::AddToPlayer( CBasePlayer *pPlayer )
 BOOL CGCShotgun::Deploy( )
 {
 	ShotgunReconfigure();
-	return DefaultDeploy( "models/gunmanchronicles/v_gcshotgun.mdl",
-		"models/gunmanchronicles/p_shotgun.mdl", GCSHOTGUN_DRAW, "shotgun" );
+	return DefaultDeploy( "models/v_shotgun.mdl",
+		"models/p_shotgun.mdl", GCSHOTGUN_DRAW, "shotgun" );
 }
 
 void CGCShotgun::Holster( int skiplocal /* = 0 */ )

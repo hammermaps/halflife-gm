@@ -39,7 +39,8 @@ void CGaussPistol::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_GAUSSPISTOL;
-	SET_MODEL(ENT(pev), "models/w_9mmhandgun.mdl"); // Using existing model as placeholder
+	// Uploaded model (note: on-disk filename has a typo: "guass" not "gauss")
+	SET_MODEL(ENT(pev), "models/w_gauss.mdl");
 
 	m_iDefaultAmmo = 20;
 
@@ -49,9 +50,9 @@ void CGaussPistol::Spawn( )
 
 void CGaussPistol::Precache( void )
 {
-	PRECACHE_MODEL("models/v_9mmhandgun.mdl"); // Using existing models as placeholders
-	PRECACHE_MODEL("models/w_9mmhandgun.mdl");
-	PRECACHE_MODEL("models/p_9mmhandgun.mdl");
+	PRECACHE_MODEL("models/v_guasspistol.mdl"); // on-disk filename has "guass" typo
+	PRECACHE_MODEL("models/w_gauss.mdl");
+	PRECACHE_MODEL("models/p_357.mdl");         // placeholder p-model (no p_gausspistol in upload)
 
 	m_iShell = PRECACHE_MODEL ("models/shell.mdl");// brass shell
 
@@ -96,7 +97,7 @@ int CGaussPistol::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CGaussPistol::Deploy( )
 {
-	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", GAUSSPISTOL_DRAW, "onehanded" );
+	return DefaultDeploy( "models/v_guasspistol.mdl", "models/p_357.mdl", GAUSSPISTOL_DRAW, "onehanded" );
 }
 
 void CGaussPistol::SecondaryAttack( void )

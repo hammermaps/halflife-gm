@@ -39,7 +39,7 @@ void CShotCycler::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_SHOTCYCLER;
-	SET_MODEL(ENT(pev), "models/gunmanchronicles/w_shotcycler.mdl");
+	SET_MODEL(ENT(pev), "models/w_shotgun.mdl");
 
 	m_iDefaultAmmo = SHOTCYCLER_DEFAULT_GIVE;
 
@@ -49,9 +49,9 @@ void CShotCycler::Spawn( )
 
 void CShotCycler::Precache( void )
 {
-	PRECACHE_MODEL("models/gunmanchronicles/v_shotcycler.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/w_shotcycler.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/p_shotgun.mdl");
+	PRECACHE_MODEL("models/v_shotgun.mdl");
+	PRECACHE_MODEL("models/w_shotgun.mdl");
+	PRECACHE_MODEL("models/p_shotgun.mdl");
 
 	m_iShell = PRECACHE_MODEL("models/shotgunshell.mdl");
 
@@ -92,7 +92,7 @@ int CShotCycler::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CShotCycler::Deploy( )
 {
-	return DefaultDeploy( "models/gunmanchronicles/v_shotcycler.mdl", "models/gunmanchronicles/p_shotgun.mdl", SHOTCYCLER_DRAW, "shotgun" );
+	return DefaultDeploy( "models/v_shotgun.mdl", "models/p_shotgun.mdl", SHOTCYCLER_DRAW, "shotgun" );
 }
 
 void CShotCycler::SecondaryAttack( void )

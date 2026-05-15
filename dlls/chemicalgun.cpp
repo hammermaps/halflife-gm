@@ -39,7 +39,7 @@ void CChemicalGun::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_CHEMICALGUN;
-	SET_MODEL(ENT(pev), "models/gunmanchronicles/w_chemicalgun.mdl");
+	SET_MODEL(ENT(pev), "models/w_chemgun.mdl");
 
 	m_iDefaultAmmo = CHEMICALGUN_DEFAULT_GIVE;
 
@@ -49,9 +49,9 @@ void CChemicalGun::Spawn( )
 
 void CChemicalGun::Precache( void )
 {
-	PRECACHE_MODEL("models/gunmanchronicles/v_chemicalgun.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/w_chemicalgun.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/p_chemicalgun.mdl");
+	PRECACHE_MODEL("models/v_chemgun.mdl");
+	PRECACHE_MODEL("models/w_chemgun.mdl");
+	PRECACHE_MODEL("models/p_crossbow.mdl");
 
 	m_iShell = PRECACHE_MODEL("models/shell.mdl");
 
@@ -93,7 +93,7 @@ int CChemicalGun::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CChemicalGun::Deploy( )
 {
-	return DefaultDeploy( "models/gunmanchronicles/v_chemicalgun.mdl", "models/gunmanchronicles/p_chemicalgun.mdl", CHEMICALGUN_DRAW, "mp5" );
+	return DefaultDeploy( "models/v_chemgun.mdl", "models/p_crossbow.mdl", CHEMICALGUN_DRAW, "mp5" );
 }
 
 void CChemicalGun::SecondaryAttack( void )

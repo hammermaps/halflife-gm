@@ -40,12 +40,12 @@ class CGaussClipAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/gunmanchronicles/w_gausspistolclip.mdl" );
+		SET_MODEL( ENT( pev ), "models/guassammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/gunmanchronicles/w_gausspistolclip.mdl" );
+		PRECACHE_MODEL( "models/guassammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -68,12 +68,12 @@ class CShotCyclerAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/w_shotbox.mdl" );
+		SET_MODEL( ENT( pev ), "models/shotgunammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/w_shotbox.mdl" );
+		PRECACHE_MODEL( "models/shotgunammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -96,12 +96,12 @@ class CChemicalAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/gunmanchronicles/chem_ammo.mdl" );
+		SET_MODEL( ENT( pev ), "models/chem_ammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/gunmanchronicles/chem_ammo.mdl" );
+		PRECACHE_MODEL( "models/chem_ammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -124,12 +124,12 @@ class CMinigunAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/w_chainammo.mdl" );
+		SET_MODEL( ENT( pev ), "models/mechammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/w_chainammo.mdl" );
+		PRECACHE_MODEL( "models/mechammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -152,12 +152,12 @@ class CDMLAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/gunmanchronicles/mechammo.mdl" );
+		SET_MODEL( ENT( pev ), "models/dmlammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/gunmanchronicles/mechammo.mdl" );
+		PRECACHE_MODEL( "models/dmlammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -171,6 +171,9 @@ class CDMLAmmo : public CBasePlayerAmmo
 	}
 };
 LINK_ENTITY_TO_CLASS( ammo_dml, CDMLAmmo );
+// Stock GC maps reference "ammo_dmlclip" (8-round magazine pickup).
+// We re-use the same CDMLAmmo behaviour until a distinct give-amount class is added.
+LINK_ENTITY_TO_CLASS( ammo_dmlclip, CDMLAmmo );
 
 //=========================================================
 // Beam gun ammo
@@ -180,12 +183,12 @@ class CBeamGunAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/w_gaussammo.mdl" );
+		SET_MODEL( ENT( pev ), "models/beamgunammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/w_gaussammo.mdl" );
+		PRECACHE_MODEL( "models/beamgunammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -208,12 +211,12 @@ class CGCBuckshotAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/gunmanchronicles/shotgunammo.mdl" );
+		SET_MODEL( ENT( pev ), "models/shotgunammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/gunmanchronicles/shotgunammo.mdl" );
+		PRECACHE_MODEL( "models/shotgunammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -245,12 +248,12 @@ class CGCGaussClipAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/gunmanchronicles/guassammo.mdl" );
+		SET_MODEL( ENT( pev ), "models/guassammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/gunmanchronicles/guassammo.mdl" );
+		PRECACHE_MODEL( "models/guassammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -274,12 +277,12 @@ class CGCMinigunClipAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/gunmanchronicles/mechammo.mdl" );
+		SET_MODEL( ENT( pev ), "models/mechammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/gunmanchronicles/mechammo.mdl" );
+		PRECACHE_MODEL( "models/mechammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -293,6 +296,12 @@ class CGCMinigunClipAmmo : public CBasePlayerAmmo
 	}
 };
 LINK_ENTITY_TO_CLASS( ammo_gcminigunclip, CGCMinigunClipAmmo );
+// Stock GC maps spell the classname with a capital 'C' ("ammo_minigunClip").
+// GoldSrc classname lookup is case-sensitive on Linux dedicated servers,
+// so register an explicit alias so those map entities resolve.
+LINK_ENTITY_TO_CLASS( ammo_minigunClip, CGCMinigunClipAmmo );
+// Some maps also use the all-lowercase variant "ammo_minigunclip".
+LINK_ENTITY_TO_CLASS( ammo_minigunclip, CGCMinigunClipAmmo );
 
 //=========================================================
 // ammo_dmlsingle  (alias for DML / rocket ammo)
@@ -306,12 +315,12 @@ class CDMLSingleAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/gunmanchronicles/dmlrocket.mdl" );
+		SET_MODEL( ENT( pev ), "models/dmlrocket.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/gunmanchronicles/dmlrocket.mdl" );
+		PRECACHE_MODEL( "models/dmlrocket.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -335,12 +344,12 @@ class CBeamGunClipAmmo : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/gunmanchronicles/beamgunammo.mdl" );
+		SET_MODEL( ENT( pev ), "models/beamgunammo.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/gunmanchronicles/beamgunammo.mdl" );
+		PRECACHE_MODEL( "models/beamgunammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -363,7 +372,7 @@ LINK_ENTITY_TO_CLASS( ammo_beamgunclip, CBeamGunClipAmmo );
 // item_gascan
 //
 // Gas canister pickup – replenishes Gauss Pistol ammunition.
-// Model: models/gunmanchronicles/gastank.mdl
+// Model: models/gastank.mdl
 //=========================================================
 #define ITEM_GASCAN_GIVE	25
 
@@ -372,12 +381,12 @@ class CItemGasCan : public CBasePlayerAmmo
 	void Spawn( void )
 	{
 		Precache();
-		SET_MODEL( ENT( pev ), "models/gunmanchronicles/gastank.mdl" );
+		SET_MODEL( ENT( pev ), "models/gastank.mdl" );
 		CBasePlayerAmmo::Spawn();
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL( "models/gunmanchronicles/gastank.mdl" );
+		PRECACHE_MODEL( "models/gastank.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
@@ -397,7 +406,7 @@ LINK_ENTITY_TO_CLASS( item_gascan, CItemGasCan );
 //
 // Gunman Chronicles armor pickup.  Restores suit charge
 // (armour value) to the player, capped at MAX_NORMAL_BATTERY.
-// Model: models/gunmanchronicles/w_armor.mdl
+// Model: models/w_armor.mdl
 //=========================================================
 #define ITEM_ARMOR_CHARGE	75
 
@@ -413,7 +422,7 @@ LINK_ENTITY_TO_CLASS( item_armor, CItemArmor );
 
 void CItemArmor::Precache( void )
 {
-	PRECACHE_MODEL( "models/gunmanchronicles/w_armor.mdl" );
+	PRECACHE_MODEL( "models/W_armor.mdl" );
 	PRECACHE_SOUND( "items/gunpickup2.wav" );
 }
 
@@ -424,7 +433,7 @@ void CItemArmor::Spawn( void )
 	pev->solid    = SOLID_TRIGGER;
 	pev->movetype = MOVETYPE_TOSS;
 
-	SET_MODEL( ENT( pev ), "models/gunmanchronicles/w_armor.mdl" );
+	SET_MODEL( ENT( pev ), "models/W_armor.mdl" );
 	UTIL_SetSize( pev, Vector( -16, -16, 0 ), Vector( 16, 16, 16 ) );
 	UTIL_SetOrigin( pev, pev->origin );
 
