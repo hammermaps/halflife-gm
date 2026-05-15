@@ -1,0 +1,114 @@
+//1280x960 text scheme file
+
+// DEFAULT BUTTON TEXT
+SchemeName = "Primary Button Text"
+FontName = "Arial"
+FontSize = 27
+FgColor = "255 170 0 255"
+BgColor = "0 0 0 141"
+FgColorArmed = "255 255 255 255"
+BgColorArmed = "255 170 0 67"
+
+// COMMAND MENU TEXT
+SchemeName = "CommandMenu Text"
+FontName = "Arial"
+FontSize = 25
+FgColor = "255 170 0 255"
+BgColor = "0 0 0 141"
+FgColorArmed = "255 255 255 255"
+BgColorArmed = "255 170 0 67"
+
+//TEMPERATURE TEXT
+SchemeName = "Temp Text"
+FontName = "verdana"
+FontSize = 24
+FontWeight = 200
+FgColor = "255 255 0 255"
+
+//TEMPERATURE TEXT
+SchemeName = "Temp Danger"
+FontName = "verdana"
+FontSize = 24
+FontWeight = 200
+FgColor = "255 10 10 255"
+
+
+//DEATH NOTICE TEXT
+SchemeName = "Death Notice Text"
+FontName = "verdana"
+FontSize = 14
+FontWeight = 0
+FgColor = "210 255 210 255"
+
+//SHOTGUN TEXT
+SchemeName = "Shotgun Text"
+FontName = "verdana"
+FontSize = 34
+FontWeight = 0
+FgColor = "210 255 210 255"
+
+//SHOTGUN SELECTED TEXT
+SchemeName = "Shotgun Selected Text"
+FontName = "verdana"
+FontSize = 34
+FontWeight = 800
+FgColor = "0 255 0 255"
+
+//DML SEL
+SchemeName = "Dml Sel"
+FontName = "verdana"
+FontSize = 27
+FontWeight = 950
+FgColor = "0 255 0 255"
+
+//DML SEL TITLE TEXT
+SchemeName = "Dml Sel Title"
+FontName = "verdana"
+FontSize = 27
+FontWeight = 950
+FgColor = "190 255 190 255"
+
+//DML TEXT
+SchemeName = "Dml Text"
+FontName = "verdana"
+FontSize = 25
+FontWeight = 0
+FgColor = "150 255 150 255"
+
+//DML TITLE TEXT
+SchemeName = "Dml Title Text"
+FontName = "verdana"
+FontSize = 25
+FontWeight = 0
+FgColor = "210 255 210 255"
+
+
+// SCOREBOARD TEXT
+SchemeName = "Scoreboard Text"
+FontName = "Arial"
+FontSize = 23
+FontWeight = 0
+
+
+// TITLE FONT in TFC selection menus
+SchemeName = "Title Font"
+FontName = "Arial"
+FontSize = 41
+FgColor = "255 170 0 255"
+
+// CLASSDESC, MAPDESC, MOTD text windows
+SchemeName = "Briefing Text"
+FontName = "Arial"
+FontSize = 23
+FontWeight = 0
+FgColor = "255 170 0 255"
+
+// Team info text (list of players, etc)
+// fgColor is automatically set to the teams color
+SchemeName = "Team Info Text"
+FontName = "Arial"
+FontSize = 23
+FontWeight = 0
+
+
+

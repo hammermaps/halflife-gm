@@ -1,0 +1,1440 @@
+//TITLES FOR Gunman
+// Position command $position x y 
+// x & y are from 0 to 1 to be screen resolution independent
+// -1 means center in each dimension
+// Effect command $effect <effect number>
+// effect 0 is fade in/fade out
+// effect 1 is flickery credits
+// effect 2 is write out (training room)
+// Text color r g b command $color
+// fadein time fadeout time / hold time
+// $fadein (message fade in time - per character in effect 2)
+// $fadeout (message fade out time)
+// $holdtime (stay on the screen for this long)
+
+// Test values -- JAY
+$position -1 0.65
+// Scan-out text effect
+$effect 2
+// This is the final color
+$color 0 255 0
+// This is the highlight color
+$color2 0 200 50
+// This is the time it takes to fade each character
+$fadein 0.005
+// This is the amount of time the highlight lags behind the leading edge of the text
+$fxtime 0.5
+// How long to hold the message on the screen (after it scans out)
+$holdtime 3.5
+// How long it takes to fade out the message after holding
+$fadeout 1.5
+
+//Gunman Intro sequence
+$color 0 128 0
+$color2 0 255 0
+$fadein 0.05
+$fxtime 0.2
+$holdtime 2
+$fadeout .5
+
+TITLE
+{
+GUNMAN CHRONICLES
+}
+
+
+$position .8 .8
+
+BC1
+{
+Rewolf
+}
+
+BC2
+{
+Mary Allred
+}
+
+BC3
+{
+Steve Baier
+}
+
+BC4
+{
+Adrian Banninga
+}
+
+BC5
+{
+Renier Banninga
+}
+
+BC6
+{
+Brian Bazyk
+}
+
+BC7
+{
+Steve Blevin
+}
+
+BC8
+{
+Dale Broadbent
+}
+
+BC9
+{
+Herbert Flower
+}
+
+BC10
+{
+Rodney Houle
+}
+
+BC11
+{
+Miriam Howes
+}
+
+BC12
+{
+Peter Immarco
+}
+
+BC13
+{
+Christopher Izatt
+}
+
+BC14
+{
+Joe Kennebec
+}
+
+BC15
+{
+Jeff Lane
+}
+
+BC16
+{
+Brian Legge
+}
+
+BC17
+{
+Chris Liesch
+}
+
+BC18
+{
+Bill Lovan
+}
+
+BC19
+{
+Christopher McArthur
+}
+
+BC20
+{
+Tomaz Zagar
+}
+
+BC21
+{
+BESONDERER DANK GEHT AN
+
+Erik Johnson
+Marc Laidlaw
+Doug Lombardi
+}
+
+$fxtime 0.3
+$color 0 128 0
+
+BC22
+{
+Intro-Musik von British Audio - www.britishaudio.com
+Intro-Musik von Instant Access Music - www.iamusic.com
+}
+
+BC23
+{
+Intro-Musik von Sound Ideas - www.sound-ideas.com
+Intro-Musik von Peter Immarco - ultralink.tzo.com
+}
+
+$position -1 -1
+$fxtime 0.5
+$color 0 255 0
+
+SKYBASE1
+{
+Standort :
+
+Spiral-Galaxis M51 (NGC 5194),
+an der Grenze zu Xenom-verseuchtem Gebiet.
+}
+
+SKYBASE2
+{
+Gunmen-Weltraumbasis der Föderation "Aeronautica"
+
+Mannschaftsquartiere
+}
+
+ValvePresents
+{
+ValveSoftware präsentiert
+}
+
+RewolfGame
+{
+ein Spiel von Rewolf Software
+}
+
+Gunman
+{
+GUNMAN
+}
+
+//Level Load Messages
+// Lower left
+$position 1 1
+$effect 0
+// Final fade-in color
+$color 66 66 255 
+// This is the highlight/flash color
+$color2 64 227 55 
+$fadein 0.07
+$fadeout 1
+$holdtime 2
+
+Hours Later
+{
+Einige Stunden später ...
+}
+
+//red stuff
+// All centered for now
+$position -1 -1
+$effect 0
+// This is the final color
+$color 200 0 0
+// This is the highlight color
+$color2 200 0 0
+// This is the time it takes to fade each character
+$fadein 0.01
+// This is the amount of time the highlight lags behind the leading edge of the text
+$fxtime 0.25
+// How long to hold the message on the screen (after it scans out)
+$holdtime 5
+// How long it takes to fade out the message after holding
+$fadeout .5
+
+
+HOURSLATER
+{
+DREI STUNDEN SPÄTER ...
+}
+
+
+KILLGUNMAN
+{
+SIE WURDEN DES HOCHVERRATS
+FÜR SCHULDIG BEFUNDEN!
+
+
+KAMERADEN DÜRFEN NICHT VERLETZT WERDEN!
+
+
+
+
+
+
+
+
+}
+
+TANKWITHPLAYER
+{
+SIE WURDEN IN DEN
+KATA-RAUM TELEPORTIERT!
+
+
+
+
+
+
+
+
+}
+
+TANKNOPLAYER
+{
+SIE BRAUCHEN DEN PANZER,
+UM DIE KATA-KANONE AUSZUSCHALTEN!
+
+
+
+
+
+
+
+
+}
+
+KATAHITGUNNER
+{
+SIE BRAUCHEN DIE DROHNE DES MAINFRAME-COMPUTERS,
+UM DIE KAMPFDROHNE DES GENERALS ZU ZERSTÖREN!
+
+
+
+
+
+
+
+
+}
+
+
+//INTRO TITLES
+// All centered for now
+$position 0.8 0.8
+$effect 0
+// This is the final color
+$color 0 255 255
+// This is the highlight color
+$color2 255 255 255
+// This is the time it takes to fade each character
+$fadein 0.01
+// This is the amount of time the highlight lags behind the leading edge of the text
+$fxtime 0.25
+// How long to hold the message on the screen (after it scans out)
+$holdtime 6
+// How long it takes to fade out the message after holding
+$fadeout 3
+
+
+
+//ENDMAP
+// All centered for now
+$position 0.8 0.8
+$effect 0
+// This is the final color
+$color 0 255 255
+// This is the highlight color
+$color2 255 255 255
+// This is the time it takes to fade each character
+$fadein 0.01
+// This is the amount of time the highlight lags behind the leading edge of the text
+$fxtime 0.25
+// How long to hold the message on the screen (after it scans out)
+$holdtime 6
+// How long it takes to fade out the message after holding
+$fadeout 3
+
+
+
+BC1X
+{
+PROJEKTLEITUNG
+
+Herbert Flower
+}
+
+BC2X
+{
+PROGRAMMIERUNG
+
+Brian Legge
+(Programmierung - Leitung)
+
+Christopher McArthur (Waffen)
+Brian Bazyk (Fahrzeuge)
+}
+
+BC3X
+{
+FOLEY-TECHNIK/SOUND
+
+Peter Immarco
+(Tontechnik - Leitung)
+
+Steve Blevin
+}
+
+BC4X
+{
+LEVEL-DESIGN
+
+Steven Baier
+(Level-Design - Leitung)
+
+Herbert Flower
+Tomaz Zagar
+Rodney Houle
+Reid Kimball
+Dale Broadbent
+}
+
+BC5X
+{
+MODELLE
+
+Renier Banninga
+(3D-Grafik - Leitung)
+
+Christopher Izatt
+Adrian Banninga
+}
+
+BC6X
+{
+TEXTUREN und SKINS
+
+Mary Allred
+(2D-Grafik - Leitung)
+
+Herbert Flower
+Renier Banninga
+Miriam Howes
+}
+
+BC7X
+{
+GERENDERTE VIDEOSEQUENZEN
+
+Adrian Banninga
+}
+
+BC8X
+{
+MUSIK
+
+Steve Blevin
+Chris Liesch
+Anthony Brown
+}
+
+BC9X
+{
+BESONDERER DANK GEHT AN
+
+Aaron Stackpole
+David Eckblad
+alle Leute bei Valve
+und SIERRA
+}
+
+BC10X
+{
+Dank für die Tier-Sounds gebührt folgenden Firmen:
+
+Naturesongs (www.naturesongs.com)
+The Australian Broadcasting Company (www.abc.net.au)
+Hollywood Sound Factory (www.hollywoodsoundfactory.com)
+}
+
+BC11X
+{
+Video-Musik von British Audio - www.britishaudio.com
+Video-Musik von Instant Access Music - www.iamusic.com
+Video-Musik von Sound Ideas - www.sound-ideas.com
+Video-Musik von Peter Immarco - ultralink.tzo.com
+Sprach-Samples mit freundlicher Genehmigung durch Spectrasonics "Symphony of Voices"
+} 
+
+BC12X
+{
+Test:
+John Largis - Stephen Musch
+Jared Guthrie - Rick Gusa
+Dave Thomas - Marc Nagel
+Jon Pulling - Niko Simonson
+Craig Bradford
+}
+
+BC13X
+{
+Sprecher (englische version):
+Bill Lovan - der "Bandit"
+Cynthia Jones - Mainframe-Computer-KI
+Mary Kae Irvin - Intro-Sprecherin
+Eric Snellman - als "der General"
+Dex Manley - Gunman-Soldat
+Jim French - Der Wissenschaftler
+Peter Immarco - Diverse
+}
+
+
+
+// In-Game messages
+$position -1 0.65
+$effect 2
+// This is the final color
+$color 100 100 100
+// This is the highlight color
+$color2 240 110 0
+// This is the time it takes to fade each character
+$fadein 0.01
+// This is the amount of time the highlight lags behind the leading edge of the text
+$fxtime 0.25
+// How long to hold the message on the screen (after it scans out)
+$holdtime 2.0
+// How long it takes to fade out the message after holding
+$fadeout 0.5
+
+GAMESAVED
+{
+Gespeichert ...
+}
+
+//HAZARD COURSE TEXT
+
+// Test values -- JAY
+$position -1 0.65
+// Scan-out text effect
+$effect 2
+// This is the final color
+$color 0 255 0
+// This is the highlight color
+$color2 0 200 50
+// This is the time it takes to fade each character
+$fadein 0.005
+// This is the amount of time the highlight lags behind the leading edge of the text
+$fxtime 0.5
+// How long to hold the message on the screen (after it scans out)
+$holdtime 3.5
+// How long it takes to fade out the message after holding
+$fadeout 1.5
+
+ENDBOSS1
+{
+ZERSTÖREN SIE DIE KATA-KANONE
+DES GENERALS.
+}
+
+ENDBOSS2
+{
+KATA-KANONE WURDE ZERSTÖRT.
+}
+
+ENDBOSS3
+{
+LOCKEN SIE DEN GENERAL ZUR SCHWEREN
+DROHNE DES MAINFRAME-COMPUTERS.
+}
+
+ENDBOSS4
+{
+SCHÜTZEN SIE DIE DROHNE DES
+MAINFRAME-COMPUTERS VOR DEN XENOMS.
+}
+
+ENDBOSS5
+{
+DIE DROHNE DES MAINFRAME-COMPUTERS
+WURDE ZERSTÖRT!
+}
+
+
+$position -1 0.65
+$holdtime 6
+
+
+
+
+TEACH0
+{
+Drücke VORWÄRTS-Taste zum Vorwärtsgehen.
+Drücke RÜCKWÄRTS-Taste, um zurückzugehen.
+LINKS-Pfeil, um nach links zu gehen.
+RECHTS-Pfeil, um nach rechts zu gehen.
+
+
+
+
+
+
+
+
+}
+
+
+TEACH2
+{
+Drücke VORWÄRTS-Taste zum Anlauf nehmen.
+Drücke DUCKEN-Taste, um dich zu ducken.
+Drücke VORWÄRTS und DUCKEN zusammen,um
+dich im Schleichmodus zu bewegen.
+
+
+
+
+
+
+
+
+}
+
+TEACH3
+{
+Drücke VORWÄRTS-Taste zum Anlauf nehmen.
+Drücke SPRUNG-Taste, um zu springen.
+
+
+
+
+
+
+
+
+}
+
+HZLADDER
+{
+Drücke die VORWÄRTS-Taste, um Leitern
+heraufzuklettern.
+Drücke die RÜCKWÄRTS-Taste, um Leitern
+herunterzuklettern.
+
+
+
+
+
+
+
+
+}
+
+TEACH5
+{
+Drücke VORWÄRTS-Taste zum Anlauf nehmen.
+Drücke SPRUNG-Taste, um zu springen.
+
+
+
+
+
+
+
+
+}
+
+TEACH6
+{
+Drücke die BENUTZEN-Taste, um einen 
+Knopf zu betätigen.
+
+
+
+
+
+
+
+
+}
+
+TEACH7
+{
+ZUM MESSER GEHEN.
+ANGRIFF1-TASTE DRÜCKEN, UM GEGENSTÄNDE
+ZU ZERSTÖREN.
+
+
+
+
+
+
+
+
+}
+
+TEACH8
+{
+Zur Nutzung von MEDI-KITS drücke die
+BENUTZEN-Taste.
+Halte diese so lange gedrückt, bis die
+Gesundheit wieder 100 erreicht hat
+oder das Kit verbraucht ist.
+
+
+
+
+
+
+
+
+}
+
+TEACH9
+{
+Drücke die VORWÄRTS-TASTE, um dich auf
+die Kiste zuzubewegen.
+Halte die VORWÄRTS-Taste gedrückt, um die
+Kiste zu SCHIEBEN.
+
+
+
+
+
+
+
+
+}
+
+TEACH9b
+{
+Drücke BENUTZEN- und RÜCKWÄRTS zusammen,
+um die Kiste nach hinten zu ZIEHEN.
+
+
+
+
+
+
+
+
+}
+
+TEACH10
+{
+Drücke VORWÄRTS und SRPINGEN zusammen.
+Drücke dann die DUCKEN-Taste.
+
+
+
+
+
+
+
+
+}
+
+RANGE1
+{
+WAFFE IN DEN ROTEN
+BEHÄLTER ZURÜCKLEGEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE3
+{
+STANDARD-PISTOLE AUFNEHMEN
+UND MUNITION HOLEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE4
+{
+TASTE FÜR DIE ANPASSUNG IHRER WAFFEN DRÜCKEN,
+UM DAS ANPASSUNGSMENÜ ZU AKTIVIEREN.
+NÄCHSTE ODER VORIGE WAFFEN-TASTE DRÜCKEN,
+UM SCHNELLFEUER-MODUS ANZUWÄHLEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE5
+{
+SCHARFSCHÜTZEN-KIT AUFNEHMEN UND TASTE
+FÜR DIE ANPASSUNG IHRER WAFFEN DRÜCKEN,
+UM SCHARFSCHÜTZEN-MODUS ANZUWÄHLEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE6
+{
+TASTE FÜR DIE ANPASSUNG IHRER WAFFEN DRÜCKEN,
+UM DAS ANPASSUNGSMENÜ ZU AKTIVIEREN.
+NÄCHSTE ODER VORIGE WAFFEN-TASTE DRÜCKEN,
+TASTEN ZUR ANWAHL DES LADUNG-MODUS.
+
+
+
+
+
+
+
+}
+
+RANGE7
+{
+DEM HOLO-ZIEL 400 SCHADENSPUNKTE ZUFÜGEN,
+BEVOR ES ZURÜCKGESETZT WIRD.
+
+
+
+
+
+
+
+
+}
+
+RANGE11
+{
+SCHROTGEWEHR AUFNEHMEN UND
+MUNITION HOLEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE12
+{
+DEM HOLO-ZIEL INNERHALB DES ZEITLIMITS 300
+SCHADENSPUNKTE ZUFÜGEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE13
+{
+TASTE FÜR DIE ANPASSUNG IHRER WAFFEN DRÜCKEN,
+UM DAS ANPASSUNGSMENÜ ZU AKTIVIEREN.
+NÄCHSTE ODER VORIGE WAFFEN-TASTE DRÜCKEN,
+TASTEN ZUR ANPASSUNG DER GESCHOSSZAHL.
+
+
+
+
+
+
+
+
+}
+
+RANGE14
+{
+DAS GLEICHZEITIGE ABFEUERN VON VIER GESCHOSSEN
+ERHÖHT DIE FEUERKRAFT IHRES SCHROTGEWEHRS.
+
+
+
+
+
+
+
+
+}
+
+RANGE17
+{
+DEM HOLO-ZIEL 500 SCHADENSPUNKTE ZUFÜGEN.
+SCHADENSPUNKTE ZUFÜGEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE18
+{
+BEI EINIGEN WAFFEN KANN ES DURCH ÜBERHITZUNG
+ZU FEHLFUNKTIONEN KOMMEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE19
+{
+MULTI-RAKETENWERFER AUFNEHMEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE22
+{
+MUNITION FÜR MULTI-RAKETENWERFER (MRW)
+KANN WIE GRANATEN BENUTZT WERDEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE23
+{
+GRANATE ÜBER DIE BARRIERE AUF
+DAS HOLO-ZIEL WERFEN.
+
+
+
+
+
+
+
+
+}
+
+RANGE24
+{
+TASTE FÜR DIE ANPASSUNG IHRER WAFFEN DRÜCKEN,
+UM DAS ANPASSUNGSMENÜ ZU AKTIVIEREN.
+NÄCHSTE ODER VORIGE WAFFEN-TASTE DRÜCKEN,
+TASTEN ZUR ANWAHL DES ZEITAUSLÖSER-MODUS.
+
+
+
+
+
+
+
+
+}
+RANGE25
+{
+TASTE FÜR DIE ANPASSUNG IHRER WAFFEN DRÜCKEN,
+UM DAS ANPASSUNGSMENÜ ZU AKTIVIEREN.
+NOCHMALS DRÜCKEN, UM "ZULADUNG" ZU MARKIEREN.
+NÄCHSTE ODER VORIGE WAFFEN-TASTE DRÜCKEN,
+TASTEN ZUR ANWAHL DES CLUSTER-MODUS.
+
+
+
+
+
+
+
+
+}
+
+TANK2
+{
+ZUM EINSTEIGEN IN DEN PANZER AN SEINE SEITE
+GEHEN UND DIE BENUTZEN-TASTE DRÜCKEN.
+
+
+
+
+
+
+
+
+}
+
+TANK3
+{
+SEITWÄRTS-TASTEN DRÜCKEN, UM DEN PANZER ZU WENDEN.
+DER GESCHÜTZTURM WIRD SEPARAT GESTEUERT.
+
+
+
+
+
+
+
+
+}
+
+TANK5
+{
+SPRINGEN-TASTE DRÜCKEN, UM DEN PANZER ZU VERLASSEN.
+
+
+
+
+
+
+
+
+}
+
+TANK6
+{
+DUCKEN-TASTE DRÜCKEN, UM DIE MASCHINENGEWEHRE
+ABZUFEUERN. DIE ANDEREN WAFFEN
+WURDEN ZEITWEILIG DEAKTIVIERT.
+
+
+
+
+
+
+
+
+}
+
+TANK7
+{
+PANZER NEBEN DEM PLATTFORMRAND PARKEN UND
+HERAUSSPRINGEN. PANZERCHASSIS ALS HILFE
+BEIM SPRUNG AUF DIE PLATTFORM BENUTZEN.
+
+
+
+
+
+
+
+
+}
+
+TANK9
+{
+ES WURDE EINE RAMPE ZUR PLATTFORM HERABGELASSEN.
+
+
+
+
+
+
+
+
+}
+
+ROCKET1
+{
+IN DER HÖHLE WERDEN ZIELDROHNEN
+FREIGESETZT.
+
+
+
+
+
+
+
+
+}
+
+ROCKET2
+{
+TASTE FÜR DIE ANPASSUNG IHRER WAFFEN DRÜCKEN,
+UM DAS ANPASSUNGSMENÜ ZU AKTIVIEREN.
+WIEDERHOLTES DRÜCKEN SCHALTET
+DURCH DIE MENÜ-KATEGORIEN.
+
+
+
+
+
+
+
+
+}
+
+ROCKET3
+{
+NÄCHSTE ODER VORIGE WAFFEN-TASTE DRÜCKEN,
+TASTEN ZUR ÄNDERUNG DER EINSTELLUNGEN.
+
+
+
+
+
+
+
+
+}
+
+ROCKET10
+{
+AUFZUG BETRETEN, UM DEN TRAININGSKURS ZU
+VERLASSEN. WEITERES TRAINING MIT DEM MRW
+ODER ANDEREN WAFFEN IST EBENFALLS MÖGLICH.
+
+
+
+
+
+
+
+
+}
+
+FLASH1
+{
+TASTE FÜR TASCHENLAMPE DRÜCKEN,
+UM IM DUNKLEN BESSER ZU SEHEN.
+
+
+
+
+
+
+
+
+}
+ 
+ 
+//map names
+
+city1a
+{
+Zug Teil 1
+}
+
+city1b
+{
+Zug Teil 2
+}
+
+city2a
+{
+Besprechungsraum
+}
+
+city2b
+{
+Bewegungstraining
+}
+
+city3a
+{
+Schießstand
+}
+
+city3b
+{
+Landebucht
+}
+
+mayan0a
+{
+Landezone
+}
+
+mayan0b
+{
+Kampfzone
+}
+
+mayan1
+{
+Flugabwehr-Station
+}
+
+mayan3a
+{
+Der Renesaurus
+}
+
+mayan4
+{
+Rückkehr des Generals
+}
+
+mayan6
+{
+Lager der Gesetzlosen
+}
+
+mayan8
+{
+Landebahn im Dschungel
+}
+
+//Rust
+
+rust1
+{
+Landeplatz Ferrin-Mond
+}
+
+rust2a
+{
+Außenposten-Sektion A
+}
+
+rust2b
+{
+Außenposten-Sektion B
+}
+
+rust3a
+{
+Plasma-Transit-Station
+}
+
+rust4a
+{
+Schildturm-Wartungsstation
+}
+
+rust4b
+{
+Schildturm
+}
+
+rust4c
+{
+Schildturm-Video
+}
+
+rust5a
+{
+Treffen im Untergrund
+}
+
+rust6a
+{
+Pump-Station A
+}
+
+rust6b
+{
+Plasma-Abgas-Station
+}
+
+rust6c
+{
+Laser-Forschungslabors
+}
+
+rust6d
+{
+Oberflächen-Sektion 6D
+}
+
+rust7a
+{
+Oberflächen-Sektor 7A
+}
+
+rust7e
+{
+Bahnverladestation
+}
+
+rust7b
+{
+Oberflächen-Sektor 7B
+}
+
+rust7c
+{
+Mainframe-Computer-Datenlager
+}
+
+rust7d
+{
+Mainframe-Computer-Kern
+}
+
+rust8a
+{
+Pump-Station B
+}
+
+rust9a
+{
+Instabiler Sektor
+}
+
+
+//West
+
+west1
+{
+Icnus - Absturzstelle
+}
+
+west2
+{
+Icnus - Klippen
+}
+
+west3a
+{
+Icnus - Bombenflug
+}
+
+west3b
+{
+Icnus - Sandsteinhöhlen
+}
+
+west4a
+{
+Icnus - Außenposten 1
+}
+
+west4b
+{
+Icnus - Außenposten 2
+}
+
+west5b
+{
+Icnus - Fuhrpark
+}
+
+west6a
+{
+Icnus - Damm
+}
+
+west6b
+{
+Icnus - Felsenbrecher
+}
+
+west6c
+{
+Icnus - Außenposten 3
+}
+
+west6d
+{
+Icnus - Raffinerie
+}
+
+west6e
+{
+Icnus - Festung der Gesetzlosen
+}
+
+rebar0a
+{
+Eingang zur Anstalt
+}
+  
+rebar0b
+{
+Hinterhalt im Lift
+}
+
+rebar2a
+{
+Deck A
+}
+
+rebar2b
+{
+Deck B
+}
+
+rebar3e
+{
+Deck B: Oberfläche
+}
+
+rebar2c
+{
+Deck C
+}
+
+rebar2g
+{
+Deck C: Schnabelbrüter
+}
+
+rebar2j
+{
+Deck D: Gen-Labors
+}
+
+rebar2d
+{
+Deck D: Kein Weg zurück
+}
+
+rebar2e
+{
+Deck E
+}
+
+rebar2h
+{
+Deck E: Der Mainframe-Computer
+}
+
+rebar2k
+{
+Die neue Ordnung
+}
+
+rebar2l
+{
+Verstärkung
+}
+
+rebar2i
+{
+Große Veränderungen
+}
+
+rebar2f
+{
+Kalter Krieg
+}
+
+rebar3b
+{
+Der Abstieg
+}
+
+rebar3d
+{
+Ungewöhnliche Wege
+}
+ 
+ 
+ 
+ 
