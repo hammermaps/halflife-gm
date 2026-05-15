@@ -171,9 +171,38 @@ class CDMLAmmo : public CBasePlayerAmmo
 	}
 };
 LINK_ENTITY_TO_CLASS( ammo_dml, CDMLAmmo );
-// Stock GC maps reference "ammo_dmlclip" (8-round magazine pickup).
-// We re-use the same CDMLAmmo behaviour until a distinct give-amount class is added.
-LINK_ENTITY_TO_CLASS( ammo_dmlclip, CDMLAmmo );
+
+//=========================================================
+// ammo_dmlclip  — 8-round Mule magazine pickup.
+// Stock maps use this classname for the higher-capacity clip
+// (distinct from the 4-round ammo_dml loose-round pickup).
+//=========================================================
+#define AMMO_DML_CLIP_GIVE  8
+
+class CDMLClipAmmo : public CBasePlayerAmmo
+{
+	void Spawn( void )
+	{
+		Precache();
+		SET_MODEL( ENT( pev ), "models/dmlammo.mdl" );
+		CBasePlayerAmmo::Spawn();
+	}
+	void Precache( void )
+	{
+		PRECACHE_MODEL( "models/dmlammo.mdl" );
+		PRECACHE_SOUND( "items/9mmclip1.wav" );
+	}
+	BOOL AddAmmo( CBaseEntity *pOther )
+	{
+		if ( pOther->GiveAmmo( AMMO_DML_CLIP_GIVE, "dml_ammo", DML_MAX_CARRY ) != -1 )
+		{
+			EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM );
+			return TRUE;
+		}
+		return FALSE;
+	}
+};
+LINK_ENTITY_TO_CLASS( ammo_dmlclip, CDMLClipAmmo );
 
 //=========================================================
 // Beam gun ammo
@@ -406,7 +435,7 @@ LINK_ENTITY_TO_CLASS( item_gascan, CItemGasCan );
 //
 // Gunman Chronicles armor pickup.  Restores suit charge
 // (armour value) to the player, capped at MAX_NORMAL_BATTERY.
-// Model: models/w_armor.mdl
+// Model: models/W_armor.mdl
 //=========================================================
 #define ITEM_ARMOR_CHARGE	75
 

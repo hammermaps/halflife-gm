@@ -41,7 +41,7 @@ important each one is in practice.
 | `weapon_beamgun`             |  10 | 10 |
 | `item_gascan`                |  10 |  3 |
 | `monster_xenome`             |   8 |  4 |
-| `monster_xenome_embryo`      |   8 |  1 |
+| `monster_xenome_embryo`      |   8 |  1 | ⚠️ No FGD entry or `LINK_ENTITY_TO_CLASS` — treated here as used but missing (see §2.2). |
 | `trigger_tank`               |   7 |  4 |
 | `decore_gutspile`            |   9 |  7 |
 | `decore_butterflyflock`      |   4 |  3 |
@@ -64,7 +64,7 @@ build will silently drop them.
 
 | Classname | Instances | Maps | Notes |
 |---|---:|---:|---|
-| `weapon_aicore`         |  1 | 1 | The "Wrench" puzzle weapon. Models present (`V_aicore.mdl`, `W_aicore.mdl`). |
+| `weapon_aicore`         |  1 | 1 | ✅ Added in this PR: `dlls/aicore.cpp` + FGD entry. |
 | `weapon_SPchemicalgun`  |  7 | 5 | Single-player variant of `weapon_chemicalgun` (cannot be dropped). |
 | `ammo_dmlclip`          | 27 | 18 | 8-round Mule magazine. (Distinct from `ammo_dmlsingle` and `ammo_dml`.) |
 | `cust_2GaussPistolSniper` | 8 | n/a | "Custom-2" weapon variant — a pre-configured sniper-mode Gauss Pistol pickup. |
@@ -75,39 +75,40 @@ build will silently drop them.
 41 distinct monster classes are placed by the stock maps but missing
 from our port. The most frequent are:
 
-| Classname | Instances | Maps |
-|---|---:|---:|
-| `monster_furniture`           | 145 | 38 |
-| `monster_human_bandit`        | 109 |  32 |
-| `monster_scientist`           |  63 | 24 |
-| `monster_beak`                |  60 | 16 |
-| `monster_generic`             |  53 | 26 |
-| `monster_rustbot`             |  43 | 14 |
-| `monster_scorpion`            |  43 |  9 |
-| `monster_rustbit`             |  35 | 11 |
-| `monster_human_demoman`       |  33 | 16 |
-| `monster_targetrocket`        |  32 |  6 |
-| `monster_tube`                |  27 | 10 |
-| `monster_hatchetfish`         |  25 |  5 |
-| `monster_human_unarmed`       |  23 |  7 |
-| `monster_human_gunman`        |  16 |  5 |
-| `monster_sentry`              |  16 |  6 |
-| `monster_raptor`              |  16 |  6 |
-| `monster_human_scientist`     |  15 |  8 |
-| `monster_rustbit_friendly`    |  15 |  4 |
-| `monster_dragonfly`           |  12 |  3 |
-| `monster_critter`             |  12 |  6 |
-| `monster_maggot`              |   9 |  5 |
-| `monster_trainingbot`         |   8 |  2 |
-| `monster_rustflier`           |   5 |  4 |
-| `monster_microraptor`         |   5 |  3 |
-| `monster_largescorpion`       |   5 |  5 |
-| `monster_aigirl`              |   4 |  3 |
-| `monster_gator`               |   4 |  1 |
-| `monster_rustgunr`            |   4 |  4 |
-| `monster_darttrap`            |   4 |  1 |
-| `monster_human_chopper`       |   2 |  2 |
-| `monster_tube_embryo`         |   2 |  1 |
+| Classname | Instances | Maps | Notes |
+|---|---:|---:|---|
+| `monster_furniture`           | 145 | 38 | |
+| `monster_human_bandit`        | 109 |  32 | |
+| `monster_scientist`           |  63 | 24 | ⚠️ HL has `dlls/scientist.cpp` but GC uses its own AI/model — needs a Gunman-specific variant. |
+| `monster_beak`                |  60 | 16 | |
+| `monster_generic`             |  53 | 26 | ⚠️ HL has `dlls/genericmonster.cpp` but GC-specific keyvalues/model need a Gunman variant. |
+| `monster_xenome_embryo`       |   8 |  1 | No FGD entry, no C++ implementation. |
+| `monster_rustbot`             |  43 | 14 | |
+| `monster_scorpion`            |  43 |  9 | |
+| `monster_rustbit`             |  35 | 11 | |
+| `monster_human_demoman`       |  33 | 16 | |
+| `monster_targetrocket`        |  32 |  6 | |
+| `monster_tube`                |  27 | 10 | |
+| `monster_hatchetfish`         |  25 |  5 | |
+| `monster_human_unarmed`       |  23 |  7 | |
+| `monster_human_gunman`        |  16 |  5 | |
+| `monster_sentry`              |  16 |  6 | |
+| `monster_raptor`              |  16 |  6 | |
+| `monster_human_scientist`     |  15 |  8 | |
+| `monster_rustbit_friendly`    |  15 |  4 | |
+| `monster_dragonfly`           |  12 |  3 | |
+| `monster_critter`             |  12 |  6 | |
+| `monster_maggot`              |   9 |  5 | |
+| `monster_trainingbot`         |   8 |  2 | |
+| `monster_rustflier`           |   5 |  4 | |
+| `monster_microraptor`         |   5 |  3 | |
+| `monster_largescorpion`       |   5 |  5 | |
+| `monster_aigirl`              |   4 |  3 | |
+| `monster_gator`               |   4 |  1 | |
+| `monster_rustgunr`            |   4 |  4 | |
+| `monster_darttrap`            |   4 |  1 | |
+| `monster_human_chopper`       |   2 |  2 | |
+| `monster_tube_embryo`         |   2 |  1 | |
 | `monster_ourano`              |   3 |  1 |
 | `monster_gunner_friendly`     |   3 |  2 |
 | `monster_rustbot_friendly`    |   3 |  2 |
@@ -250,10 +251,8 @@ Selected highlights that drive concrete change requests:
 - **`decore_spacedebris`** (42 instances, all in one map) → keys:
   `target`, `dirx`/`diry`/`dirz`, **`debrislife`** (42x — unhandled),
   `anglespeed`, `forwardspeed`, `modelname`, `targetname`. Default
-  `modelname` is `models/decoregibs2.mdl` which **is not present** in
-  `game/models/`; the closest match in the upload is the regular
-  `models/decoregibs.mdl` group — the missing model will need to be
-  added or the maps re-pointed.
+  `modelname` is `models/decoregibs2.mdl` which **is present** in
+  `game/models/`. Outstanding gap: `debrislife` key is not parsed by C++.
 - **`entity_digitgod`** (3 instances) → keys: `target`, `maxdamage`,
   `angles`, `targetname`. All ✅.
 - **`trigger_tank`** (7 instances) → keys: `model` (brush model
@@ -263,35 +262,32 @@ Selected highlights that drive concrete change requests:
 
 ## 4. Cross-cutting findings
 
-### 4.1 Case-sensitivity warning
+### 4.1 Case-sensitivity — applied in this PR
 
-`ammo_minigunClip` is used by 194 instances in 38 maps **with a
+`ammo_minigunClip` was used by 194 instances in 38 maps **with a
 capital C** in `Clip`. GoldSrc `LINK_ENTITY_TO_CLASS()` is
-case-sensitive on Linux dedicated servers. Either:
+case-sensitive on Linux dedicated servers.
 
-1. Add an explicit `LINK_ENTITY_TO_CLASS( ammo_minigunClip, CMinigunAmmo );`
-   alias next to the existing `ammo_minigun` registration, **or**
-2. Pre-process the BSP entity lump in `CWorld::KeyValue` /
-   `LoadLevel` to lower-case classnames, **or**
-3. Patch the BSPs (least desirable).
-
-Option 1 is the smallest, safest change and is the recommended fix for
-the next pass.
+✅ **Fixed:** `dlls/gm_ammo.cpp` now registers three aliases:
+```cpp
+LINK_ENTITY_TO_CLASS( ammo_gcminigunclip, CGCMinigunClipAmmo );
+LINK_ENTITY_TO_CLASS( ammo_minigunClip,   CGCMinigunClipAmmo );
+LINK_ENTITY_TO_CLASS( ammo_minigunclip,   CGCMinigunClipAmmo );
+```
+Similarly, `ammo_dmlclip` is now a separate `CDMLClipAmmo` class that
+gives the correct 8-round magazine amount.
 
 ### 4.2 Missing assets referenced by maps
 
-- `models/decoregibs2.mdl` — referenced by 42 `decore_spacedebris`
-  entities in `RUST5A`. Closest uploaded analogue is the
-  `models/decoregibs.mdl` family; either upload the missing variant
-  or recompile the map.
-- Various decoration models (`models/swampplant.mdl`, `models/cactus.mdl`,
-  `models/prickle.mdl`, `models/eagle.mdl`, `models/baboon.mdl`,
-  `models/torch.mdl`, `models/mushroom.mdl`, `models/cam.mdl`,
-  `models/ice.mdl`, `models/pteradon.mdl`, `models/nest.mdl`,
-  `models/pipes.mdl`, `models/hatgib.mdl`, `models/bodygib.mdl`,
-  `models/foot.mdl`, `models/sittingtubemortar.mdl`, `models/mushroom2.mdl`)
-  — none of these are present in `game/models/`. They are referenced by
-  the corresponding `decore_*` entities (see §2.2).
+- `models/swampplant.mdl` — referenced by `decore_*` entities; not
+  present in `game/models/`. Also: `models/torch.mdl`, `models/mushroom.mdl`,
+  `models/cam.mdl`, `models/nest.mdl`, `models/hatgib.mdl`,
+  `models/bodygib.mdl`, `models/foot.mdl`, `models/sittingtubemortar.mdl`,
+  `models/mushroom2.mdl`.
+- The following models are **present** in `game/models/` and do **not** need
+  uploading: `models/cactus.mdl`, `models/prickle.mdl`, `models/eagle.mdl`,
+  `models/Baboon.mdl`, `models/ice.mdl`, `models/pteradon.mdl`,
+  `models/pipes.mdl`, `models/decoregibs2.mdl`.
 
 ### 4.3 `ammo_*` entity defaults must match the FGD give amounts
 

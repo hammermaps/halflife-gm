@@ -189,12 +189,10 @@ CGaussPistolProjectile *CGaussPistolProjectile::CreateProjectile(
 //=========================================================
 void CGaussPistolProjectile::ProjectileThink( void )
 {
-	// Expire after 5 seconds (mirrors Lua's PlasmaLife).
+	// Expire after 5 seconds or on water entry: remove silently (no blast).
+	// Lua PlasmaThink calls SafeRemoveEntity() without doing damage.
 	if ( gpGlobals->time >= m_flExpireTime || pev->waterlevel > 0 )
 	{
-		::RadiusDamage( pev->origin, pev, pev,
-			(float)m_iBlastDmg, m_flBlastRadius, CLASS_NONE,
-			DMG_ENERGYBEAM | DMG_BLAST );
 		UTIL_Remove( this );
 		return;
 	}
@@ -207,10 +205,13 @@ void CGaussPistolProjectile::ProjectileTouch( CBaseEntity *pOther )
 	if ( pOther && pOther->edict() == pev->owner )
 		return;
 
-	if ( pOther )
-		pOther->TakeDamage( pev, pev, (float)m_iTouchDmg, DMG_ENERGYBEAM );
+	// Attribute damage to the firing player, not the projectile.
+	entvars_t *pevAttacker = pev->owner ? VARS( pev->owner ) : pev;
 
-	::RadiusDamage( pev->origin, pev, pev,
+	if ( pOther )
+		pOther->TakeDamage( pev, pevAttacker, (float)m_iTouchDmg, DMG_ENERGYBEAM );
+
+	::RadiusDamage( pev->origin, pev, pevAttacker,
 		(float)m_iBlastDmg, m_flBlastRadius, CLASS_NONE,
 		DMG_ENERGYBEAM | DMG_BLAST );
 
@@ -253,16 +254,16 @@ void CGaussPistol::Precache( void )
 	PRECACHE_MODEL( "models/dmlcluster.mdl"     );	// projectile model
 	m_iShell = PRECACHE_MODEL( "models/shell.mdl" );
 
-	// Fire sounds (Lua WeaponChannel entries).
-	PRECACHE_SOUND( "gunmanchronicles/weapons/gauss_fire4.wav"   );	// Pulse
-	PRECACHE_SOUND( "gunmanchronicles/weapons/gauss_fire2.wav"   );	// Charge
-	PRECACHE_SOUND( "gunmanchronicles/weapons/gauss_fire1.wav"   );	// Rapid
-	PRECACHE_SOUND( "gunmanchronicles/weapons/gsnipe_zoom.wav"   );	// Sniper zoom-in
-	PRECACHE_SOUND( "gunmanchronicles/weapons/sniperunzoom.wav"  );	// Sniper quick fire
-	PRECACHE_SOUND( "gunmanchronicles/weapons/sniperzoom.wav"    );	// Sniper full-zoom fire
+	// Fire sounds (uploaded to game/sound/weapons/).
+	PRECACHE_SOUND( "weapons/gauss_fire4.wav"    );	// Pulse
+	PRECACHE_SOUND( "weapons/gauss_fire2.wav"    );	// Charge
+	PRECACHE_SOUND( "weapons/gauss_fire1.wav"    );	// Rapid
+	PRECACHE_SOUND( "weapons/gsnipe_zoom.wav"    );	// Sniper zoom-in
+	PRECACHE_SOUND( "weapons/sniperunzoom.wav"   );	// Sniper quick fire
+	PRECACHE_SOUND( "weapons/sniperzoom.wav"     );	// Sniper full-zoom fire
 
-	// Mode-switch / customize sound (closest available match).
-	PRECACHE_SOUND( "gunmanchronicles/weapons/DryFire.wav"       );
+	// Mode-switch / customize sound.
+	PRECACHE_SOUND( "weapons/DryFire.wav"        );
 
 	// Pickup.
 	PRECACHE_SOUND( "items/9mmclip1.wav" );
@@ -343,7 +344,7 @@ void CGaussPistol::SetFireMode( int iMode )
 
 	SendWeaponAnim( GAUSSPISTOL_CUSTOMIZE );
 	EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,
-		"gunmanchronicles/weapons/DryFire.wav", 0.8f, ATTN_NORM );
+		"weapons/DryFire.wav", 0.8f, ATTN_NORM );
 
 	m_flNextPrimaryAttack   = UTIL_WeaponTimeBase() + 1.0f;
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5f;
@@ -386,7 +387,7 @@ void CGaussPistol::FireModePulse( void )
 		0, GP_DMG_PULSE, m_pPlayer->pev, m_pPlayer->random_seed );
 
 	EMIT_SOUND_DYN( ENT(m_pPlayer->pev), CHAN_WEAPON,
-		"gunmanchronicles/weapons/gauss_fire4.wav",
+		"weapons/gauss_fire4.wav",
 		1.0f, ATTN_NORM, 0, RANDOM_LONG( 96, 112 ) );
 
 	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= GP_AMMO_PULSE;
@@ -430,7 +431,7 @@ void CGaussPistol::FireModeRapid( void )
 		m_pPlayer );
 
 	EMIT_SOUND_DYN( ENT(m_pPlayer->pev), CHAN_WEAPON,
-		"gunmanchronicles/weapons/gauss_fire1.wav",
+		"weapons/gauss_fire1.wav",
 		1.0f, ATTN_NORM, 0, RANDOM_LONG( 100, 106 ) );
 
 	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= GP_AMMO_RAPID;
@@ -469,7 +470,7 @@ void CGaussPistol::FireModeCharge( void )
 		m_pPlayer );
 
 	EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON,
-		"gunmanchronicles/weapons/gauss_fire2.wav", 1.0f, ATTN_NORM );
+		"weapons/gauss_fire2.wav", 1.0f, ATTN_NORM );
 
 	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= GP_AMMO_CHARGE;
 	m_pPlayer->pev->punchangle.x = -4.0f;
@@ -503,15 +504,15 @@ void CGaussPistol::SniperExitMode( void )
 }
 
 // -----------------------------------------------------------------------
-// Mode 4 — Sniper fire (called when attack is released with zoom active)
+// Mode 4 — Sniper fire (called from WeaponIdle when attack is released)
 // -----------------------------------------------------------------------
 void CGaussPistol::FireModeSniper( void )
 {
 	int         iAmmoCost = ( m_iSniperZoom >= 2 ) ? GP_AMMO_SNIPER_FULL  : GP_AMMO_SNIPER_QUICK;
 	int         iDmg      = ( m_iSniperZoom >= 2 ) ? GP_DMG_SNIPER_FULL   : GP_DMG_SNIPER_QUICK;
 	const char *pszSnd    = ( m_iSniperZoom >= 2 )
-		? "gunmanchronicles/weapons/sniperzoom.wav"
-		: "gunmanchronicles/weapons/sniperunzoom.wav";
+		? "weapons/sniperzoom.wav"
+		: "weapons/sniperunzoom.wav";
 
 	if ( m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] < iAmmoCost )
 	{
@@ -532,9 +533,20 @@ void CGaussPistol::FireModeSniper( void )
 	Vector vecSrc    = m_pPlayer->GetGunPosition();
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_2DEGREES );
 
+	// Hitscan bullet.
+	TraceResult tr;
+	UTIL_TraceLine( vecSrc, vecSrc + vecAiming * 8192,
+		dont_ignore_monsters, m_pPlayer->edict(), &tr );
+
 	m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming,
 		VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_BUCKSHOT,
 		0, iDmg, m_pPlayer->pev, m_pPlayer->random_seed );
+
+	// Apply blast radius at impact point (matches Lua: BlastDamage radius=64).
+#ifndef CLIENT_DLL
+	::RadiusDamage( tr.vecEndPos, pev, m_pPlayer->pev,
+		(float)iDmg, 64.0f, CLASS_NONE, DMG_ENERGYBEAM | DMG_BLAST );
+#endif
 
 	EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, pszSnd, 1.0f, ATTN_NORM );
 
@@ -580,8 +592,9 @@ void CGaussPistol::PrimaryAttack( void )
 		break;
 
 	case FIREMODE_SNIPER:
-		// First press enters sniper scope, subsequent presses advance zoom,
-		// and release-while-zoomed fires (handled below via WeaponIdle).
+		// Mode 4 uses a hold-to-zoom / release-to-fire pattern:
+		//   - PrimaryAttack() advances the zoom state while IN_ATTACK is held.
+		//   - WeaponIdle() (called on button release) fires the shot.
 		if ( !m_bSniperMode )
 		{
 			SniperEnterMode();
@@ -589,15 +602,17 @@ void CGaussPistol::PrimaryAttack( void )
 		}
 		else if ( m_iSniperZoom == 0 )
 		{
-			// Begin zoom.
+			// Begin first zoom step.
 			m_iSniperZoom      = 1;
 			m_flSniperZoomTime = gpGlobals->time;
 			m_pPlayer->m_iFOV  = GP_SNIPER_FOV_PARTIAL;
 			m_pPlayer->pev->fov = GP_SNIPER_FOV_PARTIAL;
 			EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,
-				"gunmanchronicles/weapons/gsnipe_zoom.wav", 0.8f, ATTN_NORM );
+				"weapons/gsnipe_zoom.wav", 0.8f, ATTN_NORM );
 			SendWeaponAnim( GAUSSPISTOL_SNIPERIDLE );
+			// Poll quickly while button held so we can advance to full zoom.
 			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + GP_SNIPER_ZOOM_DELAY;
+			m_flTimeWeaponIdle    = UTIL_WeaponTimeBase() + 0.05f;
 		}
 		else if ( m_iSniperZoom == 1 &&
 			( gpGlobals->time - m_flSniperZoomTime ) >= GP_SNIPER_ZOOM_DELAY )
@@ -606,12 +621,15 @@ void CGaussPistol::PrimaryAttack( void )
 			m_iSniperZoom       = 2;
 			m_pPlayer->m_iFOV   = GP_SNIPER_FOV_FULL;
 			m_pPlayer->pev->fov = GP_SNIPER_FOV_FULL;
-			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.5f;
+			// Keep polling to stay in this branch; fire happens on release.
+			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.1f;
+			m_flTimeWeaponIdle    = UTIL_WeaponTimeBase() + 0.05f;
 		}
-		else if ( m_iSniperZoom >= 2 )
+		else
 		{
-			// Fire at current zoom level.
-			FireModeSniper();
+			// Zoom fully held — keep re-arming without advancing.
+			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.1f;
+			m_flTimeWeaponIdle    = UTIL_WeaponTimeBase() + 0.05f;
 		}
 		break;
 
@@ -639,6 +657,15 @@ void CGaussPistol::WeaponIdle( void )
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
+
+	// Sniper mode: fire on button release (WeaponIdle is called when
+	// IN_ATTACK is released).  Check before the time guard so we don't
+	// miss the release even if m_flTimeWeaponIdle is still in the future.
+	if ( m_bSniperMode && m_iSniperZoom > 0 )
+	{
+		FireModeSniper();
+		return;
+	}
 
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;

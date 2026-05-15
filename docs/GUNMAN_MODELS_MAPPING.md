@@ -95,7 +95,7 @@ Most monster stubs still point at stock Half-Life models (`zombie.mdl`, `houndey
 | `entity_digitgod` (digit sprite) | `models/gunmanchronicles/digits.mdl` | `models/digits.mdl` | Used as a sprite via `CSprite::SpriteCreate`, not as a studio model. |
 | `gunman_cycler` | *user-provided via `model` key* | n/a | Uses any of the 300+ uploaded studio models. |
 | `decore_asteroid` | *user-provided via `model` key* | `models/Asteroid.mdl` (default) | Maps frequently set `model "models/Asteroid.mdl"`. |
-| `decore_spacedebris` | *user-provided via `modelname` key* | typical: `models/decoregibs.mdl`, `models/decoregibs2.mdl` (latter is **not** uploaded — see `GUNMAN_BSP_ANALYSIS.md`). | |
+| `decore_spacedebris` | *user-provided via `modelname` key* | typical: `models/decoregibs.mdl`, `models/decoregibs2.mdl` (both **are** uploaded). | |
 
 ## Projectile / effect entities seen in GC Lua (no C++ yet)
 
@@ -105,7 +105,7 @@ exact model paths to match the GC asset set.
 
 | Lua entity | C++ port should use |
 |---|---|
-| `gunman_weapon_gausspistol_projectile` | (sprite-based — `sprites/rocket.spr` + glow) |
+| `gunman_weapon_gausspistol_projectile` | ✅ ported as `CGaussPistolProjectile` / `gausspistol_proj` in `dlls/gausspistol.cpp` — uses `models/dmlcluster.mdl` + `sprites/laserbeam.spr` trail. |
 | `gunman_weapon_beamgun_ball` / `_ball_small` | `models/dmlcluster.mdl` (closest match — small energy ball) or custom sprite |
 | `gunman_weapon_beamgun_chain` | beam temp-ent only, no model |
 | `gunman_weapon_chembomb` | `models/chem_ammo.mdl` (re-used as the canister) |

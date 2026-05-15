@@ -23,10 +23,10 @@ repeated; their keys (`targetname`, `target`, `angles`, `rendermode`,
 
 ## 1. Weapons
 
-The eight Gunman weapon classes (`CGaussPistol`, `CShotCycler`,
+The nine Gunman weapon classes (`CGaussPistol`, `CShotCycler`,
 `CChemicalGun`, `CMinigun`, `CDML`, `CBeamGun`, `CGCFists`,
-`CGCShotgun`) inherit from `CBasePlayerWeapon`. The FGD declares them
-as `base(Weapon)` and lists **no extra keys** — only `angles`,
+`CGCShotgun`, `CAICore`) inherit from `CBasePlayerWeapon`. The FGD declares
+them as `base(Weapon)` and lists **no extra keys** — only `angles`,
 `targetname`, `spawnflags`. Nothing to compare.
 
 > The interesting weapon configuration (fire modes, range, accuracy,

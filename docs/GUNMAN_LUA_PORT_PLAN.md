@@ -21,7 +21,7 @@ passes.
 | `game/lua/weapons/gunman_weapon_mechagun/` | Minigun — spin-up state machine, cooling. |
 | `game/lua/weapons/gunman_weapon_knife/` | Fists + knife toggle. |
 | `game/lua/weapons/gunman_weapon_grenade/` | Hand grenade (3 detonation types). |
-| `game/lua/weapons/gunman_weapon_aicore/` | The "Wrench" puzzle weapon. *(Not in C++ yet — see §3.)* |
+| `game/lua/weapons/gunman_weapon_aicore/` | The "Wrench" puzzle weapon. ✅ Added as `dlls/aicore.cpp` (100-dmg stub). Plug/unplug and sounds are follow-up. |
 | `game/lua/entities/gunman_*` | Server-side projectiles, explosions, ammo bases. |
 
 ## 2. Per-weapon parity gap
@@ -116,10 +116,11 @@ uploaded model set (`models/V_aicore.mdl`, `models/W_aicore.mdl`).
 There is **no FGD entry and no C++ implementation** today.
 
 In this PR a minimal C++ stub is added so the entity at least spawns and
-is interactive (deploys/holsters with the AI core models). The full Lua
-behaviour (single hit-scan with 100 hp damage, `aicore_activate` /
-`aicore_deactivate` / `aicore_activated` sounds, plug/unplug interaction
-on `button_aiwallplug`) remains to be ported in a follow-up.
+is interactive (deploys/holsters with the AI core models, fires a
+100-damage hitscan attack matching `WeaponDamage.AICore.Bullet`). The
+remaining Lua behaviour (`aicore_activate` / `aicore_deactivate` /
+`aicore_activated` sounds, plug/unplug interaction on `button_aiwallplug`)
+remains to be ported in a follow-up.
 
 ## 3. Per-entity parity gap (server-side)
 
@@ -139,7 +140,7 @@ C++ stubs:
 | `gunman_explosion`                          | `CEnvExplosionGM` (standard variant) | ✅ |
 | `gunman_explosion_small`                    | *(none yet)*                  | ❌ — 60 dmg / 256 radius variant. |
 | `gunman_explosion_chem`                     | *(none yet)*                  | ❌ — chem-coloured 60/256 variant. |
-| `gunman_weapon_gausspistol_projectile`      | *(none yet)*                  | ❌ — needed for Rapid/Charge fire modes. |
+| `gunman_weapon_gausspistol_projectile`      | ✅ ported as `CGaussPistolProjectile` / `gausspistol_proj` in `dlls/gausspistol.cpp`. |
 | `gunman_weapon_beamgun_ball`                | *(none yet)*                  | ❌ |
 | `gunman_weapon_beamgun_ball_small`          | *(none yet)*                  | ❌ |
 | `gunman_weapon_beamgun_chain`               | *(none yet)*                  | ❌ — beam temp-ent only. |
@@ -168,7 +169,7 @@ single header `dlls/gunman_damage.h`:
 ```cpp
 namespace GunmanDamage {
     namespace GaussPistol {
-        const int Pulse        = 8;
+        const int Pulse        = 25;	// WeaponDamage.GaussPistol.Pulse (from gunman_data.lua)
         const int Rapid        = 40;
         const int Charge       = 100;
         const int Sniper       = 100;
@@ -263,15 +264,14 @@ Plus the param-level fixes listed at the bottom of
 
 1. **Phase 0 (this PR):** correct model paths, document the gap,
    add `weapon_aicore` stub + FGD entry.
-2. **Phase 1:** add the missing FGD entries above so maps open
-   cleanly in Hammer; alias `ammo_minigunClip` for case-correctness
-   in C++.
+2. **Phase 1 (this PR):** add `ammo_minigunClip` / `ammo_dmlclip` aliases
+   for case-correctness in C++; implement Gauss Pistol four fire modes,
+   `CGaussPistolProjectile` entity, release-to-fire sniper logic.
 3. **Phase 2:** port the damage/ammo tables to
-   `dlls/gunman_damage.h` and replace the magic numbers in the eight
-   weapon stubs.
-4. **Phase 3:** implement the four fire modes on the Gauss Pistol
-   and the menu state machine on the Beam Gun, Chemical Gun, Mule;
-   add the projectile entities they spawn.
+   `dlls/gunman_damage.h` and replace the magic numbers in the remaining
+   seven weapon stubs.
+4. **Phase 3:** implement the fire-mode state machines on the Beam Gun,
+   Chemical Gun, and Mule; add the projectile entities they spawn.
 5. **Phase 4:** implement the human-NPC family (`monster_human_*`),
    which is what unlocks half the campaign maps.
 6. **Phase 5:** implement the vehicle/tank chain, decoration

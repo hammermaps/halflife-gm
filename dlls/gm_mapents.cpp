@@ -639,7 +639,7 @@ void CDecoreButterflyFlock::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 // decore_gutspile
 //
 // Guts pile static animated prop.  Uses a fixed model
-// (models/gutspile.mdl) placed in-world
+// (models/Gutspile.mdl) placed in-world
 // with a solid bounding box so it can serve as a prop
 // that interacts with physics.
 //=========================================================
