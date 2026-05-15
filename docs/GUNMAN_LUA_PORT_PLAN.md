@@ -75,12 +75,28 @@ be picked up incrementally.
 
 ### 2.3 Chemical Gun (`weapon_chemicalgun` / `CChemicalGun`)
 
-| Lua feature | C++ status | Required port work |
+**Status: ✅ Phase-3 implemented** — see `dlls/chemicalgun.cpp` and `dlls/weapons.h`.
+
+| Lua feature | C++ status | Notes |
 |---|---|---|
-| 4-axis chemistry menu: Acid(0-4) / Neutral(0-4) / Base(0-4) / Pressure(1-5) | ❌ | Same menu pattern as Beam Gun. Defaults `Acid=4, Neutral=2, Base=3, Pressure=3`. |
-| Projectile properties driven by chemistry (`skin`, `explode`, `bounce`, `stick`, `smokeBurn`, `airExpireTime`, `damageArea`, `ammoTake`) | ❌ | Add a `CChemBomb` projectile with these fields (see `gunman_weapon_chembomb.lua`). |
-| Damage 8 per direct hit, area 32 u, blast on explode (60 dmg / 256 radius — `EntityDamage.Explosions.Chem`) | ❌ | Wire to `RadiusDamage()`. |
-| Customize anim/sound (`Changemixture`, `gunman_chemgun_customize`) | ❌ | |
+| 4-axis chemistry menu: Acid(0-4) / Neutral(0-4) / Base(0-4) / Pressure(1-5) | ✅ done | `SecondaryAttack()` cycles axes (Acid→Neutral→Base→Pressure→Acid), plays `CHEMICALGUN_CUSTOMIZE` anim + `DryFire.wav`. Fields `m_iAcid`, `m_iNeutral`, `m_iBase`, `m_iPressure` with Lua defaults (4, 2, 3, 3). |
+| Projectile properties driven by chemistry (`skin`, `explode`, `bounce`, `stick`, `smokeBurn`, `airExpireTime`, `damageArea`, `ammoTake`) | ✅ done | `ChemConfig()` helper derives all properties from Acid/Neutral/Base axes. `CChemBomb` projectile entity carries these flags. |
+| Damage 8 per direct hit; blast on explode (60 dmg / 2×damageArea radius); normal expire (damageArea×0.2 dmg / damageArea radius) | ✅ done | `CChemBomb::Detonate()` and `BombTouch()` wired to `RadiusDamage()`. |
+| `explode` behaviour (acid>0 && base>0) | ✅ done | Large blast on contact/expire; `TE_EXPLOSION` visual. |
+| `bounce` behaviour (explode && neutral dominates) | ✅ done | `MOVETYPE_BOUNCE` on projectile; deflects off surfaces. |
+| `stick` behaviour (neutral>2 && components && !bounce) | ✅ done | On first surface/entity touch: `MOVETYPE_NONE`, velocity zeroed. |
+| `smokeBurn` behaviour (neutral>2 && (acid>2 || base && !explode)) | ✅ done | Periodic `RadiusDamage` every 0.1 s while stuck. |
+| `airExpireTime` (explode→max(1,5-neutral); else 4 s) | ✅ done | `BombThink()` auto-detonates after expire time. |
+| `damageArea` formula | ✅ done | smokeBurn→64; explode→clamp(16*(a+b),32,128); else→clamp(32*max(a,b,n),32,128). |
+| `skin` (projectile colour) | ✅ done | `pev->skin` set at spawn: 0=green(acid), 1=lime(neutral), 2=brown(a+b), 3=red(base). |
+| `ammoTake` per shot | ✅ done | `clamp(floor(1+(a+n+b)/6), 1, 3)`. Ammo deducted from pool (WEAPON_NOCLIP). |
+| Launch speed scales with Pressure (200 + 150×P u/s) | ✅ done | `LaunchChemBomb()` uses `CG_LAUNCH_BASE + CG_LAUNCH_SCALE * m_iPressure`. |
+| View punch proportional to Pressure | ✅ done | `pev->punchangle.x = -m_iPressure`. |
+| Fire sound pitch varies with Pressure | ✅ done | `EMIT_SOUND_DYN` pitch = 90 + 4×P. |
+| `Changemixture` anim + `DryFire.wav` on axis change | ✅ done | `SendWeaponAnim(CHEMICALGUN_CUSTOMIZE)` + `DryFire.wav`. |
+| `CChemBomb` entity | ✅ done | `LINK_ENTITY_TO_CLASS(chembomb, …)` in `chemicalgun.cpp`. Model: `Tubeball.mdl`. |
+| Save/restore for new fields | ✅ done | `CChemicalGun::m_SaveData[]` in `weapons.cpp`: Acid, Neutral, Base, Pressure, MenuAxis. |
+| Per-axis HUD display / vial sprites | ❌ follow-up | Client-side HUD work scoped for Phase 3. |
 
 ### 2.4 Mule / DML (`weapon_dml` / `CDML`)
 
