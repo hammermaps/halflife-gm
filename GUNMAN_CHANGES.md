@@ -188,6 +188,40 @@ To use Gunman Chronicles entities in your maps:
 - All entities support save/restore for proper game saving
 - Monster variants (armored houndeye, alpha massasaur, etc.) are supported via KeyValue body types
 
+## Further analysis & porting documentation
+
+Detailed analysis comparing this Goldsource port against the Garry's Mod /
+Source Lua reference implementation in `game/lua/*`, the FGD, and the
+shipped maps is split across four documents under `docs/`:
+
+- [`docs/GUNMAN_MODELS_MAPPING.md`](docs/GUNMAN_MODELS_MAPPING.md) — for every weapon, ammo, item and monster entity: the model path the C++ used to reference vs the actual path of the model uploaded to `game/models/`.
+- [`docs/GUNMAN_FGD_VS_CPP.md`](docs/GUNMAN_FGD_VS_CPP.md) — per-entity parameter-by-parameter comparison between `game/gunman.fgd` and the C++ KeyValue handlers, with a summary of the concrete bugs / gaps found.
+- [`docs/GUNMAN_BSP_ANALYSIS.md`](docs/GUNMAN_BSP_ANALYSIS.md) — what entities and keyvalues the 72 stock BSP maps actually use, which classes are missing from our FGD/C++, and cross-cutting issues such as classname case-sensitivity (`ammo_minigunClip`).
+- [`docs/GUNMAN_LUA_PORT_PLAN.md`](docs/GUNMAN_LUA_PORT_PLAN.md) — feature-parity gap analysis of the Lua weapon/entity reference against the current C++ stubs, and a phased roadmap for porting fire modes, projectiles, customization menus and missing entities.
+
+This PR applies the **Phase 0 and Phase 1** items from that roadmap:
+
+- All `models/gunmanchronicles/*.mdl` references in the Gunman weapon /
+  ammo / monster / map-entity C++ files have been redirected to the
+  actual uploaded asset paths under `models/*.mdl` (case-correct).
+- `monster_xenome` now uses `models/Xenome.mdl`, `monster_massasaur`
+  uses `models/Raptor.mdl`, `decore_butterflyflock` uses
+  `models/butterfly.mdl`, `decore_gutspile` uses `models/Gutspile.mdl`.
+- `ammo_minigunClip` (the case-sensitive classname stock maps actually
+  use) is now registered as an alias of `CGCMinigunClipAmmo`.
+- `ammo_dmlclip` is now a separate `CDMLClipAmmo` class that gives the
+  correct 8-round magazine amount (was incorrectly sharing `CDMLAmmo`'s
+  4-round give amount).
+- A `weapon_aicore` stub (`dlls/aicore.cpp`, declared in
+  `dlls/weapons.h`) has been added — see `GUNMAN_LUA_PORT_PLAN.md §2.8`.
+- **Gauss Pistol — four fire modes fully implemented** (`dlls/gausspistol.cpp`):
+  - Pulse (mode 1): 25-dmg hitscan, 1 ammo, 0.2 s cadence
+  - Charge (mode 2): `CGaussPistolProjectile` at 1500 u/s, touch 50 / blast 100 / radius 96, 10 ammo, 2.1 s cadence
+  - Rapid (mode 3): `CGaussPistolProjectile` at 2500 u/s, ±2° cone, touch 13 / blast 26 / radius 16, 1 ammo, 0.1 s cadence
+  - Sniper (mode 4): hold IN_ATTACK to zoom (FOV 90→80→20), release-to-fire hitscan with 64-unit blast radius
+  - `SecondaryAttack()` cycles modes 1→2→3→4→1
+  - New `CGaussPistolProjectile` entity (`gausspistol_proj`) with `TE_BEAMFOLLOW` trail
+
 ## References
 
 - Based on entity information from the Valve Developer Wiki

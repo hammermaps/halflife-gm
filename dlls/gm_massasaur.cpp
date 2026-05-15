@@ -310,7 +310,7 @@ void CMassasaur :: Spawn()
 {
 	Precache( );
 
-	SET_MODEL( ENT(pev), "models/bullsquid.mdl" );	// TODO: replace with Gunman Chronicles model
+	SET_MODEL( ENT(pev), "models/Raptor.mdl" );	// Gunman Chronicles "Massasaur" (raptor model, uploaded with capital R)
 	UTIL_SetSize( pev, Vector( -32, -32, 0 ), Vector( 32, 32, 64 ) );
 
 	pev->solid			= SOLID_SLIDEBOX;
@@ -339,7 +339,7 @@ void CMassasaur :: Precache()
 {
 	int i;
 
-	PRECACHE_MODEL( "models/bullsquid.mdl" );	// TODO: replace with Gunman Chronicles model
+	PRECACHE_MODEL( "models/Raptor.mdl" );	// Gunman Chronicles "Massasaur" (raptor model, uploaded with capital R)
 
 	for ( i = 0; i < ARRAYSIZE( pAttackHitSounds ); i++ )
 		PRECACHE_SOUND( (char *)pAttackHitSounds[i] );

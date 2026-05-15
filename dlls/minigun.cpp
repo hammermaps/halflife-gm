@@ -39,7 +39,7 @@ void CMinigun::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_MINIGUN;
-	SET_MODEL(ENT(pev), "models/gunmanchronicles/w_minigun.mdl");
+	SET_MODEL(ENT(pev), "models/w_mechagun.mdl");
 
 	m_iDefaultAmmo = MINIGUN_DEFAULT_GIVE;
 	m_bSpinning = FALSE;
@@ -50,9 +50,9 @@ void CMinigun::Spawn( )
 
 void CMinigun::Precache( void )
 {
-	PRECACHE_MODEL("models/gunmanchronicles/v_minigun.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/w_minigun.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/p_minigun.mdl");
+	PRECACHE_MODEL("models/v_mechagun.mdl");
+	PRECACHE_MODEL("models/w_mechagun.mdl");
+	PRECACHE_MODEL("models/p_9mmar.mdl");
 
 	m_iShell = PRECACHE_MODEL("models/shell.mdl");
 
@@ -95,7 +95,7 @@ int CMinigun::AddToPlayer( CBasePlayer *pPlayer )
 BOOL CMinigun::Deploy( )
 {
 	m_bSpinning = FALSE;
-	return DefaultDeploy( "models/gunmanchronicles/v_minigun.mdl", "models/gunmanchronicles/p_minigun.mdl", MINIGUN_DRAW, "mp5" );
+	return DefaultDeploy( "models/v_mechagun.mdl", "models/p_9mmar.mdl", MINIGUN_DRAW, "mp5" );
 }
 
 void CMinigun::SecondaryAttack( void )

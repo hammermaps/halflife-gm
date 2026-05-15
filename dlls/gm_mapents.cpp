@@ -570,7 +570,7 @@ void CDecoreSpaceDebris::SpaceDebrisThink( void )
 // decore_butterflyflock
 //
 // Butterfly flock animated prop.  Uses a fixed model
-// (models/gunmanchronicles/butterfly.mdl) with a random
+// (models/butterfly.mdl) with a random
 // skin selection.  Starts hidden (EF_NODRAW); firing Use()
 // toggles visibility so map triggers can reveal the flock.
 //=========================================================
@@ -586,14 +586,14 @@ LINK_ENTITY_TO_CLASS( decore_butterflyflock, CDecoreButterflyFlock );
 
 void CDecoreButterflyFlock::Precache( void )
 {
-	PRECACHE_MODEL( "models/gunmanchronicles/butterfly.mdl" );
+	PRECACHE_MODEL( "models/butterfly.mdl" );
 }
 
 void CDecoreButterflyFlock::Spawn( void )
 {
 	Precache();
 
-	pev->model = MAKE_STRING( "models/gunmanchronicles/butterfly.mdl" );
+	pev->model = MAKE_STRING( "models/butterfly.mdl" );
 	SET_MODEL( ENT( pev ), STRING( pev->model ) );
 
 	pev->skin = RANDOM_LONG( 0, 7 );
@@ -639,7 +639,7 @@ void CDecoreButterflyFlock::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 // decore_gutspile
 //
 // Guts pile static animated prop.  Uses a fixed model
-// (models/gunmanchronicles/gutspile.mdl) placed in-world
+// (models/Gutspile.mdl) placed in-world
 // with a solid bounding box so it can serve as a prop
 // that interacts with physics.
 //=========================================================
@@ -654,14 +654,14 @@ LINK_ENTITY_TO_CLASS( decore_gutspile, CDecoreGutspile );
 
 void CDecoreGutspile::Precache( void )
 {
-	PRECACHE_MODEL( "models/gunmanchronicles/gutspile.mdl" );
+	PRECACHE_MODEL( "models/Gutspile.mdl" );
 }
 
 void CDecoreGutspile::Spawn( void )
 {
 	Precache();
 
-	pev->model = MAKE_STRING( "models/gunmanchronicles/gutspile.mdl" );
+	pev->model = MAKE_STRING( "models/Gutspile.mdl" );
 
 	// Use full CGunmanCycler spawn path (sets bodygroups, solid, etc.)
 	CGunmanCycler::Spawn();
@@ -1042,7 +1042,7 @@ void CEntityDigitGod::KeyValue( KeyValueData *pkvd )
 
 void CEntityDigitGod::Precache( void )
 {
-	PRECACHE_MODEL( "models/gunmanchronicles/digits.mdl" );
+	PRECACHE_MODEL( "models/digits.mdl" );
 }
 
 void CEntityDigitGod::Spawn( void )
@@ -1094,7 +1094,7 @@ void CEntityDigitGod::CreateSprites( void )
 	{
 		Vector vecOrigin = pev->origin + offsets[i];
 
-		CSprite *pSprite = CSprite::SpriteCreate( "models/gunmanchronicles/digits.mdl", vecOrigin, FALSE );
+		CSprite *pSprite = CSprite::SpriteCreate( "models/digits.mdl", vecOrigin, FALSE );
 		if ( !pSprite ) break;
 
 		pSprite->pev->angles = pev->angles;

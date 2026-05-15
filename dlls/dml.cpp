@@ -45,7 +45,7 @@ void CDML::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_DML;
-	SET_MODEL(ENT(pev), "models/gunmanchronicles/w_dml.mdl");
+	SET_MODEL(ENT(pev), "models/w_dml.mdl");
 
 	m_iDefaultAmmo = DML_DEFAULT_GIVE;
 
@@ -55,11 +55,11 @@ void CDML::Spawn( )
 
 void CDML::Precache( void )
 {
-	PRECACHE_MODEL("models/gunmanchronicles/v_dml.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/w_dml.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/p_crossbow.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/dmlrocket.mdl");
-	PRECACHE_MODEL("models/gunmanchronicles/dmlcluster.mdl");
+	PRECACHE_MODEL("models/v_dml.mdl");
+	PRECACHE_MODEL("models/w_dml.mdl");
+	PRECACHE_MODEL("models/p_crossbow.mdl");
+	PRECACHE_MODEL("models/dmlrocket.mdl");
+	PRECACHE_MODEL("models/dmlcluster.mdl");
 
 	PRECACHE_SOUND("gunmanchronicles/weapons/dml_fire.wav");
 	PRECACHE_SOUND("gunmanchronicles/weapons/dml_reload.wav");
@@ -103,7 +103,7 @@ int CDML::AddToPlayer( CBasePlayer *pPlayer )
 
 BOOL CDML::Deploy( )
 {
-	return DefaultDeploy( "models/gunmanchronicles/v_dml.mdl", "models/gunmanchronicles/p_crossbow.mdl", DML_DRAW, "rpg" );
+	return DefaultDeploy( "models/v_dml.mdl", "models/p_crossbow.mdl", DML_DRAW, "rpg" );
 }
 
 void CDML::SecondaryAttack( void )

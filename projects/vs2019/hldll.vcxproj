@@ -108,6 +108,7 @@ call ..\..\filecopy.bat $(TargetDir)\$(TargetName).pdb ..\..\..\game\mod\dlls\$(
     <ClCompile Include="..\..\dlls\aflock.cpp" />
     <ClCompile Include="..\..\dlls\agrunt.cpp" />
     <ClCompile Include="..\..\dlls\airtank.cpp" />
+    <ClCompile Include="..\..\dlls\aicore.cpp" />
     <ClCompile Include="..\..\dlls\animating.cpp" />
     <ClCompile Include="..\..\dlls\animation.cpp" />
     <ClCompile Include="..\..\dlls\apache.cpp" />

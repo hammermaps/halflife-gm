@@ -68,6 +68,7 @@ OBJ = \
 	$(DLL_OBJDIR)/aflock.o \
 	$(DLL_OBJDIR)/agrunt.o \
 	$(DLL_OBJDIR)/airtank.o \
+	$(DLL_OBJDIR)/aicore.o \
 	$(DLL_OBJDIR)/animating.o \
 	$(DLL_OBJDIR)/animation.o \
 	$(DLL_OBJDIR)/apache.o \

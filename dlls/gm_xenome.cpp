@@ -306,7 +306,7 @@ void CXenome :: Spawn()
 {
 	Precache( );
 
-	SET_MODEL( ENT(pev), "models/headcrab.mdl" );	// TODO: replace with Gunman Chronicles model
+	SET_MODEL( ENT(pev), "models/Xenome.mdl" );	// Gunman Chronicles Xenome (uploaded, capital X)
 	UTIL_SetSize( pev, Vector( -12, -12, 0 ), Vector( 12, 12, 24 ) );
 
 	pev->solid			= SOLID_SLIDEBOX;
@@ -327,7 +327,7 @@ void CXenome :: Precache()
 {
 	int i;
 
-	PRECACHE_MODEL( "models/headcrab.mdl" );	// TODO: replace with Gunman Chronicles model
+	PRECACHE_MODEL( "models/Xenome.mdl" );	// Gunman Chronicles Xenome (uploaded, capital X)
 
 	for ( i = 0; i < ARRAYSIZE( pIdleSounds ); i++ )
 		PRECACHE_SOUND( (char *)pIdleSounds[i] );

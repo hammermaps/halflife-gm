@@ -61,7 +61,7 @@ void CGCFists::Spawn( )
 {
 	Precache( );
 	m_iId = WEAPON_FISTS;
-	SET_MODEL( ENT(pev), "models/gunmanchronicles/w_knife.mdl" );
+	SET_MODEL( ENT(pev), "models/w_knife.mdl" );
 
 	m_iDefaultAmmo = 0;
 	m_iWeaponMode  = 0; // start with fists
@@ -72,9 +72,9 @@ void CGCFists::Spawn( )
 
 void CGCFists::Precache( void )
 {
-	PRECACHE_MODEL( "models/gunmanchronicles/v_hands.mdl" );
-	PRECACHE_MODEL( "models/gunmanchronicles/w_knife.mdl" );
-	PRECACHE_MODEL( "models/gunmanchronicles/p_crowbar.mdl" );
+	PRECACHE_MODEL( "models/v_hands.mdl" );
+	PRECACHE_MODEL( "models/w_knife.mdl" );
+	PRECACHE_MODEL( "models/p_crowbar.mdl" );
 
 	PRECACHE_SOUND( "gunmanchronicles/weapons/KnifeAttack1.wav" );
 	PRECACHE_SOUND( "gunmanchronicles/weapons/KnifeAttack1b.wav" );
@@ -130,10 +130,10 @@ BOOL CGCFists::Deploy( )
 	if ( m_iWeaponMode == 1 )
 	{
 		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/KnifeDraw.wav", 0.9, ATTN_NORM );
-		return DefaultDeploy( "models/gunmanchronicles/v_hands.mdl", "models/gunmanchronicles/p_crowbar.mdl",
+		return DefaultDeploy( "models/v_hands.mdl", "models/p_crowbar.mdl",
 			FISTS_KNIFEDRAW, "onehanded", 0, FISTS_BODYKNIFE );
 	}
-	return DefaultDeploy( "models/gunmanchronicles/v_hands.mdl", "models/gunmanchronicles/p_crowbar.mdl",
+	return DefaultDeploy( "models/v_hands.mdl", "models/p_crowbar.mdl",
 		FISTS_READY, "onehanded", 0, FISTS_BODYFISTS );
 }
 

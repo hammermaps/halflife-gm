@@ -1606,6 +1606,16 @@ TYPEDESCRIPTION	CShotgun::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE( CShotgun, CBasePlayerWeapon );
 
+TYPEDESCRIPTION	CGaussPistol::m_SaveData[] =
+{
+	DEFINE_FIELD( CGaussPistol, m_iFireMode,      FIELD_INTEGER ),
+	DEFINE_FIELD( CGaussPistol, m_bSniperMode,    FIELD_INTEGER ),
+	DEFINE_FIELD( CGaussPistol, m_iSniperZoom,    FIELD_INTEGER ),
+	DEFINE_FIELD( CGaussPistol, m_flSniperZoomTime, FIELD_TIME  ),
+	DEFINE_FIELD( CGaussPistol, m_flBeamEndTime,  FIELD_TIME    ),
+};
+IMPLEMENT_SAVERESTORE( CGaussPistol, CBasePlayerWeapon );
+
 TYPEDESCRIPTION	CGauss::m_SaveData[] = 
 {
 	DEFINE_FIELD( CGauss, m_fInAttack, FIELD_INTEGER ),
