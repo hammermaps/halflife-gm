@@ -53,15 +53,25 @@ be picked up incrementally.
 
 ### 2.2 Beam Gun (`weapon_beamgun` / `CBeamGun`)
 
-| Lua feature | C++ status | Required port work |
+**Status: ✅ Phase-2 implemented** — see `dlls/beamgun.cpp` and `dlls/weapons.h`.
+
+| Lua feature | C++ status | Notes |
 |---|---|---|
-| 3-axis menu: Range (1-4), Power/Accuracy (1-4), Lightning (1-3) | ❌ | Three impulses or a sub-menu. Damage scales per `WeaponDamage.Beamgun.Modes[]`. |
-| Tazer mode | ❌ | Continuous-beam variant (`env_beam`/`TE_BEAMENTPOINT`) draining 1 ammo every think tick. |
-| Power-ball secondary (20 ammo) | ❌ | `CBeamGunBall` projectile with touch=100, blast=100, radius=128, plus think-time blast `ThinkBlast=10, ThinkRadius=128`. |
-| Chain mode | ❌ | Lightning chain (`TE_BEAMTORUS`) hitting up to N entities with falling damage (5 hp default). |
-| Windup / windown sounds (`egon_windup2*`, `egon_off1`) | ❌ | `EMIT_SOUND` calls at `PrimaryAttack` / `Holster`. |
-| Temperature ramp + malfunction lockout (`weaponTemp`, `Malfunction`) | ❌ | A `float m_flBeamTemp` plus a 3-second lockout via `m_flNextPrimaryAttack`. |
-| Residual sound on stop (`residual1-4.wav`) | ❌ | One-shot random pick on release. |
+| 3-axis menu: Range (1-4), Power/Accuracy (1-4), Lightning (1-3) | ✅ done | `SecondaryAttack()` cycles axes (Range→P/A→Lightning→Range), plays `BEAMGUN_CONFIG` anim + `DryFire.wav`. Fields `m_iRange`, `m_iPowerAndAccuracy`, `m_iLightning` with Lua defaults (3, 2, 1). |
+| Windup / windown sounds (`egon_windup2`, `egon_windup2_new`, `egon_off1`) | ✅ done | `BeginAttack()` plays windup (egon_windup2 for P/A≥2, egon_windup2_new otherwise); `EndAttack()` plays egon_off1. |
+| Hold-to-fire state machine (windup 0.75 s) | ✅ done | `m_iFireState` (BGFIRE_OFF/WINDUP/FIRING). `PrimaryAttack()` advances states; `WeaponIdle()` calls `EndAttack()` on button release. |
+| Tazer mode (Range ≤ 2, Lightning=1) | ✅ done | Continuous hitscan; entity within range gets `TazerBurst(160)/P/A` blast + `overheat.wav`; 2-second lockout per burst. |
+| Standard beam (Range 3-4, Lightning=1-2) | ✅ done | Hitscan damage from `Modes[]={7,10,12,15}` driven by `m_iPowerAndAccuracy`; area blast (16 u) at impact point; ammo cost = `ceil((5-P/A)*0.5)`. |
+| Chain mode (Lightning=2) | ✅ done | Spawns `CBeamGunChain` (new entity) at hit point; spawn rate = `√P/A × 0.25 s`; chain entity applies 5 hp blast each 0.5 s for 5 s then removes. |
+| Power-ball secondary (Lightning=3, 20 ammo) | ✅ done | `LaunchPowerBall()` → `CBeamGunBall` projectile at 500 u/s. `CBeamGunBall`: touch=100, blast=100, radius=128, periodic think blast 10/128; spawns up to 18 `CBeamGunBallSmall` sub-projectiles + 3 `CBeamGunChain` arcs; expires after 10 s. |
+| `CBeamGunBall` entity | ✅ done | `LINK_ENTITY_TO_CLASS(beamgun_ball, …)` in `beamgun.cpp`. Precaches ball-fly / ball-die sounds. |
+| `CBeamGunBallSmall` entity | ✅ done | `LINK_ENTITY_TO_CLASS(beamgun_ball_small, …)` in `beamgun.cpp`. touch=20, blast=10, radius=64, expires 3 s. |
+| `CBeamGunChain` entity | ✅ done | `LINK_ENTITY_TO_CLASS(beamgun_chain, …)` in `beamgun.cpp`. RadiusDamage 5 hp / random radius each 0.5 s; TE_SPARKS visual; removes after 10 ticks (~5 s). |
+| Temperature ramp + malfunction lockout | ✅ done | `m_flBeamTemp` rises +0.2/tick while firing, falls −0.1/tick idle. At 140 → `m_bMalfunction=TRUE`, 3 s lockout, `electro4.wav`. Clears below 130 after delay. |
+| Residual sound on stop (`residual1-4.wav`) | ✅ done | `EndAttack()` picks random residual1-4 on CHAN_ITEM. |
+| Save/restore for new fields | ✅ done | `CBeamGun::m_SaveData[]` in `weapons.cpp`: Range, P/A, Lightning, BeamTemp, Malfunction, MalfunctionReset, BallLaunched. |
+| Per-axis HUD display | ❌ follow-up | Client-side HUD work scoped for Phase 3. |
+| `TE_BEAMENTPOINT` beam visual | ❌ follow-up | Requires client-side event; documented in §5. |
 
 ### 2.3 Chemical Gun (`weapon_chemicalgun` / `CChemicalGun`)
 
@@ -141,9 +151,9 @@ C++ stubs:
 | `gunman_explosion_small`                    | *(none yet)*                  | ❌ — 60 dmg / 256 radius variant. |
 | `gunman_explosion_chem`                     | *(none yet)*                  | ❌ — chem-coloured 60/256 variant. |
 | `gunman_weapon_gausspistol_projectile`      | ✅ ported as `CGaussPistolProjectile` / `gausspistol_proj` in `dlls/gausspistol.cpp`. |
-| `gunman_weapon_beamgun_ball`                | *(none yet)*                  | ❌ |
-| `gunman_weapon_beamgun_ball_small`          | *(none yet)*                  | ❌ |
-| `gunman_weapon_beamgun_chain`               | *(none yet)*                  | ❌ — beam temp-ent only. |
+| `gunman_weapon_beamgun_ball`                | ✅ ported as `CBeamGunBall` / `beamgun_ball` in `dlls/beamgun.cpp`. |
+| `gunman_weapon_beamgun_ball_small`          | ✅ ported as `CBeamGunBallSmall` / `beamgun_ball_small` in `dlls/beamgun.cpp`. |
+| `gunman_weapon_beamgun_chain`               | ✅ ported as `CBeamGunChain` / `beamgun_chain` in `dlls/beamgun.cpp`. |
 | `gunman_weapon_chembomb`                    | *(none yet)*                  | ❌ |
 | `gunman_weapon_grenade_base`                | *(none yet)*                  | ❌ |
 | `gunman_weapon_grenade_armed`               | *(none yet)*                  | ❌ |

@@ -49,7 +49,7 @@ All Gunman-specific additions are documented in [`GUNMAN_CHANGES.md`](GUNMAN_CHA
 | Smoke Trail effect entity | `dlls/effects.cpp` (`CEnvSmokeTrail`) | ✅ Implemented |
 | Electrified surface entity | `dlls/effects.cpp` (`CEnvElectrified`) | ✅ Implemented |
 | Game entity definitions (FGD) | `game/gunman/gunman.fgd` | ✅ Complete |
-| Other weapons (Shot Cycler, Chemical Gun, etc.) | — | 🔄 Placeholder |
+| Other weapons (Shot Cycler, Chemical Gun, etc.) | `dlls/beamgun.cpp` (Beam Gun full), others stub | 🔄 In progress |
 | Monster/NPC implementations | — | ❌ Requires assets |
 
 ## Building

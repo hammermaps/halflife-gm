@@ -1270,6 +1270,12 @@ private:
 class CBeamGun : public CBasePlayerWeapon
 {
 public:
+#ifndef CLIENT_DLL
+	int		Save( CSave &save );
+	int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+#endif
+
 	void Spawn( void );
 	void Precache( void );
 	int iItemSlot( void ) { return 6; }
@@ -1283,6 +1289,13 @@ public:
 	void Reload( void );
 	void WeaponIdle( void );
 
+	// Attack state-machine helpers
+	void BeginAttack( void );
+	void ContinueAttack( void );
+	void EndAttack( void );
+	void FireWeapon( void );
+	void LaunchPowerBall( void );
+
 	virtual BOOL UseDecrement( void )
 	{ 
 #if defined( CLIENT_WEAPONS )
@@ -1292,9 +1305,33 @@ public:
 #endif
 	}
 
+	// Fire-state constants
+	enum {
+		BGFIRE_OFF     = 0,
+		BGFIRE_WINDUP  = 1,
+		BGFIRE_FIRING  = 2,
+	};
+
+	// 3-axis menu settings (persisted via save/restore)
+	int     m_iRange;               // 1-4, default 3
+	int     m_iPowerAndAccuracy;    // 1-4, default 2
+	int     m_iLightning;           // 1-3, default 1
+
+	// Windup / charge state
+	int     m_iFireState;           // BGFIRE_* constant
+	float   m_flChargeStartTime;    // gpGlobals->time when windup began
+	BOOL    m_bBallWasLaunched;     // PowerBall mode: prevents re-launch
+
+	// Temperature ramp & malfunction
+	float   m_flBeamTemp;           // 0-140; rises while firing
+	BOOL    m_bMalfunction;         // TRUE while weapon is locked out
+	float   m_flMalfunctionReset;   // time malfunction clears
+
+	// Chain spawn throttle
+	float   m_flNextChainTime;
+
 private:
 	unsigned short m_usBeamGun;
-	float m_flAmmoUseTime;
 };
 
 // Gunman Chronicles fists / knife melee weapon

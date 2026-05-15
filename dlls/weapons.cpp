@@ -1616,6 +1616,18 @@ TYPEDESCRIPTION	CGaussPistol::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE( CGaussPistol, CBasePlayerWeapon );
 
+TYPEDESCRIPTION	CBeamGun::m_SaveData[] =
+{
+	DEFINE_FIELD( CBeamGun, m_iRange,            FIELD_INTEGER ),
+	DEFINE_FIELD( CBeamGun, m_iPowerAndAccuracy, FIELD_INTEGER ),
+	DEFINE_FIELD( CBeamGun, m_iLightning,        FIELD_INTEGER ),
+	DEFINE_FIELD( CBeamGun, m_flBeamTemp,        FIELD_FLOAT   ),
+	DEFINE_FIELD( CBeamGun, m_bMalfunction,      FIELD_INTEGER ),
+	DEFINE_FIELD( CBeamGun, m_flMalfunctionReset,FIELD_TIME    ),
+	DEFINE_FIELD( CBeamGun, m_bBallWasLaunched,  FIELD_INTEGER ),
+};
+IMPLEMENT_SAVERESTORE( CBeamGun, CBasePlayerWeapon );
+
 TYPEDESCRIPTION	CGauss::m_SaveData[] = 
 {
 	DEFINE_FIELD( CGauss, m_fInAttack, FIELD_INTEGER ),
