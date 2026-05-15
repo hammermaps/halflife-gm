@@ -34,15 +34,22 @@ be picked up incrementally.
 
 ### 2.1 Gauss Pistol (`weapon_gausspistol` / `CGaussPistol`)
 
-| Lua feature | C++ status | Required port work |
+**Status: ✅ Phase-1 implemented** — see `dlls/gausspistol.cpp` and `dlls/weapons.h`.
+
+| Lua feature | C++ status | Notes |
 |---|---|---|
-| Fire mode menu (Pulse / Charge / Rapid / Sniper) | ❌ none | Add an `int m_iFireMode` impulse-controlled selector with HUD overlay (analogous to `IMPULSE_FIRE_RPG`). Default 1 (Pulse). |
-| Pulse: instant hit-scan, 25 hp dmg, 1 ammo, 0.2s cadence | ⚠️ partial | The current `PrimaryAttack()` does a single 9mm hitscan at 0.3s and consumes 1 round — replace with the GC numbers (`WeaponDamage.GaussPistol.Pulse`, `WeaponAmmoUsage.GaussPistol.Pulse`). |
-| Rapid: 1 ammo / 0.1s, 40 hp, projectile at 2500 u/s with random ±2° cone | ❌ | Add a `CGaussProjectile` entity (model `models/dmlcluster.mdl` or custom sprite) with touch-damage + radius-damage from `EntityDamage.GaussPistol.Rapid`. |
-| Charge: 10 ammo / 2.1s, 100 hp, projectile at 1500 u/s | ❌ | Same projectile class with `ProjectileType = Charge` flag; touch 50, blast 100, radius 96. |
-| Sniper: 10 ammo (unzoomed), 20 ammo (zoomed), beam ring effects, FOV 80→20 zoom, 1.5s lock | ❌ | New `SecondaryAttack()` that switches to sniper mode (bodygroup `11`); a separate `m_iSniperZoom` state machine drives FOV transitions. |
-| `customize` animation + `gunman_gausspistol_customize` sound on fire-mode change | ❌ | Tie into the menu code; HL has `SendWeaponAnim` for the playback. |
-| Bodygroup swap on sniper deploy (`10` / `11`) | ❌ | `pev->body` toggle on draw. |
+| Fire mode menu (Pulse / Charge / Rapid / Sniper) | ✅ done | `m_iFireMode` (1–4). `SecondaryAttack()` cycles modes (1→2→3→4→1) and plays `GAUSSPISTOL_CUSTOMIZE` anim + DryFire sound. |
+| Pulse: instant hitscan, 25 hp dmg, 1 ammo, 0.2 s | ✅ done | `FireModePulse()` — `VECTOR_CONE_1DEGREES`, `gauss_fire4.wav` (pitch 96–112). |
+| Rapid: 1 ammo / 0.1 s, projectile 2500 u/s, ±2° cone | ✅ done | `FireModeRapid()` — `CGaussPistolProjectile` (touch 13, blast 26, radius 16), `gauss_fire1.wav`. |
+| Charge: 10 ammo / 2.1 s, projectile 1500 u/s | ✅ done | `FireModeCharge()` — `CGaussPistolProjectile` (touch 50, blast 100, radius 96), `gauss_fire2.wav`. |
+| Sniper: hold to zoom (FOV 90→80→20), release-to-fire | ✅ done | `FireModeSniper()` / `SniperEnterMode()` / `SniperExitMode()`, `m_iSniperZoom` state machine. Unzoomed dmg 40 (10 ammo) / full-zoom dmg 100 (20 ammo). |
+| `customize` animation + sound on fire-mode change | ✅ done | `SendWeaponAnim(GAUSSPISTOL_CUSTOMIZE)` + `DryFire.wav`. |
+| `CGaussPistolProjectile` entity (Rapid + Charge) | ✅ done | `LINK_ENTITY_TO_CLASS(gausspistol_proj, …)`, `TE_BEAMFOLLOW` sprite trail, `RadiusDamage`, 5 s expire / water expire. |
+| Ammo type → `gausspistol_ammo`, NOCLIP magazine | ✅ done | `GetItemInfo()` updated; old `"9mm"` / clip-20 removed. |
+| Save/restore for new fields | ✅ done | `CGaussPistol::m_SaveData[]` in `weapons.cpp`. |
+| Bodygroup swap on sniper mode (body 10 / 11) | ⚠️ partial | `SniperEnterMode` plays `GAUSSPISTOL_SNIPERDRAW`; actual body-group write via `pev->body` omitted pending confirmation of correct index in v_guasspistol.mdl. |
+| Beam-ring visual effect (sniper shot) | ❌ follow-up | Requires `TE_BEAMTORUS` packet; documented in §5. |
+| Per-fire-mode HUD overlay (sprites) | ❌ follow-up | Client-side HUD work scoped for Phase 3. |
 
 ### 2.2 Beam Gun (`weapon_beamgun` / `CBeamGun`)
 

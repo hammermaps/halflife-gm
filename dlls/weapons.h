@@ -1102,6 +1102,15 @@ public:
 	void Reload( void );
 	void WeaponIdle( void );
 
+	// Fire mode helpers
+	void FireModePulse( void );
+	void FireModeRapid( void );
+	void FireModeCharge( void );
+	void FireModeSniper( void );
+	void SniperEnterMode( void );
+	void SniperExitMode( void );
+	void SetFireMode( int iMode );
+
 	virtual BOOL UseDecrement( void )
 	{ 
 #if defined( CLIENT_WEAPONS )
@@ -1111,8 +1120,24 @@ public:
 #endif
 	}
 
+	// Fire modes: 1=Pulse, 2=Charge, 3=Rapid, 4=Sniper
+	enum {
+		FIREMODE_PULSE  = 1,
+		FIREMODE_CHARGE = 2,
+		FIREMODE_RAPID  = 3,
+		FIREMODE_SNIPER = 4,
+		FIREMODE_MAX    = 4
+	};
+
+	int		m_iFireMode;		// current fire mode (1-4)
+	BOOL	m_bSniperMode;		// sniper scope is deployed
+	int		m_iSniperZoom;		// 0=off, 1=partial, 2=full, 3=locked
+	float	m_flSniperZoomTime;	// time sniper zoom started
+	float	m_flBeamEndTime;	// time to stop rendering the shot beam
+	int		m_iSniperSprite;	// precached scope sprite index
+
 private:
-	int m_iShell;
+	int			m_iShell;
 	unsigned short m_usGaussPistol;
 };
 
