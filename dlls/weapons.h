@@ -1241,6 +1241,12 @@ private:
 class CMinigun : public CBasePlayerWeapon
 {
 public:
+#ifndef CLIENT_DLL
+	int		Save( CSave &save );
+	int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+#endif
+
 	void Spawn( void );
 	void Precache( void );
 	int iItemSlot( void ) { return 5; }
@@ -1251,8 +1257,8 @@ public:
 	void SecondaryAttack( void );
 	BOOL Deploy( void );
 	void Holster( int skiplocal = 0 );
-	void Reload( void );
 	void WeaponIdle( void );
+	void ItemPostFrame( void );
 
 	virtual BOOL UseDecrement( void )
 	{ 
@@ -1263,10 +1269,18 @@ public:
 #endif
 	}
 
+	// Spin-up / turbo-mode state machine
+	int   m_iFireState;         // MGSTATE_* constant
+	float m_flSpinTime;         // time when spinup/spindown transition completes
+	float m_flWeaponTemp;       // overheating meter (0–162+)
+	float m_flMalfunctionEnd;   // time when malfunction lockout ends
+	float m_flNextTempThink;    // next temperature-update poll
+	float m_flNextAnimTime;     // next fireloop/idleloop re-send time
+	int   m_iCooled;            // TRUE if this is the cooled pickup variant
+
 private:
 	int m_iShell;
 	unsigned short m_usMinigun;
-	BOOL m_bSpinning;
 };
 
 class CDML : public CBasePlayerWeapon

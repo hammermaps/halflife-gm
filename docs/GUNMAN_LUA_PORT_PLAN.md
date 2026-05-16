@@ -137,13 +137,22 @@ be picked up incrementally.
 
 ### 2.6 Minigun / Mechagun (`weapon_minigun` / `CMinigun`)
 
-| Lua feature | C++ status | Required port work |
+**Status: ✅ Phase implemented** — see `dlls/minigun.cpp` and `dlls/weapons.h`.
+
+| Lua feature | C++ status | Notes |
 |---|---|---|
-| Spin-up before fire (`MechaSpinUp`) | ❌ | `m_flSpinUpTime`. |
-| Spin-down on release (`MechaSpinDown`) | ❌ | |
-| 0.05 s cadence at full RPM | ❌ | Use `m_flNextPrimaryAttack`. |
-| `cust_2MinigunCooled` pickup variant | ❌ | New entity; gives the minigun with `m_iCooled = TRUE` flag. |
-| Tracers + per-shot sound (`hks3.wav`) | ❌ | |
+| Spin-up before fire (`MechaSpinUp`) | ✅ done | `SecondaryAttack()` from MGSTATE_NORMAL → MGSTATE_SPINUP: plays `spinup` anim + `MechaSpinUp.wav`; `m_flSpinTime = now + 1.917 s` (31 frames/15 fps − 0.15 s). `ItemPostFrame()` advances to MGSTATE_TURBO when timer expires. |
+| Spin-down on release (`MechaSpinDown`) | ✅ done | `SecondaryAttack()` from MGSTATE_TURBO → MGSTATE_SPINDOWN: plays `spindown` anim + `MechaSpinDown.wav`; `m_flSpinTime = now + 2.067 s`. `ItemPostFrame()` returns to MGSTATE_NORMAL when timer expires. Also triggered by malfunction / holster. |
+| 0.05 s cadence at full RPM | ✅ done | In MGSTATE_TURBO `PrimaryAttack()` sets `m_flNextPrimaryAttack += MG_TURBO_FIRE_RATE (0.05 s)`. Normal mode uses 0.2 s. |
+| Looping fire/idle animations in turbo | ✅ done | `ItemPostFrame()` re-sends `MINIGUN_FIRELOOP` or `MINIGUN_IDLELOOP` every `MG_ANIM_LOOP_TIME (0.689 s)` based on `IN_ATTACK` button. |
+| `cust_2MinigunCooled` pickup variant | ✅ done | `CCust2MinigunCooled` (thin subclass) sets `m_iCooled=TRUE` in `Spawn()`; `LINK_ENTITY_TO_CLASS(cust_2MinigunCooled, …)` in `minigun.cpp`. Cooled variant uses half temperature rise rate. |
+| Tracers + per-shot sound (`hks3.wav`) | ✅ done | `EMIT_SOUND_DYN` uses `GMSND_MECHA_FIRE` (`weapons/hks3.wav`). Shell eject via `EjectBrass`. 1 bullet per shot (was incorrectly 2). |
+| Temperature / malfunction system | ✅ done | `m_flWeaponTemp` rises +2 per 0.1 s while turbo-firing (±0 cooled: +1), falls -1 per 0.1 s otherwise. At ≥ 162: MGSTATE_MALFUNCTION, temp reset to 160, `m_flMalfunctionEnd = now + 3 s`, spindown anim plays. After lockout `ItemPostFrame()` re-enters MGSTATE_SPINDOWN. |
+| Animation enum corrected | ✅ done | All 9 sequences verified from `v_mechagun.mdl`: idle(0) idleinspect(1) firenormal(2) spinup(3) fireloop(4) spindown(5) arming(6) idleloop(7) holster(8). Previous stub had wrong indices from mp5. |
+| Sound paths corrected | ✅ done | All paths updated from `gunmanchronicles/weapons/` → `weapons/` via `GMSND_MECHA_*` constants in `gunman_sounds.h`. |
+| Ammo: WEAPON_NOCLIP, 1 shot/tick | ✅ done | `iMaxClip = WEAPON_NOCLIP`; ammo deducted directly from `m_rgAmmo[]`. No reload needed (matches Lua `MaxAmmo = -1`). |
+| Save/restore for new fields | ✅ done | `CMinigun::m_SaveData[]` in `weapons.cpp`: FireState, SpinTime, WeaponTemp, MalfunctionEnd, Cooled. |
+| Per-axis HUD display (temperature bar) | ❌ follow-up | Client-side HUD work scoped for Phase 6. |
 
 ### 2.7 Fists / Knife (`weapon_fists` / `CGCFists`)
 

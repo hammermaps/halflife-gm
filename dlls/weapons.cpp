@@ -1688,6 +1688,18 @@ TYPEDESCRIPTION	CBeamGun::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE( CBeamGun, CBasePlayerWeapon );
 
+TYPEDESCRIPTION	CMinigun::m_SaveData[] =
+{
+	// Spin-up / turbo state machine (persisted so weapon state survives save/load)
+	DEFINE_FIELD( CMinigun, m_iFireState,        FIELD_INTEGER ),
+	DEFINE_FIELD( CMinigun, m_flSpinTime,        FIELD_TIME    ),
+	DEFINE_FIELD( CMinigun, m_flWeaponTemp,      FIELD_FLOAT   ),
+	DEFINE_FIELD( CMinigun, m_flMalfunctionEnd,  FIELD_TIME    ),
+	// m_flNextTempThink and m_flNextAnimTime are transient — reset on deploy
+	DEFINE_FIELD( CMinigun, m_iCooled,           FIELD_INTEGER ),
+};
+IMPLEMENT_SAVERESTORE( CMinigun, CBasePlayerWeapon );
+
 TYPEDESCRIPTION	CGauss::m_SaveData[] = 
 {
 	DEFINE_FIELD( CGauss, m_fInAttack, FIELD_INTEGER ),
