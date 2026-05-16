@@ -100,13 +100,26 @@ be picked up incrementally.
 
 ### 2.4 Mule / DML (`weapon_dml` / `CDML`)
 
-| Lua feature | C++ status | Required port work |
+**Status: ✅ Phase-3 implemented** — see `dlls/dml.cpp` and `dlls/weapons.h`.
+
+| Lua feature | C++ status | Notes |
 |---|---|---|
-| 4-axis menu: LaunchType / FlightPathType / DetonationType / PayloadType (all 1-3 or similar) | ❌ | |
-| Single vs. dual reload (`gunman_dml_reload` / `gunman_dml_dualreload`) | ❌ | Detect ammo count and pick anim accordingly. |
-| Single-rocket vs. spiral launch (`LaunchStandard=1 ammo` vs. `LaunchSpiral=2 ammo`) | ❌ | Two projectile spawn pathways. |
-| Cluster payload (`gunman_weapon_grenade_cluster`) | ❌ | Sub-projectile spawner on detonation. |
-| Lock-on (`gunman_dml_lock` sound) | ❌ | Aim-trace + sound. |
+| 4-axis menu: LaunchType (1-2) / FlightPathType (1-3) / DetonationType (1-3) / PayloadType (1-2) | ✅ done | `SecondaryAttack()` advances current axis value, cycles to next axis on rollover. Plays `DML_CUSTOMIZE` anim + `DryFire.wav`. Fields `m_iLaunchType`, `m_iFlightPathType`, `m_iDetonationType`, `m_iPayloadType`, `m_iMenuAxis`. |
+| Single vs. dual reload (`dml_reload` / `dml_dualreload`) | ✅ done | `WeaponIdle()` completes reload: clip==0 && ammo≥2 → `DML_RELOADBOTH` (2 ammo), else `DML_RELOADLEFT/RIGHT` alternating (1 ammo). `m_iReloadFlipFlop` tracks which side. |
+| Single-rocket vs. spiral launch (`LaunchStandard=1 ammo` vs. `LaunchSpiral=2 ammo`) | ✅ done | FlightPath==3 launches two `CDMLMissile` (one normal, one `bSpiralInvert=TRUE`) and costs 2 ammo. All other modes launch one missile for 1 ammo. |
+| Guided flight (FlightPath=1) | ✅ done | `CDMLMissile::MissileThink()` soft-steers toward player aim direction each tick. |
+| Homing flight (FlightPath=2) | ✅ done | `DML_FindHomingTarget()` scans `monster_*` in a forward cone (dot ≥ 0.92, range 4096); missile steers toward locked target. LaunchType=2 refuses to fire without a target. |
+| Spiral flight (FlightPath=3) | ✅ done | Sinusoidal up/right offsets applied to forward velocity each think tick; inversion flag mirrors secondary rocket. |
+| OnImpact detonation (Detonation=1) | ✅ done | `CDMLMissile::MissileTouch()` calls `Detonate()` immediately. |
+| Timed detonation (Detonation=2) | ✅ done | Auto-detonate after `DML_TIMED_FUSE` (20 s) in `MissileThink()`. |
+| TripMine detonation (Detonation=3) | ✅ done | On surface contact: missile sticks (MOVETYPE_NONE), arms after 0.8 s, then checks for entities within 64 u each tick. |
+| Explosive payload (Payload=1) | ✅ done | `CDMLMissile::Detonate()` → `RadiusDamage` (100 dmg / 150 u). |
+| Cluster payload (Payload=2) | ✅ done | `CDMLMissile::Detonate()` spawns `DML_CLUSTER_COUNT` (5) `CDMLClusterBomb` sub-bombs that scatter, bounce, and detonate individually after 2 s (40 dmg / 100 u each). |
+| `CDMLMissile` entity | ✅ done | `LINK_ENTITY_TO_CLASS(dml_missile, …)` in `dlls/dml.cpp`. `TE_BEAMFOLLOW` smoke trail, `weapons/rocket1.wav` fly sound, `TE_EXPLOSION` on detonate. |
+| `CDMLClusterBomb` entity | ✅ done | `LINK_ENTITY_TO_CLASS(dml_clusterbomb, …)` in `dlls/dml.cpp`. `dmlcluster.mdl`, MOVETYPE_BOUNCE, 2 s fuse. |
+| Ammo type → `dml_ammo`, clip=2, max-carry=8 | ✅ done | `GetItemInfo()` updated; `DML_MAX_CLIP=2`, `DML_MAX_CARRY=8`, `DML_DEFAULT_GIVE=2` corrected from old stub values. |
+| Save/restore for new fields | ✅ done | `CDML::m_SaveData[]` in `weapons.cpp`: LaunchType, FlightPathType, DetonationType, PayloadType, MenuAxis, ReloadFlipFlop, ReloadState, ReloadCompleteTime. |
+| Per-axis HUD display | ❌ follow-up | Client-side HUD work scoped for Phase 3. |
 
 ### 2.5 Shotcycler / GC Shotgun (`weapon_shotcycler` & `weapon_gcshotgun`)
 
@@ -175,7 +188,8 @@ C++ stubs:
 | `gunman_weapon_grenade_armed`               | *(none yet)*                  | ❌ |
 | `gunman_weapon_grenade_cluster`             | *(none yet)*                  | ❌ |
 | `gunman_weapon_grenade_tripmine`            | *(none yet)*                  | ❌ |
-| `gunman_weapon_missile_armed`               | *(none yet)*                  | ❌ — Mule rocket in flight. |
+| `gunman_weapon_missile_armed`               | ✅ ported as `CDMLMissile` / `dml_missile` in `dlls/dml.cpp`. Guided / Homing / Spiral / OnImpact / Timed / TripMine modes. |
+| `gunman_weapon_grenade_cluster`             | ✅ partial — `CDMLClusterBomb` / `dml_clusterbomb` spawned by `CDMLMissile::Detonate()` when Payload=2. Full standalone entity pending. |
 | `gunman_aiwallplug`                         | *(none yet — `button_aiwallplug` is the map entity)* | ❌ |
 | `gunman_physics_object`                     | uses HL pushable               | n/a |
 
