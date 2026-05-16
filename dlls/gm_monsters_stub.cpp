@@ -44,8 +44,7 @@
 //     monster_aigirl, monster_ourano, monster_renesaur,
 //     monster_endboss, monster_gator
 //   Environmental / vehicles:
-//     monster_targetrocket,
-//     monster_trainingbot
+//     monster_targetrocket
 //   Small critters:
 //     monster_critter, monster_cricket, monster_dragonfly,
 //     monster_flashlight, monster_hatchetfish, monster_maggot,
@@ -132,9 +131,9 @@ LINK_ENTITY_TO_CLASS( monster_gator,    CGMMonsterStub );
 //=========================================================
 // Environmental / vehicles
 // Note: monster_furniture is CFurniture in scripted.cpp (real implementation)
+// Note: monster_trainingbot is CTrainingBot in gm_trainingbot.cpp (real implementation)
 //=========================================================
 LINK_ENTITY_TO_CLASS( monster_targetrocket,  CGMMonsterStub );
-LINK_ENTITY_TO_CLASS( monster_trainingbot,   CGMMonsterStub );
 
 //=========================================================
 // Small critters
