@@ -50,10 +50,12 @@
 // random_speaker
 //
 // Key/values:
-//   rsnoise  <soundfile>   - ambient sound to play
-//   volume   <float>       - volume (0-1), default 1
-//   wait     <float>       - base interval in seconds
-//   random   <int>         - percentage randomness added to wait (0-100)
+//   rsnoise     <soundfile>   - ambient sound to play (also accepted as "noise")
+//   volume      <float>       - volume (0-1), default 1
+//   wait        <float>       - base interval in seconds
+//   random      <int>         - percentage randomness added to wait (0-100)
+//   attenuation <float>       - sound attenuation (0=everywhere, 1=normal, 2=idle,
+//                               3=static/small, -1=no attenuation); default 1
 //=========================================================
 class CRandomSpeaker : public CBaseEntity
 {
@@ -71,16 +73,20 @@ public:
 	virtual int ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 private:
-	float	m_flVolume;    // playback volume
-	float	m_flWait;      // base interval between sounds (seconds)
-	int		m_iRandom;     // percentage randomness added to interval
+	float	m_flVolume;        // playback volume
+	float	m_flWait;          // base interval between sounds (seconds)
+	int		m_iRandom;         // percentage randomness added to interval
+	int		m_iAttenuationSel; // FGD selector: -1=unset, 0=none, 1=norm, 2=idle, 3=static
+	float	m_flAttenuation;   // resolved ATTN_* float used during playback
 };
 
 TYPEDESCRIPTION CRandomSpeaker::m_SaveData[] =
 {
-	DEFINE_FIELD( CRandomSpeaker, m_flVolume, FIELD_FLOAT ),
-	DEFINE_FIELD( CRandomSpeaker, m_flWait,   FIELD_FLOAT ),
-	DEFINE_FIELD( CRandomSpeaker, m_iRandom,  FIELD_INTEGER ),
+	DEFINE_FIELD( CRandomSpeaker, m_flVolume,        FIELD_FLOAT   ),
+	DEFINE_FIELD( CRandomSpeaker, m_flWait,          FIELD_FLOAT   ),
+	DEFINE_FIELD( CRandomSpeaker, m_iRandom,         FIELD_INTEGER ),
+	DEFINE_FIELD( CRandomSpeaker, m_iAttenuationSel, FIELD_INTEGER ),
+	DEFINE_FIELD( CRandomSpeaker, m_flAttenuation,   FIELD_FLOAT   ),
 };
 
 IMPLEMENT_SAVERESTORE( CRandomSpeaker, CBaseEntity );
@@ -88,9 +94,9 @@ LINK_ENTITY_TO_CLASS( random_speaker, CRandomSpeaker );
 
 void CRandomSpeaker::KeyValue( KeyValueData *pkvd )
 {
-	if ( FStrEq( pkvd->szKeyName, "rsnoise" ) )
+	if ( FStrEq( pkvd->szKeyName, "rsnoise" ) || FStrEq( pkvd->szKeyName, "noise" ) )
 	{
-		// Store sound name in pev->message (a spare string field)
+		// Both "rsnoise" and "noise" accepted; store in pev->message
 		pev->message = ALLOC_STRING( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
@@ -107,6 +113,17 @@ void CRandomSpeaker::KeyValue( KeyValueData *pkvd )
 	else if ( FStrEq( pkvd->szKeyName, "random" ) )
 	{
 		m_iRandom = atoi( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if ( FStrEq( pkvd->szKeyName, "attenuation" ) )
+	{
+		// Store as integer selector; resolved to ATTN_* float in Spawn().
+		// Convention mirrors ambient_generic:
+		//   0 = ATTN_NONE (everywhere)
+		//   1 = ATTN_NORM (normal)
+		//   2 = ATTN_IDLE (idle / short-range)
+		//   3 = ATTN_STATIC (static / very short-range)
+		m_iAttenuationSel = atoi( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -139,6 +156,21 @@ void CRandomSpeaker::Spawn( void )
 		m_iRandom = 0;
 	if ( m_iRandom > 100 )
 		m_iRandom = 100;
+	// Resolve integer attenuation selector → engine ATTN_* float.
+	// FGD choices: 1=ATTN_NORM (default), 2=ATTN_IDLE, 3=ATTN_STATIC,
+	//              0=ATTN_NONE (everywhere).
+	// m_iAttenuationSel is zero-initialized when the key is absent from the
+	// BSP, so case 0 doubles as the "not set" path, which maps to ATTN_NORM.
+	// (Hammer always writes the default value "1" to the BSP, so a zero here
+	//  only appears for old maps written without this FGD key.)
+	switch ( m_iAttenuationSel )
+	{
+	case 0: m_flAttenuation = ATTN_NORM;   break; // unset → default
+	case 1: m_flAttenuation = ATTN_NORM;   break;
+	case 2: m_flAttenuation = ATTN_IDLE;   break;
+	case 3: m_flAttenuation = ATTN_STATIC; break;
+	default: m_flAttenuation = ATTN_NONE;  break; // raw-BSP values ≤ -1
+	}
 
 	// Start active by default (consistent with ambient_generic behaviour)
 	SetThink( &CRandomSpeaker::SpeakerThink );
@@ -150,7 +182,7 @@ void CRandomSpeaker::SpeakerThink( void )
 	if ( pev->message )
 	{
 		EMIT_AMBIENT_SOUND( ENT(pev), pev->origin, STRING(pev->message),
-			m_flVolume, ATTN_IDLE, 0, PITCH_NORM );
+			m_flVolume, m_flAttenuation, 0, PITCH_NORM );
 	}
 
 	// Schedule next play: base wait + random fraction
@@ -366,7 +398,7 @@ LINK_ENTITY_TO_CLASS( decore_asteroid, CDecoreAsteroid );
 
 void CDecoreAsteroid::KeyValue( KeyValueData *pkvd )
 {
-	if ( FStrEq( pkvd->szKeyName, "asteroidsize" ) )
+	if ( FStrEq( pkvd->szKeyName, "asteroidsize" ) || FStrEq( pkvd->szKeyName, "size" ) )
 	{
 		int size = atoi( pkvd->szValue );
 		m_iAsteroidSize = ( size < ASTEROID_SIZE_BIG || size > ASTEROID_SIZE_SMALL ) ? ASTEROID_SIZE_SMALL : size;
@@ -451,6 +483,7 @@ void CDecoreAsteroid::AsteroidThink( void )
 //   dirx / diry / dirz <float> - direction vector components
 //   forwardspeed       <float> - speed in units/s when launched
 //   anglespeed         <float> - rotation rate (degrees per 0.1 s tick)
+//   debrislife         <float> - lifetime in seconds after launch (0 = unlimited)
 //   cyc_submodel1/2/3          - inherited from gunman_cycler
 //=========================================================
 class CDecoreSpaceDebris : public CGunmanCycler
@@ -468,12 +501,16 @@ public:
 private:
 	BOOL	m_blRotate;
 	float	m_flAnglespeed;
+	float	m_flLife;      // lifetime in seconds (0 = unlimited)
+	float	m_flDieTime;   // absolute gpGlobals->time when to remove (set on Use())
 };
 
 TYPEDESCRIPTION CDecoreSpaceDebris::m_SaveData[] =
 {
 	DEFINE_FIELD( CDecoreSpaceDebris, m_blRotate,     FIELD_BOOLEAN ),
 	DEFINE_FIELD( CDecoreSpaceDebris, m_flAnglespeed, FIELD_FLOAT   ),
+	DEFINE_FIELD( CDecoreSpaceDebris, m_flLife,       FIELD_FLOAT   ),
+	DEFINE_FIELD( CDecoreSpaceDebris, m_flDieTime,    FIELD_TIME    ),
 };
 
 IMPLEMENT_SAVERESTORE( CDecoreSpaceDebris, CGunmanCycler );
@@ -504,6 +541,11 @@ void CDecoreSpaceDebris::KeyValue( KeyValueData *pkvd )
 	else if ( FStrEq( pkvd->szKeyName, "anglespeed" ) )
 	{
 		m_flAnglespeed = (float)atof( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if ( FStrEq( pkvd->szKeyName, "debrislife" ) )
+	{
+		m_flLife = (float)atof( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
 	else if ( FStrEq( pkvd->szKeyName, "modelname" ) )
@@ -546,11 +588,22 @@ void CDecoreSpaceDebris::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 	pev->velocity = pev->velocity + gpGlobals->v_forward * pev->speed;
 
 	m_blRotate = TRUE;
+
+	// Record removal time if a lifetime was configured
+	if ( m_flLife > 0.0f )
+		m_flDieTime = gpGlobals->time + m_flLife;
 }
 
 void CDecoreSpaceDebris::SpaceDebrisThink( void )
 {
 	CGunmanCycler::CyclerThink();
+
+	// Auto-remove when lifetime expires
+	if ( m_flDieTime > 0.0f && gpGlobals->time >= m_flDieTime )
+	{
+		UTIL_Remove( this );
+		return;
+	}
 
 	if ( m_blRotate )
 	{
@@ -573,16 +626,52 @@ void CDecoreSpaceDebris::SpaceDebrisThink( void )
 // (models/butterfly.mdl) with a random
 // skin selection.  Starts hidden (EF_NODRAW); firing Use()
 // toggles visibility so map triggers can reveal the flock.
+//
+// Key/values:
+//   flFlockRadius  <float> - flock spawn radius (default 64)
+//   iFlockSize     <int>   - number of butterflies to simulate (default 20)
 //=========================================================
 class CDecoreButterflyFlock : public CGunmanCycler
 {
 public:
 	void Spawn( void );
 	void Precache( void );
+	void KeyValue( KeyValueData *pkvd );
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
+private:
+	float	m_flFlockRadius;
+	int		m_iFlockSize;
 };
 
+TYPEDESCRIPTION CDecoreButterflyFlock::m_SaveData[] =
+{
+	DEFINE_FIELD( CDecoreButterflyFlock, m_flFlockRadius, FIELD_FLOAT   ),
+	DEFINE_FIELD( CDecoreButterflyFlock, m_iFlockSize,    FIELD_INTEGER ),
+};
+
+IMPLEMENT_SAVERESTORE( CDecoreButterflyFlock, CGunmanCycler );
 LINK_ENTITY_TO_CLASS( decore_butterflyflock, CDecoreButterflyFlock );
+
+void CDecoreButterflyFlock::KeyValue( KeyValueData *pkvd )
+{
+	if ( FStrEq( pkvd->szKeyName, "flFlockRadius" ) )
+	{
+		m_flFlockRadius = (float)atof( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if ( FStrEq( pkvd->szKeyName, "iFlockSize" ) )
+	{
+		m_iFlockSize = atoi( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CGunmanCycler::KeyValue( pkvd );
+}
 
 void CDecoreButterflyFlock::Precache( void )
 {
@@ -604,6 +693,10 @@ void CDecoreButterflyFlock::Spawn( void )
 
 	pev->health    = 80000;
 	pev->yaw_speed = 5;
+
+	// Apply defaults for flock parameters
+	if ( m_flFlockRadius <= 0.0f ) m_flFlockRadius = 64.0f;
+	if ( m_iFlockSize <= 0 )       m_iFlockSize = 20;
 
 	m_flFrameRate   = 75.0f;
 	m_flGroundSpeed = 0.0f;
@@ -676,14 +769,16 @@ void CDecoreGutspile::Spawn( void )
 // toggles it on/off.
 //
 // Key/values:
-//   spritename  <spr>   - sprite to spray
-//   spritespeed <float> - base speed of sprayed sprites
-//   spritecount <int>   - base number of sprites per burst
-//   spritefreq  <int>   - adds random count on top of spritecount
-//   spritenoise <int>   - speed noise (0-255)
-//   spritex     <float> - direction vector X component
-//   spritey     <float> - direction vector Y component
-//   spritez     <float> - direction vector Z component
+//   spritename       <spr>   - sprite to spray
+//   spritespeed      <float> - base speed of sprayed sprites
+//   spritecount      <int>   - base number of sprites per burst
+//   spritefreq       <int>   - adds random count on top of spritecount
+//   spritenoise      <int>   - speed noise (0-255)
+//   spritex          <float> - direction vector X component
+//   spritey          <float> - direction vector Y component
+//   spritez          <float> - direction vector Z component
+//   spritestartstate <int>   - 1 = Start On (emitting from spawn)
+//   targetent        <string>- attach origin to another entity by targetname
 //=========================================================
 class CEntitySpriteGod : public CBaseEntity
 {
@@ -694,8 +789,26 @@ public:
 	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT SpriteGodThink( void );
 
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
 	virtual int ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+
+private:
+	BOOL	m_blStartOn;       // spritestartstate: start emitting on Spawn()
+	string_t m_iszTargetEnt;  // targetent: follow another entity's origin
+	EHANDLE  m_hTargetEnt;    // resolved target entity handle (cached)
 };
+
+TYPEDESCRIPTION CEntitySpriteGod::m_SaveData[] =
+{
+	DEFINE_FIELD( CEntitySpriteGod, m_blStartOn,    FIELD_BOOLEAN ),
+	DEFINE_FIELD( CEntitySpriteGod, m_iszTargetEnt, FIELD_STRING  ),
+	DEFINE_FIELD( CEntitySpriteGod, m_hTargetEnt,   FIELD_EHANDLE ),
+};
+
+IMPLEMENT_SAVERESTORE( CEntitySpriteGod, CBaseEntity );
 
 LINK_ENTITY_TO_CLASS( entity_spritegod, CEntitySpriteGod );
 
@@ -741,6 +854,16 @@ void CEntitySpriteGod::KeyValue( KeyValueData *pkvd )
 		pev->movedir.x = (float)atof( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
+	else if ( FStrEq( pkvd->szKeyName, "spritestartstate" ) )
+	{
+		m_blStartOn = ( atoi( pkvd->szValue ) != 0 ) ? TRUE : FALSE;
+		pkvd->fHandled = TRUE;
+	}
+	else if ( FStrEq( pkvd->szKeyName, "targetent" ) )
+	{
+		m_iszTargetEnt = ALLOC_STRING( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
 	else
 		CBaseEntity::KeyValue( pkvd );
 }
@@ -766,8 +889,16 @@ void CEntitySpriteGod::Spawn( void )
 	if ( pev->movedir == Vector( 0.0f, 0.0f, 0.0f ) )
 		pev->movedir = Vector( 0.0f, 0.0f, 1.0f );
 
-	// Start inactive; Use() activates it
-	pev->nextthink = 0.0f;
+	// Start emitting immediately if spritestartstate was set
+	if ( m_blStartOn )
+	{
+		SetThink( &CEntitySpriteGod::SpriteGodThink );
+		pev->nextthink = gpGlobals->time + 0.1f;
+	}
+	else
+	{
+		pev->nextthink = 0.0f;
+	}
 }
 
 void CEntitySpriteGod::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
@@ -789,6 +920,20 @@ void CEntitySpriteGod::SpriteGodThink( void )
 	pev->nextthink = gpGlobals->time + 0.1f;
 
 	if ( !pev->model ) return;
+
+	// If a target entity is configured, snap our origin to theirs each tick.
+	// The EHANDLE is cached; re-resolve via name search only when it is NULL.
+	if ( m_iszTargetEnt )
+	{
+		CBaseEntity *pTarget = m_hTargetEnt;
+		if ( !pTarget )
+		{
+			pTarget = UTIL_FindEntityByTargetname( NULL, STRING( m_iszTargetEnt ) );
+			m_hTargetEnt = pTarget;
+		}
+		if ( pTarget )
+			UTIL_SetOrigin( pev, pTarget->pev->origin );
+	}
 
 	// Convert movedir to a forward direction vector
 	Vector vecAngles = UTIL_VecToAngles( pev->movedir );

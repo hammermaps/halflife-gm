@@ -258,6 +258,65 @@
 	]
 ]
 
+// -------------------------------------------------------
+// Stub monster entries — classnames used in stock GC maps
+// but not yet fully implemented in C++.  Each stub removes
+// itself immediately on spawn; entries here make Hammer
+// aware of the classname so it does not report an error.
+// -------------------------------------------------------
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_human_bandit    : "Human Bandit (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_human_gunman    : "Human Gunman (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_human_demoman   : "Human Demoman (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_human_scientist : "Human Scientist (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_human_unarmed   : "Human Unarmed (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_human_chopper   : "Human Chopper (stub)" []
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_beak        : "Beak (stub)" []
+@PointClass base(Monster) size(-32 -32 0, 32 32 72) = monster_raptor      : "Raptor (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_microraptor : "Micro Raptor (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_rustbit     : "Rustbit (stub)" []
+@PointClass base(Monster) size(-32 -32 0, 32 32 72) = monster_rustbot     : "Rustbot (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_rustflier   : "Rustflier (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_rustgunr    : "Rustgunr (stub)" []
+
+@PointClass base(Monster) size(-24 -24 0, 24 24 48) = monster_scorpion      : "Scorpion (stub)" []
+@PointClass base(Monster) size(-48 -48 0, 48 48 64) = monster_largescorpion : "Large Scorpion (stub)" []
+
+// monster_sentry is the real Half-Life sentry turret (CSentry in turret.cpp)
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_sentry      : "Sentry Turret" []
+@PointClass base(Monster) size(-8 -8 0, 8 8 36)    = monster_sentry_mini : "Sentry Mini (stub)" []
+
+@PointClass base(Monster) size(-32 -32 0, 32 32 128) = monster_tube      : "Tube (stub)" []
+@PointClass base(Monster) size(-64 -64 0, 64 64 256) = monster_tubequeen : "Tube Queen (stub)" []
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_aigirl   : "AI Girl (stub)" []
+@PointClass base(Monster) size(-32 -32 0, 32 32 96) = monster_ourano   : "Ourano (stub)" []
+@PointClass base(Monster) size(-32 -32 0, 32 32 96) = monster_renesaur : "Renesaur (stub)" []
+@PointClass base(Monster) size(-64 -64 0, 64 64 256) = monster_endboss : "End Boss (stub)" []
+@PointClass base(Monster) size(-32 -32 0, 32 32 48) = monster_gator    : "Gator (stub)" []
+
+// monster_furniture is the real Half-Life scripted sequence prop (CFurniture in scripted.cpp)
+@PointClass base(Monster) size(-32 -32 0, 32 32 72) = monster_furniture    : "Scripted Furniture Prop" []
+@PointClass base(Monster) size(-8 -8 0, 8 8 16)     = monster_targetrocket : "Target Rocket (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_trainingbot  : "Training Bot (stub)" []
+
+@PointClass base(Monster) size(-8 -8 0, 8 8 16)  = monster_critter     : "Critter (stub)" []
+@PointClass base(Monster) size(-8 -8 0, 8 8 8)   = monster_cricket     : "Cricket (stub)" []
+@PointClass base(Monster) size(-8 -8 0, 8 8 8)   = monster_dragonfly   : "Dragonfly (stub)" []
+@PointClass base(Monster) size(-8 -8 0, 8 8 16)  = monster_flashlight  : "Flashlight (stub)" []
+@PointClass base(Monster) size(-8 -8 0, 8 8 16)  = monster_hatchetfish : "Hatchetfish (stub)" []
+@PointClass base(Monster) size(-4 -4 0, 4 4 8)   = monster_maggot      : "Maggot (stub)" []
+@PointClass base(Monster) size(-8 -8 0, 8 8 8)   = monster_darttrap    : "Dart Trap (stub)" []
+
+@PointClass base(Monster) size(-8 -8 0, 8 8 16)  = monster_xenome_embryo : "Xenome Embryo (stub)" []
+@PointClass base(Monster) size(-8 -8 0, 8 8 16)  = monster_tube_embryo   : "Tube Embryo (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 48) = monster_beakbirther : "Beak Birther (stub)" []
+
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_gunner_friendly  : "Friendly Gunner (stub)" []
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_rustbit_friendly : "Friendly Rustbit (stub)" []
+@PointClass base(Monster) size(-32 -32 0, 32 32 72) = monster_rustbot_friendly : "Friendly Rustbot (stub)" []
+
 //
 // Gunman Chronicles Environmental Effects
 //
@@ -293,6 +352,7 @@
 	iMagnitude(Integer) : "Magnitude" : 100
 	iRadiusOverride(integer) : "Radius Override" : 0
 	sprite(sprite) : "Sprite Name" : "sprites/zerogxplode.spr"
+	spriteScale(integer) : "Sprite Scale (0=auto from magnitude)" : 0
 	rendermode(choices) : "Render Mode" : 5 =
 	[
 		0: "Normal"
@@ -337,6 +397,12 @@
 
 @PointClass base(Targetname) size(-32 -32 0, 32 32 64) color(255 255 0) = info_node_gunman : "Gunman AI Node"
 [
+	nodetype(choices) : "Node Type" : 0 =
+	[
+		0 : "Land"
+		1 : "Air"
+		2 : "Water"
+	]
 	spawnflags(Flags) =
 	[
 		1 : "Crouch Cover" : 0
@@ -348,6 +414,7 @@
 
 @PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 72) color(0 255 0) = info_player_gunman : "Gunman Player Start"
 [
+	master(string) : "Master (Multisource gate)"
 	spawnflags(Flags) =
 	[
 		1 : "Master" : 0
@@ -415,10 +482,18 @@
 
 @PointClass base(Targetname, Target) size(-16 -16 -16, 16 16 16) = random_speaker : "Random Speaker (Gunman)"
 [
-	rsnoise(sound)   : "Sound file"
-	volume(float)    : "Volume (0.0–1.0)" : 1.0
-	wait(float)      : "Base wait time (s)" : 5.0
-	random(integer)  : "Random multiplier %" : 100
+	rsnoise(sound)          : "Sound file (rsnoise)"
+	noise(sound)            : "Sound file (noise alias)"
+	volume(float)           : "Volume (0.0–1.0)" : 1.0
+	wait(float)             : "Base wait time (s)" : 5.0
+	random(integer)         : "Random multiplier %" : 100
+	attenuation(choices)    : "Sound Attenuation" : 1 =
+	[
+		0 : "Everywhere (ATTN_NONE, no attenuation)"
+		1 : "Normal (ATTN_NORM)"
+		2 : "Idle / Short range (ATTN_IDLE)"
+		3 : "Static / Very short range (ATTN_STATIC)"
+	]
 ]
 
 @PointClass base(Targetname, Angles, RenderFields) size(-16 -16 -16, 16 16 16) = gunman_cycler : "Gunman Cycler (animated prop)"
@@ -451,22 +526,33 @@
 	dirz(float)          : "Direction Z" : 1
 	forwardspeed(float)  : "Launch speed" : 200
 	anglespeed(float)    : "Rotation speed" : 3.0
+	debrislife(float)    : "Lifetime after launch (0=unlimited)" : 0
 ]
 
-@PointClass base(Targetname, Angles) size(-16 -16 -16, 16 16 16) = decore_butterflyflock : "Butterfly Flock (Gunman)" []
+@PointClass base(Targetname, Angles) size(-16 -16 -16, 16 16 16) = decore_butterflyflock : "Butterfly Flock (Gunman)"
+[
+	flFlockRadius(float)   : "Flock radius" : 64
+	iFlockSize(integer)    : "Flock size (number of butterflies)" : 20
+]
 
 @PointClass base(Targetname, Angles) size(-32 -32 0, 32 32 32) = decore_gutspile : "Guts Pile (Gunman)" []
 
 @PointClass base(Targetname, Angles) size(-8 -8 -8, 8 8 8) = entity_spritegod : "Sprite Spray Emitter (Gunman)"
 [
-	spritename(sprite) : "Sprite file"
-	spritespeed(integer) : "Sprite speed" : 16
-	spritecount(integer) : "Base sprite count" : 8
-	spritefreq(integer)  : "Random extra sprites" : 0
-	spritenoise(integer) : "Speed noise (0-255)" : 100
-	spritex(float) : "Direction X" : 0
-	spritey(float) : "Direction Y" : 0
-	spritez(float) : "Direction Z" : 1
+	spritename(sprite)       : "Sprite file"
+	spritespeed(integer)     : "Sprite speed" : 16
+	spritecount(integer)     : "Base sprite count" : 8
+	spritefreq(integer)      : "Random extra sprites" : 0
+	spritenoise(integer)     : "Speed noise (0-255)" : 100
+	spritex(float)           : "Direction X" : 0
+	spritey(float)           : "Direction Y" : 0
+	spritez(float)           : "Direction Z" : 1
+	spritestartstate(choices) : "Start State" : 0 =
+	[
+		0 : "Off (activated by Use)"
+		1 : "On (emit from spawn)"
+	]
+	targetent(target_destination) : "Attach to entity (by targetname)"
 ]
 
 @SolidClass base(Targetname, Target) = trigger_tank : "Trigger Tank (Gunman)"

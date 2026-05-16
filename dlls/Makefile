@@ -115,6 +115,7 @@ OBJ = \
 	$(DLL_OBJDIR)/gm_info.o \
 	$(DLL_OBJDIR)/gm_mapents.o \
 	$(DLL_OBJDIR)/gm_massasaur.o \
+	$(DLL_OBJDIR)/gm_monsters_stub.o \
 	$(DLL_OBJDIR)/gm_shockroach.o \
 	$(DLL_OBJDIR)/gm_warpball.o \
 	$(DLL_OBJDIR)/gm_xenmaker.o \
