@@ -1616,6 +1616,17 @@ TYPEDESCRIPTION	CGaussPistol::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE( CGaussPistol, CBasePlayerWeapon );
 
+TYPEDESCRIPTION	CChemicalGun::m_SaveData[] =
+{
+	// 4-axis chemistry menu state (persisted so configuration survives save/load)
+	DEFINE_FIELD( CChemicalGun, m_iAcid,     FIELD_INTEGER ),
+	DEFINE_FIELD( CChemicalGun, m_iNeutral,  FIELD_INTEGER ),
+	DEFINE_FIELD( CChemicalGun, m_iBase,     FIELD_INTEGER ),
+	DEFINE_FIELD( CChemicalGun, m_iPressure, FIELD_INTEGER ),
+	DEFINE_FIELD( CChemicalGun, m_iMenuAxis, FIELD_INTEGER ),
+};
+IMPLEMENT_SAVERESTORE( CChemicalGun, CBasePlayerWeapon );
+
 TYPEDESCRIPTION	CBeamGun::m_SaveData[] =
 {
 	// 3-axis menu state (persisted so configuration survives save/load)

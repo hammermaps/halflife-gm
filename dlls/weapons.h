@@ -1180,6 +1180,12 @@ private:
 class CChemicalGun : public CBasePlayerWeapon
 {
 public:
+#ifndef CLIENT_DLL
+	int		Save( CSave &save );
+	int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+#endif
+
 	void Spawn( void );
 	void Precache( void );
 	int iItemSlot( void ) { return 4; }
@@ -1193,6 +1199,8 @@ public:
 	void Reload( void );
 	void WeaponIdle( void );
 
+	void LaunchChemBomb( void );
+
 	virtual BOOL UseDecrement( void )
 	{ 
 #if defined( CLIENT_WEAPONS )
@@ -1202,8 +1210,17 @@ public:
 #endif
 	}
 
+	// 4-axis chemistry menu (Lua: MenuOptions)
+	// Acid(0-4), Neutral(0-4), Base(0-4) — active chemical levels
+	// Pressure(1-5) — launch force modifier (ammoTake derived from Acid/Neutral/Base only)
+	// Defaults from gunman_data.lua DefaultWeaponSettings.Chemgun
+	int  m_iAcid;       // 0-4, default 4
+	int  m_iNeutral;    // 0-4, default 2
+	int  m_iBase;       // 0-4, default 3
+	int  m_iPressure;   // 1-5, default 3 (launch speed and view punch only)
+	int  m_iMenuAxis;   // 0-3: which axis SecondaryAttack advances next
+
 private:
-	int m_iShell;
 	unsigned short m_usChemicalGun;
 };
 
