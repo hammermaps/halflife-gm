@@ -159,6 +159,7 @@ call ..\..\filecopy.bat $(TargetDir)\$(TargetName).pdb ..\..\..\game\mod\dlls\$(
     <ClCompile Include="..\..\dlls\gm_info.cpp" />
     <ClCompile Include="..\..\dlls\gm_mapents.cpp" />
     <ClCompile Include="..\..\dlls\gm_massasaur.cpp" />
+    <ClCompile Include="..\..\dlls\gm_monsters_stub.cpp" />
     <ClCompile Include="..\..\dlls\gm_shockroach.cpp" />
     <ClCompile Include="..\..\dlls\gm_warpball.cpp" />
     <ClCompile Include="..\..\dlls\gm_xenmaker.cpp" />

@@ -81,6 +81,11 @@ void CEnvExplosionGM::KeyValue( KeyValueData *pkvd )
 		pev->message = ALLOC_STRING( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
+	else if ( FStrEq( pkvd->szKeyName, "spriteScale" ) )
+	{
+		m_spriteScale = atoi( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
 	else
 		CBaseEntity::KeyValue( pkvd );
 }
@@ -93,15 +98,19 @@ void CEnvExplosionGM::Spawn( void )
 	pev->effects = EF_NODRAW;
 	pev->movetype = MOVETYPE_NONE;
 
-	float flSpriteScale;
-	flSpriteScale = ( m_iMagnitude - 50 ) * 0.6;
-
-	if ( flSpriteScale < 10 )
+	// Only auto-compute sprite scale when not overridden via KeyValue
+	if ( m_spriteScale <= 0 )
 	{
-		flSpriteScale = 10;
-	}
+		float flSpriteScale;
+		flSpriteScale = ( m_iMagnitude - 50 ) * 0.6;
 
-	m_spriteScale = (int)flSpriteScale;
+		if ( flSpriteScale < 10 )
+		{
+			flSpriteScale = 10;
+		}
+
+		m_spriteScale = (int)flSpriteScale;
+	}
 }
 
 void CEnvExplosionGM::Precache( void )
