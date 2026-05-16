@@ -1388,6 +1388,12 @@ private:
 class CGCFists : public CBasePlayerWeapon
 {
 public:
+#ifndef CLIENT_DLL
+	int		Save( CSave &save );
+	int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+#endif
+
 	void Spawn( void );
 	void Precache( void );
 	int iItemSlot( void ) { return 1; }
@@ -1460,11 +1466,11 @@ public:
 
 
 // Gunman Chronicles "AI Core" / Wrench puzzle weapon.
-// Stub implementation — exists so that the entity is spawnable and
-// `weapon_aicore` map references (see GUNMAN_BSP_ANALYSIS.md) load
-// without error.  Full behaviour (single 100-hp hitscan, plug/unplug
-// interaction with `button_aiwallplug`) is tracked in
-// docs/GUNMAN_LUA_PORT_PLAN.md and is out of scope for the current pass.
+// Deploys with v_aicore.mdl, delivers a 100-hp delayed hitscan within 128 units.
+// When the hit entity is `button_aiwallplug` the weapon is stripped from the
+// player (puzzle solved).  Activation sounds (aiplug_activate_gs,
+// aiplug_deactivate_gs, aiplug_loop_gs) are precached and played on hit.
+// See docs/GUNMAN_LUA_PORT_PLAN.md (§2.8) for remaining Lua features.
 class CAICore : public CBasePlayerWeapon
 {
 public:
@@ -1478,6 +1484,8 @@ public:
 	BOOL Deploy( void );
 	void Holster( int skiplocal = 0 );
 	void WeaponIdle( void );
+
+	void EXPORT PlugHit( void );
 
 	virtual BOOL UseDecrement( void )
 	{

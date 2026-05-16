@@ -52,8 +52,9 @@ enum fists_anim_e
 #define FISTS_BODYFISTS		0
 #define FISTS_BODYKNIFE		1
 
-#define FISTS_DAMAGE		8
-#define KNIFE_DAMAGE		25
+// Damage values from Lua WeaponDamage.Knife (gunman_data.lua)
+#define FISTS_DAMAGE		10
+#define KNIFE_DAMAGE		30
 #define FISTS_RANGE			32.0f
 #define KNIFE_RANGE			48.0f
 
@@ -76,19 +77,19 @@ void CGCFists::Precache( void )
 	PRECACHE_MODEL( "models/w_knife.mdl" );
 	PRECACHE_MODEL( "models/p_crowbar.mdl" );
 
-	PRECACHE_SOUND( "gunmanchronicles/weapons/KnifeAttack1.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/KnifeAttack1b.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/KnifeAttack2.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/KnifeAttack2b.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/KnifeDraw.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/KnifeHolster.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/LeftPunch.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/LeftPunch2.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/LeftPunch3.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/RightPunch.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/RightPunch2.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/RightPunch3.wav" );
-	PRECACHE_SOUND( "gunmanchronicles/weapons/Hands_IdleKickAss_F0.wav" );
+	PRECACHE_SOUND( "weapons/KnifeAttack1.wav" );
+	PRECACHE_SOUND( "weapons/KnifeAttack1b.wav" );
+	PRECACHE_SOUND( "weapons/KnifeAttack2.wav" );
+	PRECACHE_SOUND( "weapons/KnifeAttack2b.wav" );
+	PRECACHE_SOUND( "weapons/KnifeDraw.wav" );
+	PRECACHE_SOUND( "weapons/KnifeHolster.wav" );
+	PRECACHE_SOUND( "weapons/LeftPunch.wav" );
+	PRECACHE_SOUND( "weapons/LeftPunch2.wav" );
+	PRECACHE_SOUND( "weapons/LeftPunch3.wav" );
+	PRECACHE_SOUND( "weapons/RightPunch.wav" );
+	PRECACHE_SOUND( "weapons/RightPunch2.wav" );
+	PRECACHE_SOUND( "weapons/RightPunch3.wav" );
+	PRECACHE_SOUND( "weapons/Hands_IdleKickAss_F0.wav" );
 
 	// Fallback sounds in case Gunman assets are missing
 	PRECACHE_SOUND( "weapons/cbar_hit1.wav" );
@@ -129,7 +130,7 @@ BOOL CGCFists::Deploy( )
 {
 	if ( m_iWeaponMode == 1 )
 	{
-		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/KnifeDraw.wav", 0.9, ATTN_NORM );
+		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/KnifeDraw.wav", 0.9, ATTN_NORM );
 		return DefaultDeploy( "models/v_hands.mdl", "models/p_crowbar.mdl",
 			FISTS_KNIFEDRAW, "onehanded", 0, FISTS_BODYKNIFE );
 	}
@@ -143,7 +144,7 @@ void CGCFists::Holster( int skiplocal /* = 0 */ )
 
 	if ( m_iWeaponMode == 1 )
 	{
-		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/KnifeHolster.wav", 0.9, ATTN_NORM );
+		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/KnifeHolster.wav", 0.9, ATTN_NORM );
 		SendWeaponAnim( FISTS_KNIFEHOLSTER, skiplocal, FISTS_BODYKNIFE );
 	}
 	else
@@ -171,12 +172,12 @@ void CGCFists::SecondaryAttack( void )
 
 	if ( m_iWeaponMode == 1 )
 	{
-		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/KnifeDraw.wav", 0.9, ATTN_NORM );
+		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/KnifeDraw.wav", 0.9, ATTN_NORM );
 		SendWeaponAnim( FISTS_KNIFEDRAW, 0, FISTS_BODYKNIFE );
 	}
 	else
 	{
-		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/KnifeHolster.wav", 0.9, ATTN_NORM );
+		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/KnifeHolster.wav", 0.9, ATTN_NORM );
 		SendWeaponAnim( FISTS_READY, 0, FISTS_BODYFISTS );
 	}
 
@@ -199,7 +200,7 @@ void CGCFists::WeaponIdle( void )
 			iAnim = FISTS_IDLEJUDO;
 		else
 		{
-			EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "gunmanchronicles/weapons/Hands_IdleKickAss_F0.wav", 0.7, ATTN_NORM );
+			EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/Hands_IdleKickAss_F0.wav", 0.7, ATTN_NORM );
 			iAnim = FISTS_IDLEKICKASS;
 		}
 		SendWeaponAnim( iAnim, 0, FISTS_BODYFISTS );
@@ -253,10 +254,10 @@ int CGCFists::Swing( int fFirst )
 			const char *szSnd;
 			switch ( iSndIdx )
 			{
-				case 0:  szSnd = "gunmanchronicles/weapons/KnifeAttack1.wav"; break;
-				case 1:  szSnd = "gunmanchronicles/weapons/KnifeAttack1b.wav"; break;
-				case 2:  szSnd = "gunmanchronicles/weapons/KnifeAttack2.wav"; break;
-				default: szSnd = "gunmanchronicles/weapons/KnifeAttack2b.wav"; break;
+				case 0:  szSnd = "weapons/KnifeAttack1.wav"; break;
+				case 1:  szSnd = "weapons/KnifeAttack1b.wav"; break;
+				case 2:  szSnd = "weapons/KnifeAttack2.wav"; break;
+				default: szSnd = "weapons/KnifeAttack2b.wav"; break;
 			}
 			EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, szSnd, 0.9, ATTN_NORM );
 		}
@@ -270,9 +271,9 @@ int CGCFists::Swing( int fFirst )
 				int iSndIdx = RANDOM_LONG( 0, 2 );
 				switch ( iSndIdx )
 				{
-					case 0:  szSnd = "gunmanchronicles/weapons/RightPunch.wav"; break;
-					case 1:  szSnd = "gunmanchronicles/weapons/RightPunch2.wav"; break;
-					default: szSnd = "gunmanchronicles/weapons/RightPunch3.wav"; break;
+					case 0:  szSnd = "weapons/RightPunch.wav"; break;
+					case 1:  szSnd = "weapons/RightPunch2.wav"; break;
+					default: szSnd = "weapons/RightPunch3.wav"; break;
 				}
 			}
 			else
@@ -280,9 +281,9 @@ int CGCFists::Swing( int fFirst )
 				int iSndIdx = RANDOM_LONG( 0, 2 );
 				switch ( iSndIdx )
 				{
-					case 0:  szSnd = "gunmanchronicles/weapons/LeftPunch.wav"; break;
-					case 1:  szSnd = "gunmanchronicles/weapons/LeftPunch2.wav"; break;
-					default: szSnd = "gunmanchronicles/weapons/LeftPunch3.wav"; break;
+					case 0:  szSnd = "weapons/LeftPunch.wav"; break;
+					case 1:  szSnd = "weapons/LeftPunch2.wav"; break;
+					default: szSnd = "weapons/LeftPunch3.wav"; break;
 				}
 			}
 			EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_WEAPON, szSnd, 0.9, ATTN_NORM );

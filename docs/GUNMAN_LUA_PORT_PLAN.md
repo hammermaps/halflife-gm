@@ -147,25 +147,31 @@ be picked up incrementally.
 
 ### 2.7 Fists / Knife (`weapon_fists` / `CGCFists`)
 
-| Lua feature | C++ status | Required port work |
+**Status: ✅ Phase implemented** — see `dlls/gm_fists.cpp` and `dlls/weapons.h`.
+
+| Lua feature | C++ status | Notes |
 |---|---|---|
-| Hands (10 hp) vs Knife (30 hp) toggle | ⚠️ partial | The toggle exists in C++ — wire the damage values from `WeaponDamage.Knife`. |
-| Alternating left-/right-punch animations + sounds | ⚠️ partial | Alternation flag exists; bind anim events. |
-| `gunman_hands_idlekickass` idle sound | ❌ | |
-| `gunman_hands_knifedraw` / `_knifeholster` sounds | ❌ | |
+| Hands (10 hp) vs Knife (30 hp) toggle | ✅ done | `FISTS_DAMAGE = 10`, `KNIFE_DAMAGE = 30` — matches `WeaponDamage.Knife.Hands/Knife` from `gunman_data.lua`. Previous values (8/25) corrected. |
+| Alternating left-/right-punch animations + sounds | ✅ done | `m_iSwing` flag drives `FISTS_LEFTPUNCH`/`FISTS_RIGHTPUNCH`/`FISTS_DOUBLEPUNCH` every third hit; right/left punch sounds chosen randomly from 3 variants each. |
+| `gunman_hands_idlekickass` idle sound | ✅ done | `WeaponIdle()` emits `weapons/Hands_IdleKickAss_F0.wav` on 33 % idle chance. |
+| `gunman_hands_knifedraw` / `_knifeholster` sounds | ✅ done | `Deploy()`, `Holster()`, and `SecondaryAttack()` emit `weapons/KnifeDraw.wav` / `weapons/KnifeHolster.wav`. |
+| Sound paths corrected | ✅ done | All sounds updated from `gunmanchronicles/weapons/` to `weapons/` to match the actual `game/sound/weapons/` directory. |
+| Save/restore for m_iWeaponMode + m_iSwing | ✅ done | `CGCFists::m_SaveData[]` in `weapons.cpp`. |
 
 ### 2.8 AI Core / Wrench (`weapon_aicore` — **new**)
 
-This weapon is referenced by 1 map and exists in Lua and in the
-uploaded model set (`models/V_aicore.mdl`, `models/W_aicore.mdl`).
-There is **no FGD entry and no C++ implementation** today.
+**Status: ✅ Phase implemented** — see `dlls/aicore.cpp` and `dlls/weapons.h`.
 
-In this PR a minimal C++ stub is added so the entity at least spawns and
-is interactive (deploys/holsters with the AI core models, fires a
-100-damage hitscan attack matching `WeaponDamage.AICore.Bullet`). The
-remaining Lua behaviour (`aicore_activate` / `aicore_deactivate` /
-`aicore_activated` sounds, plug/unplug interaction on `button_aiwallplug`)
-remains to be ported in a follow-up.
+| Lua feature | C++ status | Notes |
+|---|---|---|
+| Correct animation sequences | ✅ done | V_aicore.mdl has 3 sequences: `coreidle`=0, `coreplugin`=1, `coredraw`=2. Enum corrected; previous stub had wrong order and a non-existent `AICORE_HOLSTER`. |
+| Deploy with `coredraw` sequence | ✅ done | `DefaultDeploy()` sends `AICORE_DRAW` (index 2 = coredraw). |
+| Primary fire: `coreplugin` animation + 0.6 s delayed hit | ✅ done | `PrimaryAttack()` plays `AICORE_ATTACK` (index 1 = coreplugin) and schedules `PlugHit()` via `SetThink` after 0.6 s — mirrors Lua `timer.Simple(0.6, ...)`. |
+| 100-hp hitscan within 128 units | ✅ done | `PlugHit()` traces 128 u forward; `RadiusDamage`-free direct hit — matches `WeaponDamage.AICore.Bullet = 100`. |
+| Taze sound (`gunman_beamgun_taze` = `overheat.wav`) | ✅ done | `PlugHit()` emits `weapons/overheat.wav` on any hit. |
+| Plug/unplug interaction (`button_aiwallplug`) | ✅ done | `PlugHit()` checks `FClassnameIs(pHit, "button_aiwallplug")`; plays `mainframe/aiplug_activate_gs.wav` and calls `RemovePlayerWeapon(this)`. |
+| Aicore activation sounds precached | ✅ done | `Precache()` caches `mainframe/aiplug_activate_gs.wav`, `aiplug_deactivate_gs.wav`, `aiplug_loop_gs.wav`. |
+| FGD entry | ✅ done | `weapon_aicore` and `button_aiwallplug` added to `game/gunman/gunman.fgd`. |
 
 ## 3. Per-entity parity gap (server-side)
 
