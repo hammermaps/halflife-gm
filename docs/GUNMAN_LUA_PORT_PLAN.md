@@ -123,11 +123,17 @@ be picked up incrementally.
 
 ### 2.5 Shotcycler / GC Shotgun (`weapon_shotcycler` & `weapon_gcshotgun`)
 
-| Lua feature | C++ status | Required port work |
+**Status: ✅ Phase implemented** — see `dlls/gm_gcshotgun.cpp`, `dlls/shotcycler.cpp`, and `dlls/weapons.h`.
+
+| Lua feature | C++ status | Notes |
 |---|---|---|
-| Configurable shell count per shot (1-4) | ⚠️ partial | `CGCShotgun` already exposes the shell-count and spread mode keyvalue; wire it to the actual `FireBulletsPlayer()` call. |
-| Shotgun / Riot / Rifle spread profile | ⚠️ partial | Same as above. |
-| `gunman_shotgunCock` per-shot sound | ❌ | |
+| Configurable shell count per shot (1-4) | ✅ done | `CGCShotgun::m_iShellCount` (default 2, matches Lua `CurrentShellCost=2`). `SecondaryAttack()` axis 1 cycles 1→2→3→4→1. Ammo deducted = shell count. |
+| Shotgun / Riot / Rifle spread profile | ✅ done | `CGCShotgun::m_iSpreadMode` (0=shotgun, 1=riotgun, 2=rifle). `SecondaryAttack()` axis 2 cycles through modes. Spread vectors from `VECTOR_CONE_10DEG` / `VECTOR_CONE_20DEG` / `VECTOR_CONE_2DEG`. |
+| Pellet count formula | ✅ done | `FireBulletsPlayer(5 * iShells, …)` — matches Lua `bullet.Num = 5 * CurrentShellCost`. Previous stub incorrectly fired 6 pellets per shell in a loop. |
+| 2-axis `SecondaryAttack` menu | ✅ done | Axis 1 = ShellUsage (1-4), Axis 2 = SpreadAdjust (0-2). Plays `GCSHOTGUN_CUSTOMIZE` anim + cock sound on each change. |
+| `gunman_shotgunCock` per-shot sound | ✅ done | `m_flCockTime` scheduled 0.5 s after firing; `WeaponIdle()` emits `shotgun_cock_heavy.wav` when timer fires. Applied to both `CGCShotgun` and `CShotCycler`. |
+| Save/restore for new fields | ✅ done | `CGCShotgun::m_SaveData[]` in `weapons.cpp`: ShellCount, SpreadMode, MenuAxis, CockTime. `CShotCycler::m_SaveData[]`: CockTime. |
+| Per-axis HUD display | ❌ follow-up | Client-side HUD work scoped for Phase 3. |
 
 ### 2.6 Minigun / Mechagun (`weapon_minigun` / `CMinigun`)
 

@@ -1150,6 +1150,12 @@ private:
 class CShotCycler : public CBasePlayerWeapon
 {
 public:
+#ifndef CLIENT_DLL
+	int		Save( CSave &save );
+	int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+#endif
+
 	void Spawn( void );
 	void Precache( void );
 	int iItemSlot( void ) { return 3; }
@@ -1175,6 +1181,7 @@ public:
 private:
 	int m_iShell;
 	unsigned short m_usShotCycler;
+	float m_flCockTime;	// time to emit per-shot cock sound
 };
 
 class CChemicalGun : public CBasePlayerWeapon
@@ -1413,6 +1420,12 @@ public:
 class CGCShotgun : public CBasePlayerWeapon
 {
 public:
+#ifndef CLIENT_DLL
+	int		Save( CSave &save );
+	int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+#endif
+
 	void Spawn( void );
 	void Precache( void );
 	int iItemSlot( void ) { return 3; }
@@ -1437,8 +1450,10 @@ public:
 #endif
 	}
 
-	int m_iSpreadMode;  // 0=shotgun, 1=riotgun, 2=rifle
-	int m_iShellCount;  // 1-4 shells per shot
+	int   m_iSpreadMode;  // 0=shotgun, 1=riotgun, 2=rifle
+	int   m_iShellCount;  // 1-4 shells per shot (Lua: CurrentShellCost, default 2)
+	int   m_iMenuAxis;    // 1=ShellUsage, 2=SpreadAdjust
+	float m_flCockTime;   // time to emit per-shot cock sound
 };
 
 

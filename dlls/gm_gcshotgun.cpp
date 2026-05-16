@@ -66,7 +66,9 @@ void CGCShotgun::Spawn( )
 
 	m_iDefaultAmmo = GC_BUCKSHOT_GIVE;
 	m_iSpreadMode  = GCSHOTGUN_MODE_SHOTGUN;
-	m_iShellCount  = 1;
+	m_iShellCount  = 2;		// Lua default: CurrentShellCost = 2
+	m_iMenuAxis    = 1;
+	m_flCockTime   = 0.0f;
 
 	FallInit();
 }
@@ -204,12 +206,9 @@ void CGCShotgun::FireShotgun( void )
 		default:                     vecSpread = s_vecSpreadShotgun;  break;
 	}
 
-	// Each shell fires 6 pellets (standard buckshot)
-	for ( int i = 0; i < iShells; i++ )
-	{
-		m_pPlayer->FireBulletsPlayer( 6, vecSrc, vecAiming, vecSpread, 2048, BULLET_PLAYER_BUCKSHOT,
-			0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
-	}
+	// 5 pellets per shell in one call (matches Lua: bullet.Num = 5 * CurrentShellCost)
+	m_pPlayer->FireBulletsPlayer( 5 * iShells, vecSrc, vecAiming, vecSpread, 2048, BULLET_PLAYER_BUCKSHOT,
+		0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 
 	m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.75f;
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.75f;
@@ -219,26 +218,53 @@ void CGCShotgun::FireShotgun( void )
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 
+	// Schedule per-shot cock sound (Lua: gunman_shotgunCock, CustomizeSoundDelay = 0.8 s)
+	m_flCockTime = UTIL_WeaponTimeBase() + 0.5f;
+
 	m_pPlayer->pev->punchangle.x = -5.0f * iShells;
 }
 
 void CGCShotgun::SecondaryAttack( void )
 {
-	// Cycle through spread modes: shotgun -> riotgun -> rifle -> shotgun
-	m_iSpreadMode = ( m_iSpreadMode + 1 ) % 3;
+	// 2-axis customisation menu (mirrors Lua FireModes: ShellUsage and SpreadAdjust)
+	// Advance the current axis value; when it wraps, move to the next axis.
+	switch ( m_iMenuAxis )
+	{
+	case 1: // ShellUsage: 1-4
+		m_iShellCount++;
+		if ( m_iShellCount > 4 ) { m_iShellCount = 1; m_iMenuAxis = 2; }
+		break;
+	case 2: // SpreadAdjust: 0=shotgun, 1=riotgun, 2=rifle (wraps back to 0)
+		m_iSpreadMode = ( m_iSpreadMode + 1 ) % 3;
+		if ( m_iSpreadMode == 0 ) m_iMenuAxis = 1;  // wrapped back to shotgun → return to axis 1
+		break;
+	default:
+		m_iMenuAxis = 1;
+		break;
+	}
+
 	ShotgunReconfigure();
+
+	SendWeaponAnim( GCSHOTGUN_CUSTOMIZE );
+	EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,
+		"gunmanchronicles/weapons/shotgun_cock_heavy.wav", 0.8f, ATTN_NORM );
 
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5f;
 	m_flTimeWeaponIdle      = UTIL_WeaponTimeBase() + 1.0f;
-
-	// Cock sound for mode change feedback
-	EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM, "gunmanchronicles/weapons/shotgun_cock_heavy.wav", 0.8, ATTN_NORM );
 }
 
 void CGCShotgun::WeaponIdle( void )
 {
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
+
+	// Per-shot cock sound (Lua: gunman_shotgunCock, CustomizeSoundDelay = 0.8 s)
+	if ( m_flCockTime > 0.0f && UTIL_WeaponTimeBase() >= m_flCockTime )
+	{
+		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,
+			"gunmanchronicles/weapons/shotgun_cock_heavy.wav", 0.8f, ATTN_NORM );
+		m_flCockTime = 0.0f;
+	}
 
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;

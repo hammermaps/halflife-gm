@@ -1606,6 +1606,23 @@ TYPEDESCRIPTION	CShotgun::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE( CShotgun, CBasePlayerWeapon );
 
+TYPEDESCRIPTION	CShotCycler::m_SaveData[] =
+{
+	DEFINE_FIELD( CShotCycler, m_flCockTime, FIELD_TIME ),
+};
+IMPLEMENT_SAVERESTORE( CShotCycler, CBasePlayerWeapon );
+
+TYPEDESCRIPTION	CGCShotgun::m_SaveData[] =
+{
+	// 2-axis customisation menu state (persisted so configuration survives save/load)
+	DEFINE_FIELD( CGCShotgun, m_iShellCount,  FIELD_INTEGER ),
+	DEFINE_FIELD( CGCShotgun, m_iSpreadMode,  FIELD_INTEGER ),
+	DEFINE_FIELD( CGCShotgun, m_iMenuAxis,    FIELD_INTEGER ),
+	// Delayed cock sound timer
+	DEFINE_FIELD( CGCShotgun, m_flCockTime,   FIELD_TIME    ),
+};
+IMPLEMENT_SAVERESTORE( CGCShotgun, CBasePlayerWeapon );
+
 TYPEDESCRIPTION	CDML::m_SaveData[] =
 {
 	// 4-axis customisation menu state (persisted so configuration survives save/load)

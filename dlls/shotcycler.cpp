@@ -42,6 +42,7 @@ void CShotCycler::Spawn( )
 	SET_MODEL(ENT(pev), "models/w_shotgun.mdl");
 
 	m_iDefaultAmmo = SHOTCYCLER_DEFAULT_GIVE;
+	m_flCockTime   = 0.0f;
 
 	FallInit();
 }
@@ -97,7 +98,12 @@ BOOL CShotCycler::Deploy( )
 
 void CShotCycler::SecondaryAttack( void )
 {
-	// Alternate fire mode could be implemented here
+	// Manual cock action — plays the cock sound as audible feedback
+	EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,
+		"gunmanchronicles/weapons/shotgun_cock_heavy.wav", 0.8f, ATTN_NORM );
+
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5f;
+	m_flTimeWeaponIdle      = UTIL_WeaponTimeBase() + 1.0f;
 }
 
 void CShotCycler::PrimaryAttack( void )
@@ -156,6 +162,9 @@ void CShotCycler::PrimaryAttack( void )
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 
 	m_pPlayer->pev->punchangle.x = -5.0;
+
+	// Schedule per-shot cock sound
+	m_flCockTime = UTIL_WeaponTimeBase() + 0.5f;
 }
 
 
@@ -180,6 +189,14 @@ void CShotCycler::WeaponIdle( void )
 	ResetEmptySound( );
 
 	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
+
+	// Per-shot cock sound
+	if ( m_flCockTime > 0.0f && UTIL_WeaponTimeBase() >= m_flCockTime )
+	{
+		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,
+			"gunmanchronicles/weapons/shotgun_cock_heavy.wav", 0.8f, ATTN_NORM );
+		m_flCockTime = 0.0f;
+	}
 
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
