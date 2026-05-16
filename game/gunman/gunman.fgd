@@ -176,6 +176,8 @@
 @PointClass base(Weapon) = weapon_minigun : "Minigun (Gunman)" []
 @PointClass base(Weapon) = weapon_dml : "DML (Gunman)" []
 @PointClass base(Weapon) = weapon_beamgun : "Beam Gun (Gunman)" []
+@PointClass base(Weapon) = weapon_fists : "Fists / Knife (Gunman)" []
+@PointClass base(Weapon) = weapon_aicore : "AI Core / Wrench (Gunman)" []
 
 // Standard Half-Life weapons (compatible)
 @PointClass base(Weapon) = weapon_crowbar : "Crowbar" []
@@ -510,6 +512,13 @@
 @PointClass base(Targetname) size(-16 -16 0, 16 16 32) = item_armor : "Armor Pickup (Gunman)"
 [
 	// Restores 75 points of suit charge.
+]
+
+@PointClass base(Targetname, Target, Angles) size(-8 -8 -8, 8 8 8) = button_aiwallplug : "AI Wall Plug (Gunman)"
+[
+	// Interactive puzzle entity.  When a player uses weapon_aicore on it the
+	// weapon deals 100 hp of club damage and is then stripped (puzzle solved).
+	// Fires its target on activation.  See dlls/aicore.cpp for interaction logic.
 ]
 
 //

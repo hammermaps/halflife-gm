@@ -1612,6 +1612,14 @@ TYPEDESCRIPTION	CShotCycler::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE( CShotCycler, CBasePlayerWeapon );
 
+TYPEDESCRIPTION	CGCFists::m_SaveData[] =
+{
+	// Weapon mode and swing counter (persisted so knife/fists state survives save/load)
+	DEFINE_FIELD( CGCFists, m_iWeaponMode, FIELD_INTEGER ),
+	DEFINE_FIELD( CGCFists, m_iSwing,      FIELD_INTEGER ),
+};
+IMPLEMENT_SAVERESTORE( CGCFists, CBasePlayerWeapon );
+
 TYPEDESCRIPTION	CGCShotgun::m_SaveData[] =
 {
 	// 2-axis customisation menu state (persisted so configuration survives save/load)
