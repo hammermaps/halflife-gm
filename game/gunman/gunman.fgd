@@ -600,6 +600,24 @@
 
 @PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 64) = decore_sack : "Sack/bag decoration (Gunman)" []
 
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 16) = decore_scripted_boulder : "Scripted boulder — solid (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 32) = decore_corpse : "Corpse prop — drops to floor; set 'model' key (Gunman)"
+[
+	model(studio) : "Corpse model"
+]
+
+@PointClass base(Targetname, Target) size(-8 -8 -8, 8 8 8) = random_trigger : "Random Trigger — fires target at random intervals (Gunman)"
+[
+	random_min(float)        : "Minimum seconds between firings" : 5
+	random_max(float)        : "Maximum seconds between firings" : 10
+	start_state(choices)     : "Start State" : 0 =
+	[
+		0 : "Off (activated by Use)"
+		1 : "On (fires from spawn)"
+	]
+]
+
 @PointClass base(Targetname, Angles) size(-8 -8 -8, 8 8 8) = entity_spritegod : "Sprite Spray Emitter (Gunman)"
 [
 	spritename(sprite)       : "Sprite file"

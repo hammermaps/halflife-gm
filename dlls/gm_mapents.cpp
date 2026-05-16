@@ -53,6 +53,8 @@
 // decore_aicore            - spinning AI Core prop (models/W_aicore.mdl).
 // decore_goldskull         - golden skull trophy (models/goldskull.mdl).
 // decore_sack              - sack/bag decoration (models/sack.mdl).
+// decore_scripted_boulder  - solid boulder prop (models/boulder.mdl).
+// decore_corpse            - corpse prop; drops to floor; model set by mapper.
 //
 // entity_spritegod      - directional sprite spray emitter (toggleable via Use()).
 // trigger_tank          - invisible trigger fired when the vehicle_tank_body brush
@@ -62,6 +64,11 @@
 // entity_digitgod       - three-digit damage counter displayed via env_sprite
 //                         entities; fires targets when accumulated damage
 //                         reaches a configured maximum.
+// random_trigger        - fires target at configurable random intervals;
+//                         toggleable via Use(). Keys: random_min, random_max,
+//                         start_state.
+// decore_scripted_boulder - solid boulder prop (models/boulder.mdl).
+// decore_corpse         - corpse prop; model selectable via "model" key.
 //
 // Ported from MisterCalvin/SvenCoop-GC AngelScript scripts
 //=========================================================
@@ -1548,6 +1555,179 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( decore_sack, CDecoreSack );
+
+
+//=========================================================
+// decore_scripted_boulder
+//
+// Solid boulder prop used by scripted sequences (the model
+// can be knocked or used in scripted scene transitions).
+// Solid (blocks movement), does not drop to floor by default.
+// Default model: models/boulder.mdl
+//=========================================================
+class CDecoreScriptedBoulder : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void )  { return "models/boulder.mdl"; }
+	BOOL        ShouldBeSolid( void ) { return TRUE; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_scripted_boulder, CDecoreScriptedBoulder );
+
+
+//=========================================================
+// decore_corpse
+//
+// Generic corpse decoration prop.  The model is selected by
+// the mapper via the standard "model" key; no default model
+// is imposed so the mapper can choose the appropriate corpse
+// model for the scene.  Non-solid, drops to the floor on spawn
+// so the corpse lies naturally on whatever surface it's above.
+//=========================================================
+class CDecoreCorpse : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void )      { return NULL; }   // mapper-selected
+	BOOL        ShouldDropToFloor( void ) { return TRUE; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_corpse, CDecoreCorpse );
+
+
+//=========================================================
+// random_trigger
+//
+// Fires its target (and optionally its kill-target) at a
+// random interval between random_min and random_max seconds.
+// Can be toggled on / off via Use().
+//
+// Key/values:
+//   target       <string> - entity to fire (standard key)
+//   killtarget   <string> - entity to kill  (standard key)
+//   random_min   <float>  - minimum seconds between firings (default 5)
+//   random_max   <float>  - maximum seconds between firings (default 10)
+//   start_state  <int>    - 0 = off on spawn (default), 1 = on immediately
+//=========================================================
+class CRandomTrigger : public CBaseEntity
+{
+public:
+	void Spawn( void );
+	void KeyValue( KeyValueData *pkvd );
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void EXPORT TriggerThink( void );
+
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
+	virtual int ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+
+private:
+	float	m_flRandMin;   // minimum wait between firings (seconds)
+	float	m_flRandMax;   // maximum wait between firings (seconds)
+	BOOL	m_bStartOn;    // 1 = start active, 0 = start inactive
+};
+
+TYPEDESCRIPTION CRandomTrigger::m_SaveData[] =
+{
+	DEFINE_FIELD( CRandomTrigger, m_flRandMin, FIELD_FLOAT   ),
+	DEFINE_FIELD( CRandomTrigger, m_flRandMax, FIELD_FLOAT   ),
+	DEFINE_FIELD( CRandomTrigger, m_bStartOn,  FIELD_BOOLEAN ),
+};
+
+IMPLEMENT_SAVERESTORE( CRandomTrigger, CBaseEntity );
+LINK_ENTITY_TO_CLASS( random_trigger, CRandomTrigger );
+
+void CRandomTrigger::KeyValue( KeyValueData *pkvd )
+{
+	if ( FStrEq( pkvd->szKeyName, "random_min" ) )
+	{
+		m_flRandMin = (float)atof( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if ( FStrEq( pkvd->szKeyName, "random_max" ) )
+	{
+		m_flRandMax = (float)atof( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if ( FStrEq( pkvd->szKeyName, "start_state" ) )
+	{
+		m_bStartOn = ( atoi( pkvd->szValue ) != 0 ) ? TRUE : FALSE;
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CBaseEntity::KeyValue( pkvd );
+}
+
+void CRandomTrigger::Spawn( void )
+{
+	pev->solid    = SOLID_NOT;
+	pev->movetype = MOVETYPE_NONE;
+
+	// Apply sane defaults if the mapper left the range unset
+	if ( m_flRandMin <= 0.0f ) m_flRandMin = 5.0f;
+	if ( m_flRandMax <= 0.0f ) m_flRandMax = 10.0f;
+
+	// Ensure min <= max
+	if ( m_flRandMin > m_flRandMax )
+	{
+		float flSwap = m_flRandMin;
+		m_flRandMin  = m_flRandMax;
+		m_flRandMax  = flSwap;
+	}
+
+	if ( m_bStartOn )
+	{
+		SetThink( &CRandomTrigger::TriggerThink );
+		pev->nextthink = gpGlobals->time + RANDOM_FLOAT( m_flRandMin, m_flRandMax );
+	}
+}
+
+void CRandomTrigger::TriggerThink( void )
+{
+	SUB_UseTargets( this, USE_TOGGLE, 0.0f );
+
+	// Schedule next firing
+	pev->nextthink = gpGlobals->time + RANDOM_FLOAT( m_flRandMin, m_flRandMax );
+}
+
+void CRandomTrigger::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	BOOL bIsActive = ( pev->nextthink > 0.0f );
+
+	switch ( useType )
+	{
+	case USE_ON:
+		if ( !bIsActive )
+		{
+			SetThink( &CRandomTrigger::TriggerThink );
+			pev->nextthink = gpGlobals->time + RANDOM_FLOAT( m_flRandMin, m_flRandMax );
+		}
+		break;
+
+	case USE_OFF:
+		if ( bIsActive )
+		{
+			SetThink( NULL );
+			pev->nextthink = -1.0f;
+		}
+		break;
+
+	case USE_TOGGLE:
+	default:
+		if ( bIsActive )
+		{
+			SetThink( NULL );
+			pev->nextthink = -1.0f;
+		}
+		else
+		{
+			SetThink( &CRandomTrigger::TriggerThink );
+			pev->nextthink = gpGlobals->time + RANDOM_FLOAT( m_flRandMin, m_flRandMax );
+		}
+		break;
+	}
+}
 
 
 //=========================================================
