@@ -27,26 +27,32 @@
 // decore_asteroid          - slowly rotating asteroid prop; optional size preset.
 // decore_spacedebris       - space debris launched on Use(), with optional lifetime.
 // decore_butterflyflock    - butterfly flock animated prop; flock radius + count keys.
-// decore_gutspile          - guts pile static prop (models/Gutspile.mdl).
+// decore_gutspile          - guts pile static prop; drops to floor (models/Gutspile.mdl).
 // decore_torch             - static torch with warm-light glow (models/Torch.mdl).
+// decore_torchflame        - animated flame sprite companion (sprites/flames.spr).
 // decore_swampplants       - swamp foliage prop; body variant selectable (models/swampstuff.mdl).
-// decore_cactus            - cactus decoration (models/cactus.mdl).
-// decore_prickle           - prickle decoration (models/prickle.mdl).
+// decore_cactus            - cactus: solid, drops to floor, touch damage 1 (models/cactus.mdl).
+// decore_prickle           - prickle: drops to floor (models/prickle.mdl).
 // decore_cam               - sweeping security camera (models/Camera.mdl).
-// decore_ice               - ice block; optional frozen beak inside (models/ice.mdl).
+// decore_camflare          - camera cone/flare companion (models/cameracone.mdl).
+// decore_ice               - ice block: solid, additive render, drops to floor (models/ice.mdl).
+// decore_icebeak           - frozen beak creature: solid, drops to floor (models/icebeak.mdl).
 // decore_labstuff          - lab equipment; body variant selectable (models/labstuff.mdl).
-// decore_pteradon          - flying pteradon decoration (models/pteradon.mdl).
-// decore_pipes             - pipes decoration (models/pipes.mdl).
+// decore_pteradon          - flying pteradon decoration (models/pteradon2.mdl).
+// decore_pipes             - pipes: solid (models/pipes.mdl).
 // decore_explodable        - destructible prop; custom model/gib/sequences.
-// decore_sittingtubemortar - sitting tube mortar prop (models/tubemortar.mdl).
+// decore_sittingtubemortar - sitting tube mortar: solid, drops to floor, frame 1 (models/tubemortar.mdl).
 // decore_eagle             - eagle decoration (models/eagle.mdl).
-// decore_nest              - nest decoration (models/ornest.mdl).
+// decore_nest              - nest: drops to floor (models/ornest.mdl).
 // decore_baboon            - baboon decoration (models/Baboon.mdl).
-// decore_hatgib            - hat gib decoration (models/Hatgib.mdl).
-// decore_bodygib           - body gib decoration (models/Bodygib.mdl).
-// decore_mushroom          - mushroom decoration (models/Mushroom.mdl).
-// decore_mushroom2         - mushroom variant 2 (models/mushroom2.mdl).
+// decore_hatgib            - hat gib: drops to floor (models/Hatgib.mdl).
+// decore_bodygib           - body gib: drops to floor (models/Bodygib.mdl).
+// decore_mushroom          - mushroom: solid (models/Mushroom.mdl).
+// decore_mushroom2         - mushroom variant 2: solid (models/mushroom2.mdl).
 // decore_foot              - creature foot decoration (models/renesaurfoot.mdl).
+// decore_aicore            - spinning AI Core prop (models/W_aicore.mdl).
+// decore_goldskull         - golden skull trophy (models/goldskull.mdl).
+// decore_sack              - sack/bag decoration (models/sack.mdl).
 //
 // entity_spritegod      - directional sprite spray emitter (toggleable via Use()).
 // trigger_tank          - invisible trigger fired when the vehicle_tank_body brush
@@ -753,9 +759,8 @@ void CDecoreButterflyFlock::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 // decore_gutspile
 //
 // Guts pile static animated prop.  Uses a fixed model
-// (models/Gutspile.mdl) placed in-world
-// with a solid bounding box so it can serve as a prop
-// that interacts with physics.
+// (models/Gutspile.mdl) placed in-world.  Drops to the
+// floor on spawn; non-solid.
 //=========================================================
 class CDecoreGutspile : public CGunmanCycler
 {
@@ -777,33 +782,94 @@ void CDecoreGutspile::Spawn( void )
 
 	pev->model = MAKE_STRING( "models/Gutspile.mdl" );
 
-	// Use full CGunmanCycler spawn path (sets bodygroups, solid, etc.)
 	CGunmanCycler::Spawn();
+
+	pev->solid = SOLID_NOT;
+
+	// Drop to the floor so guts settle naturally on surfaces
+	DROP_TO_FLOOR( ENT(pev) );
 }
 
 
 //=========================================================
 // CDecoreSimple — internal base for fixed-model decoration props.
 //
-// Subclasses only override DefaultModel() to supply the
-// model path.  No custom keyvalues or save/restore fields
-// are added; everything is handled by CGunmanCycler.
+// Subclasses override virtual methods to declare capabilities:
+//   DefaultModel()         — model path (required)
+//   ShouldDropToFloor()    — snap to ground on Spawn (default FALSE)
+//   ShouldBeSolid()        — use SOLID_SLIDEBOX hull (default FALSE → SOLID_NOT)
+//   TouchDamage()          — damage per touch (default 0 = no damage)
+//   TouchDamageTime()      — cooldown between touches in seconds (default 1.0)
+//   StartFrame()           — initial animation frame (-1 = no override)
+//   ShouldRotate()         — random angular velocity on Spawn (default FALSE)
+//   DefaultRenderMode()    — GoldSrc kRender* constant (-1 = no override)
+//
+// No custom keyvalues or save/restore fields are added; all
+// per-prop state is handled by CGunmanCycler or set once in Spawn().
 //=========================================================
 class CDecoreSimple : public CGunmanCycler
 {
 public:
-	virtual const char *DefaultModel( void ) { return NULL; }
+	virtual const char *DefaultModel( void )         { return NULL; }
+	virtual BOOL        ShouldDropToFloor( void )    { return FALSE; }
+	virtual BOOL        ShouldBeSolid( void )        { return FALSE; }
+	virtual int         TouchDamage( void )          { return 0; }
+	virtual float       TouchDamageTime( void )      { return 1.0f; }
+	virtual int         StartFrame( void )           { return -1; }
+	virtual BOOL        ShouldRotate( void )         { return FALSE; }
+	virtual int         DefaultRenderMode( void )    { return -1; }
+
 	void Precache( void )
 	{
 		if ( DefaultModel() )
 			PRECACHE_MODEL( (char*)DefaultModel() );
 	}
+
 	void Spawn( void )
 	{
 		Precache();
 		if ( !pev->model && DefaultModel() )
 			pev->model = MAKE_STRING( DefaultModel() );
 		CGunmanCycler::Spawn();
+
+		// Apply solid override
+		if ( !ShouldBeSolid() )
+			pev->solid = SOLID_NOT;
+
+		// Apply render mode override
+		if ( DefaultRenderMode() >= 0 )
+		{
+			pev->rendermode = DefaultRenderMode();
+			if ( pev->renderamt <= 0.0f )
+				pev->renderamt = 255.0f;
+		}
+
+		// Apply initial animation frame
+		if ( StartFrame() >= 0 )
+			pev->frame = (float)StartFrame();
+
+		// Apply random angular rotation (decorative spinning props)
+		if ( ShouldRotate() )
+		{
+			pev->avelocity.x = RANDOM_FLOAT( -30.0f, 30.0f );
+			pev->avelocity.y = RANDOM_FLOAT( -30.0f, 30.0f );
+			pev->avelocity.z = RANDOM_FLOAT( -30.0f, 30.0f );
+			pev->movetype    = MOVETYPE_FLY;
+		}
+
+		// Drop to floor last (after solid & position are set)
+		if ( ShouldDropToFloor() )
+			DROP_TO_FLOOR( ENT(pev) );
+	}
+
+	void Touch( CBaseEntity *pOther )
+	{
+		if ( TouchDamage() <= 0 ) return;
+		if ( !pOther || !pOther->IsAlive() ) return;
+		if ( gpGlobals->time < pev->dmgtime ) return;
+
+		pOther->TakeDamage( pev, pev, (float)TouchDamage(), DMG_GENERIC );
+		pev->dmgtime = gpGlobals->time + TouchDamageTime();
 	}
 };
 
@@ -829,6 +895,49 @@ LINK_ENTITY_TO_CLASS( decore_torch, CDecoreTorch );
 
 
 //=========================================================
+// decore_torchflame
+//
+// Animated torch flame companion sprite.  Placed at the tip
+// of a decore_torch to add the fire visual.  Spawns a
+// looping additive sprite (sprites/flames.spr) and removes
+// its placeholder entity after creation.
+//=========================================================
+class CDecoreTorchFlame : public CBaseEntity
+{
+public:
+	void Precache( void )
+	{
+		PRECACHE_MODEL( "sprites/flames.spr" );
+	}
+
+	void Spawn( void )
+	{
+		Precache();
+		pev->solid    = SOLID_NOT;
+		pev->movetype = MOVETYPE_NONE;
+
+		// Create a self-contained animated sprite
+		CSprite *pFlame = CSprite::SpriteCreate( "sprites/flames.spr", pev->origin, FALSE );
+		if ( pFlame )
+		{
+			pFlame->pev->rendermode  = kRenderTransAdd;
+			pFlame->pev->rendercolor = Vector( 255.0f, 255.0f, 255.0f );
+			pFlame->pev->renderamt   = 255.0f;
+			pFlame->pev->framerate   = 10.0f;
+			pFlame->TurnOn();
+		}
+
+		// Remove the placement stub — the CSprite carries on independently
+		UTIL_Remove( this );
+	}
+
+	virtual int ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_torchflame, CDecoreTorchFlame );
+
+
+//=========================================================
 // decore_swampplants
 //
 // Swamp foliage prop.  The mapper selects a body variant
@@ -847,13 +956,19 @@ LINK_ENTITY_TO_CLASS( decore_swampplants, CDecoreSwampplants );
 //=========================================================
 // decore_cactus
 //
-// Cactus decoration.
+// Cactus decoration — solid (blocks movement) and deals
+// 1 point of generic damage to anything that touches it,
+// with a 1-second cooldown per-entity (stored on pev->dmgtime).
 // Default model: models/cactus.mdl
 //=========================================================
 class CDecoreCactus : public CDecoreSimple
 {
 public:
-	const char *DefaultModel( void ) { return "models/cactus.mdl"; }
+	const char *DefaultModel( void )  { return "models/cactus.mdl"; }
+	BOOL        ShouldDropToFloor( void ) { return TRUE; }
+	BOOL        ShouldBeSolid( void ) { return TRUE; }
+	int         TouchDamage( void )   { return 1; }
+	float       TouchDamageTime( void ) { return 1.0f; }
 };
 
 LINK_ENTITY_TO_CLASS( decore_cactus, CDecoreCactus );
@@ -862,13 +977,15 @@ LINK_ENTITY_TO_CLASS( decore_cactus, CDecoreCactus );
 //=========================================================
 // decore_prickle
 //
-// Prickle plant decoration.
+// Prickle plant decoration — drops to the floor on spawn,
+// non-solid.
 // Default model: models/prickle.mdl
 //=========================================================
 class CDecorePrickle : public CDecoreSimple
 {
 public:
-	const char *DefaultModel( void ) { return "models/prickle.mdl"; }
+	const char *DefaultModel( void )      { return "models/prickle.mdl"; }
+	BOOL        ShouldDropToFloor( void ) { return TRUE; }
 };
 
 LINK_ENTITY_TO_CLASS( decore_prickle, CDecorePrickle );
@@ -926,6 +1043,8 @@ void CDecoreCam::Spawn( void )
 
 	CGunmanCycler::Spawn();
 
+	pev->solid = SOLID_NOT;  // camera is non-interactive decoration
+
 	m_flBaseAngle = pev->angles.y;
 	m_flCurOffset = 0.0f;
 	m_iSweepDir   = 1;
@@ -958,68 +1077,58 @@ void CDecoreCam::CamThink( void )
 
 
 //=========================================================
-// decore_ice
+// decore_camflare
 //
-// Ice block decoration.  When the "beakinside" key is set
-// to 1, body group 1 is selected to reveal the frozen beak
-// variant of the model.
-// Default model: models/ice.mdl
-//
-// Key/values:
-//   beakinside  <int>  - 0 = plain ice (default), 1 = beak frozen inside
+// Camera cone / light flare companion prop, placed at the
+// lens of a decore_cam to indicate the camera's active FOV.
+// Default model: models/cameracone.mdl
 //=========================================================
-class CDecoreIce : public CGunmanCycler
+class CDecoreCamflare : public CDecoreSimple
 {
 public:
-	void Precache( void );
-	void Spawn( void );
-	void KeyValue( KeyValueData *pkvd );
-
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-	static	TYPEDESCRIPTION m_SaveData[];
-
-private:
-	BOOL	m_bBeakInside;
+	const char *DefaultModel( void ) { return "models/cameracone.mdl"; }
 };
 
-TYPEDESCRIPTION CDecoreIce::m_SaveData[] =
+LINK_ENTITY_TO_CLASS( decore_camflare, CDecoreCamflare );
+
+
+//=========================================================
+// decore_ice
+//
+// Ice block decoration.  Solid (passable by bullets, blocks
+// movement) with an additive render mode that gives it a
+// translucent, glowing appearance.  Drops to the floor on
+// spawn.  Default model: models/ice.mdl
+//
+// Note: use decore_icebeak for the ice-encased beak creature.
+//=========================================================
+class CDecoreIce : public CDecoreSimple
 {
-	DEFINE_FIELD( CDecoreIce, m_bBeakInside, FIELD_BOOLEAN ),
+public:
+	const char *DefaultModel( void )      { return "models/ice.mdl"; }
+	BOOL        ShouldDropToFloor( void ) { return TRUE; }
+	BOOL        ShouldBeSolid( void )     { return TRUE; }
+	int         DefaultRenderMode( void ) { return kRenderTransAdd; }
 };
 
-IMPLEMENT_SAVERESTORE( CDecoreIce, CGunmanCycler );
 LINK_ENTITY_TO_CLASS( decore_ice, CDecoreIce );
 
-void CDecoreIce::KeyValue( KeyValueData *pkvd )
+
+//=========================================================
+// decore_icebeak
+//
+// Ice-encased beak creature prop — a frozen predator.
+// Solid, drops to the floor.  Default model: models/icebeak.mdl
+//=========================================================
+class CDecoreIceBeak : public CDecoreSimple
 {
-	if ( FStrEq( pkvd->szKeyName, "beakinside" ) )
-	{
-		m_bBeakInside = ( atoi( pkvd->szValue ) != 0 ) ? TRUE : FALSE;
-		pkvd->fHandled = TRUE;
-	}
-	else
-		CGunmanCycler::KeyValue( pkvd );
-}
+public:
+	const char *DefaultModel( void )      { return "models/icebeak.mdl"; }
+	BOOL        ShouldDropToFloor( void ) { return TRUE; }
+	BOOL        ShouldBeSolid( void )     { return TRUE; }
+};
 
-void CDecoreIce::Precache( void )
-{
-	PRECACHE_MODEL( "models/ice.mdl" );
-	PRECACHE_MODEL( "models/icebeak.mdl" );
-}
-
-void CDecoreIce::Spawn( void )
-{
-	Precache();
-	if ( !pev->model )
-		pev->model = MAKE_STRING( "models/ice.mdl" );
-
-	CGunmanCycler::Spawn();
-
-	// Body group 1 shows the frozen beak inside the ice block
-	if ( m_bBeakInside )
-		SetBodygroup( 1, 1 );
-}
+LINK_ENTITY_TO_CLASS( decore_icebeak, CDecoreIceBeak );
 
 
 //=========================================================
@@ -1041,9 +1150,9 @@ LINK_ENTITY_TO_CLASS( decore_labstuff, CDecoreLabstuff );
 //=========================================================
 // decore_pteradon
 //
-// Flying pteradon decoration prop.  The animated model
-// hovers in place using MOVETYPE_FLY; no active pathfinding.
-// Default model: models/pteradon.mdl
+// Flying pteradon decoration prop.  Uses a symmetrical
+// bounding box (floats in mid-air, not placed on the floor).
+// Default model: models/pteradon2.mdl
 //=========================================================
 class CDecorePteradon : public CGunmanCycler
 {
@@ -1056,19 +1165,19 @@ LINK_ENTITY_TO_CLASS( decore_pteradon, CDecorePteradon );
 
 void CDecorePteradon::Precache( void )
 {
-	PRECACHE_MODEL( "models/pteradon.mdl" );
+	PRECACHE_MODEL( "models/pteradon2.mdl" );
 }
 
 void CDecorePteradon::Spawn( void )
 {
 	Precache();
 	if ( !pev->model )
-		pev->model = MAKE_STRING( "models/pteradon.mdl" );
+		pev->model = MAKE_STRING( "models/pteradon2.mdl" );
 
 	CGunmanCycler::Spawn();
 
-	// Hover in place — MOVETYPE_FLY disables gravity while keeping
-	// physics collision active
+	// Non-interactive flying decoration — no solid collision
+	pev->solid    = SOLID_NOT;
 	pev->movetype = MOVETYPE_FLY;
 }
 
@@ -1076,13 +1185,14 @@ void CDecorePteradon::Spawn( void )
 //=========================================================
 // decore_pipes
 //
-// Pipes decoration.
+// Industrial pipe decoration — solid (blocks movement).
 // Default model: models/pipes.mdl
 //=========================================================
 class CDecorePipes : public CDecoreSimple
 {
 public:
-	const char *DefaultModel( void ) { return "models/pipes.mdl"; }
+	const char *DefaultModel( void )  { return "models/pipes.mdl"; }
+	BOOL        ShouldBeSolid( void ) { return TRUE; }
 };
 
 LINK_ENTITY_TO_CLASS( decore_pipes, CDecorePipes );
@@ -1250,13 +1360,17 @@ void CDecoreExplodable::ExplodeAndRemove( CBaseEntity *pAttacker )
 //=========================================================
 // decore_sittingtubemortar
 //
-// Sitting tube-mortar prop decoration.
+// Sitting (closed/inactive) tube-mortar prop.  Solid, drops
+// to the floor.  Starts at animation frame 1 (the closed pose).
 // Default model: models/tubemortar.mdl
 //=========================================================
 class CDecoreSittingTubeMortar : public CDecoreSimple
 {
 public:
-	const char *DefaultModel( void ) { return "models/tubemortar.mdl"; }
+	const char *DefaultModel( void )      { return "models/tubemortar.mdl"; }
+	BOOL        ShouldDropToFloor( void ) { return TRUE; }
+	BOOL        ShouldBeSolid( void )     { return TRUE; }
+	int         StartFrame( void )        { return 1; }
 };
 
 LINK_ENTITY_TO_CLASS( decore_sittingtubemortar, CDecoreSittingTubeMortar );
@@ -1265,7 +1379,7 @@ LINK_ENTITY_TO_CLASS( decore_sittingtubemortar, CDecoreSittingTubeMortar );
 //=========================================================
 // decore_eagle
 //
-// Eagle decoration prop.
+// Eagle decoration prop — non-solid, non-interactive.
 // Default model: models/eagle.mdl
 //=========================================================
 class CDecoreEagle : public CDecoreSimple
@@ -1280,13 +1394,14 @@ LINK_ENTITY_TO_CLASS( decore_eagle, CDecoreEagle );
 //=========================================================
 // decore_nest
 //
-// Nest decoration prop.
+// Bird's nest decoration — drops to the floor on spawn.
 // Default model: models/ornest.mdl
 //=========================================================
 class CDecoreNest : public CDecoreSimple
 {
 public:
-	const char *DefaultModel( void ) { return "models/ornest.mdl"; }
+	const char *DefaultModel( void )      { return "models/ornest.mdl"; }
+	BOOL        ShouldDropToFloor( void ) { return TRUE; }
 };
 
 LINK_ENTITY_TO_CLASS( decore_nest, CDecoreNest );
@@ -1310,13 +1425,14 @@ LINK_ENTITY_TO_CLASS( decore_baboon, CDecoreBaboon );
 //=========================================================
 // decore_hatgib
 //
-// Hat gib decoration prop.
+// Hat gib decoration — drops to the floor on spawn.
 // Default model: models/Hatgib.mdl
 //=========================================================
 class CDecoreHatgib : public CDecoreSimple
 {
 public:
-	const char *DefaultModel( void ) { return "models/Hatgib.mdl"; }
+	const char *DefaultModel( void )      { return "models/Hatgib.mdl"; }
+	BOOL        ShouldDropToFloor( void ) { return TRUE; }
 };
 
 LINK_ENTITY_TO_CLASS( decore_hatgib, CDecoreHatgib );
@@ -1325,13 +1441,14 @@ LINK_ENTITY_TO_CLASS( decore_hatgib, CDecoreHatgib );
 //=========================================================
 // decore_bodygib
 //
-// Body gib decoration prop.
+// Body gib decoration — drops to the floor on spawn.
 // Default model: models/Bodygib.mdl
 //=========================================================
 class CDecoreBodygib : public CDecoreSimple
 {
 public:
-	const char *DefaultModel( void ) { return "models/Bodygib.mdl"; }
+	const char *DefaultModel( void )      { return "models/Bodygib.mdl"; }
+	BOOL        ShouldDropToFloor( void ) { return TRUE; }
 };
 
 LINK_ENTITY_TO_CLASS( decore_bodygib, CDecoreBodygib );
@@ -1340,13 +1457,15 @@ LINK_ENTITY_TO_CLASS( decore_bodygib, CDecoreBodygib );
 //=========================================================
 // decore_mushroom
 //
-// Mushroom decoration prop.
+// Mushroom decoration — solid (collidable), symmetrical
+// bounding box (floats or protrudes from floor).
 // Default model: models/Mushroom.mdl
 //=========================================================
 class CDecoreMushroom : public CDecoreSimple
 {
 public:
-	const char *DefaultModel( void ) { return "models/Mushroom.mdl"; }
+	const char *DefaultModel( void )  { return "models/Mushroom.mdl"; }
+	BOOL        ShouldBeSolid( void ) { return TRUE; }
 };
 
 LINK_ENTITY_TO_CLASS( decore_mushroom, CDecoreMushroom );
@@ -1355,13 +1474,14 @@ LINK_ENTITY_TO_CLASS( decore_mushroom, CDecoreMushroom );
 //=========================================================
 // decore_mushroom2
 //
-// Mushroom variant 2 decoration prop.
+// Mushroom variant 2 — solid (collidable).
 // Default model: models/mushroom2.mdl
 //=========================================================
 class CDecoreMushroom2 : public CDecoreSimple
 {
 public:
-	const char *DefaultModel( void ) { return "models/mushroom2.mdl"; }
+	const char *DefaultModel( void )  { return "models/mushroom2.mdl"; }
+	BOOL        ShouldBeSolid( void ) { return TRUE; }
 };
 
 LINK_ENTITY_TO_CLASS( decore_mushroom2, CDecoreMushroom2 );
@@ -1370,7 +1490,7 @@ LINK_ENTITY_TO_CLASS( decore_mushroom2, CDecoreMushroom2 );
 //=========================================================
 // decore_foot
 //
-// Creature foot decoration prop (renesaur foot).
+// Creature foot decoration prop (rene-saur foot). Tall prop.
 // Default model: models/renesaurfoot.mdl
 //=========================================================
 class CDecoreFoot : public CDecoreSimple
@@ -1380,6 +1500,54 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( decore_foot, CDecoreFoot );
+
+
+//=========================================================
+// decore_aicore
+//
+// Decorative spinning AI Core prop — uses the AI Core world
+// model and applies a random angular velocity so it rotates
+// freely in space (used in hub areas and cinematic scenes).
+// Default model: models/W_aicore.mdl
+//=========================================================
+class CDecoreAicore : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void )  { return "models/W_aicore.mdl"; }
+	BOOL        ShouldRotate( void )  { return TRUE; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_aicore, CDecoreAicore );
+
+
+//=========================================================
+// decore_goldskull
+//
+// Golden skull trophy decoration.
+// Default model: models/goldskull.mdl
+//=========================================================
+class CDecoreGoldskull : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/goldskull.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_goldskull, CDecoreGoldskull );
+
+
+//=========================================================
+// decore_sack
+//
+// Sack / bag decoration prop.
+// Default model: models/sack.mdl
+//=========================================================
+class CDecoreSack : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/sack.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_sack, CDecoreSack );
 
 
 //=========================================================

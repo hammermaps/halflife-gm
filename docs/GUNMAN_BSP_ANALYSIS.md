@@ -143,34 +143,46 @@ for this pass — see `GUNMAN_LUA_PORT_PLAN.md` for the staging plan.
 
 | Classname | Inst. | Maps | Notes |
 |---|---:|---:|---|
-| `decore_torch`            | 126 | 7  | ✅ `CDecoreTorch` in `dlls/gm_mapents.cpp` — `models/Torch.mdl` + `EF_BRIGHTLIGHT` |
+| `decore_torch`            | 126 | 7  | ✅ `CDecoreTorch` — `models/Torch.mdl` + `EF_BRIGHTLIGHT` |
 | `decore_swampplants`      |  89 | 6  | ✅ `CDecoreSwampplants` — `models/swampstuff.mdl`; `body` via engine |
-| `decore_cactus`           |  64 | 12 | ✅ `CDecoreCactus` — `models/cactus.mdl` |
-| `decore_prickle`          |  61 | 10 | ✅ `CDecorePrickle` — `models/prickle.mdl` |
-| `decore_spacedebris`      |  42 | 1  | ✅ (already in our FGD; uses `debrislife` — see GUNMAN_FGD_VS_CPP.md) |
+| `decore_cactus`           |  64 | 12 | ✅ `CDecoreCactus` — `models/cactus.mdl`; solid, drops to floor, touch dmg 1/1s |
+| `decore_prickle`          |  61 | 10 | ✅ `CDecorePrickle` — `models/prickle.mdl`; drops to floor |
+| `decore_spacedebris`      |  42 | 1  | ✅ (already in our FGD; uses `debrislife`) |
 | `decore_cam`              |  27 | 11 | ✅ `CDecoreCam` — `models/Camera.mdl`; sweeps ±45° on Y at 30°/s |
-| `decore_ice`              |  19 | 1  | ✅ `CDecoreIce` — `models/ice.mdl`; `beakinside` sets body group 1 |
+| `decore_ice`              |  19 | 1  | ✅ `CDecoreIce` — `models/ice.mdl`; solid, additive render, drops to floor |
 | `decore_labstuff`         |  18 | 4  | ✅ `CDecoreLabstuff` — `models/labstuff.mdl`; `body` via engine |
-| `decore_pteradon`         |  15 | 5  | ✅ `CDecorePteradon` — `models/pteradon.mdl`; MOVETYPE_FLY hover |
-| `decore_pipes`            |  10 | 8  | ✅ `CDecorePipes` — `models/pipes.mdl` |
-| `decore_gutspile`         |   9 | 7  | ✅ (already in our FGD) |
+| `decore_pteradon`         |  15 | 5  | ✅ `CDecorePteradon` — `models/pteradon2.mdl`; MOVETYPE_FLY, symmetric bbox |
+| `decore_pipes`            |  10 | 8  | ✅ `CDecorePipes` — `models/pipes.mdl`; solid |
+| `decore_gutspile`         |   9 | 7  | ✅ `CDecoreGutspile` — `models/Gutspile.mdl`; drops to floor |
 | `decore_explodable`       |   5 | 3  | ✅ `CDecoreExplodable` — custom model/gib/sequences; damageable |
-| `decore_sittingtubemortar`|   6 | 1  | ✅ `CDecoreSittingTubeMortar` — `models/tubemortar.mdl` |
+| `decore_sittingtubemortar`|   6 | 1  | ✅ `CDecoreSittingTubeMortar` — `models/tubemortar.mdl`; solid, drops to floor, frame 1 |
 | `decore_eagle`            |   3 | 3  | ✅ `CDecoreEagle` — `models/eagle.mdl` |
-| `decore_nest`             |   3 | 3  | ✅ `CDecoreNest` — `models/ornest.mdl` |
+| `decore_nest`             |   3 | 3  | ✅ `CDecoreNest` — `models/ornest.mdl`; drops to floor |
 | `decore_baboon`           |   4 | 2  | ✅ `CDecoreBaboon` — `models/Baboon.mdl` |
-| `decore_hatgib`           |   3 | 2  | ✅ `CDecoreHatgib` — `models/Hatgib.mdl` |
-| `decore_bodygib`          |   3 | 2  | ✅ `CDecoreBodygib` — `models/Bodygib.mdl` |
-| `decore_mushroom`         |   3 | 1  | ✅ `CDecoreMushroom` — `models/Mushroom.mdl` |
-| `decore_mushroom2`        |   2 | 1  | ✅ `CDecoreMushroom2` — `models/mushroom2.mdl` |
+| `decore_hatgib`           |   3 | 2  | ✅ `CDecoreHatgib` — `models/Hatgib.mdl`; drops to floor |
+| `decore_bodygib`          |   3 | 2  | ✅ `CDecoreBodygib` — `models/Bodygib.mdl`; drops to floor |
+| `decore_mushroom`         |   3 | 1  | ✅ `CDecoreMushroom` — `models/Mushroom.mdl`; solid |
+| `decore_mushroom2`        |   2 | 1  | ✅ `CDecoreMushroom2` — `models/mushroom2.mdl`; solid |
 | `decore_foot`             |   1 | 1  | ✅ `CDecoreFoot` — `models/renesaurfoot.mdl` |
-| `decore_butterflyflock`   |   4 | 3  | ✅ (already in our FGD — see param gap) |
-| `decore_asteroid`         |  14 | 3  | ✅ (already in our FGD — see param gap)  |
+| `decore_butterflyflock`   |   4 | 3  | ✅ (already in our FGD) |
+| `decore_asteroid`         |  14 | 3  | ✅ (already in our FGD) |
+
+Additional decore entities found in `eukara/freegunman` reference, all models present:
+
+| Classname | Notes |
+|---|---|
+| `decore_aicore`       | ✅ `CDecoreAicore` — `models/W_aicore.mdl`; random spin (ShouldRotate) |
+| `decore_camflare`     | ✅ `CDecoreCamflare` — `models/cameracone.mdl` |
+| `decore_icebeak`      | ✅ `CDecoreIceBeak` — `models/icebeak.mdl`; solid, drops to floor |
+| `decore_torchflame`   | ✅ `CDecoreTorchFlame` — `sprites/flames.spr` additive animated sprite |
+| `decore_goldskull`    | ✅ `CDecoreGoldskull` — `models/goldskull.mdl` |
+| `decore_sack`         | ✅ `CDecoreSack` — `models/sack.mdl` |
 
 All `decore_*` entities are derived from `CGunmanCycler` (itself a `CBaseAnimating`).
-Simple props use the `CDecoreSimple` intermediate base class which only overrides
-`DefaultModel()`.  Entities with custom behaviour (cam sweep, ice beak, explodable)
-have their own `KeyValue`, `Spawn`, and optionally `Save/Restore` implementations.
+Simple props use the `CDecoreSimple` intermediate base class with virtual hooks for
+`ShouldDropToFloor()`, `ShouldBeSolid()`, `TouchDamage()`, `StartFrame()`, `ShouldRotate()`,
+and `DefaultRenderMode()`.  Entities with custom behaviour (cam sweep, explodable) retain
+their own `Spawn`/`KeyValue`/`Save`+`Restore` implementations.
 
 #### Triggers / map logic
 
