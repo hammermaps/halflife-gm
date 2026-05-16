@@ -23,6 +23,8 @@
 #include "decals.h"
 #include "explode.h"
 #include "weapons.h"
+#include "gunman_damage.h"
+#include "gunman_sounds.h"
 
 // Spawnflags
 #define SF_ENVEXPLOSION_GM_NODAMAGE		( 1 << 0 )
@@ -212,4 +214,169 @@ void CEnvExplosionGM::Smoke( void )
 	{
 		UTIL_Remove( this );
 	}
+}
+
+// =========================================================
+// gunman_explosion_small
+//
+// Programmatic small explosion entity (60 dmg / 256 u radius).
+// Spawned by grenade cluster sub-bombs.  Immediately detonates
+// on Spawn() and removes itself.
+//
+// Use CGunmanExplosionSmall::Create() to spawn it.
+// =========================================================
+class CGunmanExplosionSmall : public CBaseEntity
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+
+	static CGunmanExplosionSmall *Create( const Vector &origin, CBaseEntity *pOwner );
+};
+
+LINK_ENTITY_TO_CLASS( gunman_explosion_small, CGunmanExplosionSmall );
+
+void CGunmanExplosionSmall::Precache( void )
+{
+	PRECACHE_SOUND( GMSND_KABOOM1 );
+	PRECACHE_SOUND( GMSND_KABOOM2 );
+	PRECACHE_SOUND( GMSND_KABOOM3 );
+}
+
+void CGunmanExplosionSmall::Spawn( void )
+{
+	Precache();
+
+	pev->solid    = SOLID_NOT;
+	pev->effects  = EF_NODRAW;
+	pev->movetype = MOVETYPE_NONE;
+
+	// Pick a random kaboom sound
+	const char *pszSounds[3] = { GMSND_KABOOM1, GMSND_KABOOM2, GMSND_KABOOM3 };
+	EMIT_SOUND( ENT(pev), CHAN_AUTO,
+		pszSounds[ RANDOM_LONG( 0, 2 ) ], 1.0f, ATTN_NORM );
+
+	// Trace down for a decal
+	TraceResult tr;
+	Vector vecSpot = pev->origin + Vector( 0, 0, 8 );
+	UTIL_TraceLine( vecSpot, vecSpot + Vector( 0, 0, -40 ), ignore_monsters, ENT(pev), &tr );
+	if ( tr.flFraction != 1.0f )
+		UTIL_DecalTrace( &tr, DECAL_SCORCH2 );
+
+	// Fireball visual
+	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+		WRITE_BYTE( TE_EXPLOSION );
+		WRITE_COORD( pev->origin.x );
+		WRITE_COORD( pev->origin.y );
+		WRITE_COORD( pev->origin.z );
+		WRITE_SHORT( g_sModelIndexFireball );
+		WRITE_BYTE( 15 );  // scale
+		WRITE_BYTE( 15 );  // framerate
+		WRITE_BYTE( TE_EXPLFLAG_NONE );
+	MESSAGE_END();
+
+	// Damage
+	::RadiusDamage( pev->origin, pev, pev,
+		(float)GunmanEntityDamage::Explosions::Small.damage,
+		(float)GunmanEntityDamage::Explosions::Small.radius,
+		CLASS_NONE, DMG_BLAST );
+
+	UTIL_Remove( this );
+}
+
+/*static*/ CGunmanExplosionSmall *CGunmanExplosionSmall::Create(
+	const Vector &origin, CBaseEntity *pOwner )
+{
+	CGunmanExplosionSmall *p = GetClassPtr( (CGunmanExplosionSmall *)NULL );
+	UTIL_SetOrigin( p->pev, origin );
+	p->pev->owner = pOwner ? pOwner->edict() : NULL;
+	p->Spawn();
+	return p;
+}
+
+// =========================================================
+// gunman_explosion_chem
+//
+// Chemical explosion entity (60 dmg / 256 u radius, scaled
+// by pev->scale for larger chem-bomb bursts).
+// Spawned by chemical bomb detonate when explode-flag is set.
+//
+// Use CGunmanExplosionChem::Create() to spawn it.
+// The optional fScale parameter multiplies the blast radius.
+// =========================================================
+class CGunmanExplosionChem : public CBaseEntity
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+
+	static CGunmanExplosionChem *Create( const Vector &origin, CBaseEntity *pOwner,
+		float fScale = 1.0f );
+};
+
+LINK_ENTITY_TO_CLASS( gunman_explosion_chem, CGunmanExplosionChem );
+
+void CGunmanExplosionChem::Precache( void )
+{
+	PRECACHE_SOUND( GMSND_EXPLODE3 );
+	PRECACHE_SOUND( GMSND_EXPLODE4 );
+	PRECACHE_SOUND( GMSND_EXPLODE5 );
+}
+
+void CGunmanExplosionChem::Spawn( void )
+{
+	Precache();
+
+	pev->solid    = SOLID_NOT;
+	pev->effects  = EF_NODRAW;
+	pev->movetype = MOVETYPE_NONE;
+
+	float fScale = ( pev->scale > 0.0f ) ? pev->scale : 1.0f;
+
+	// Pick a random chemical explosion sound
+	const char *pszSounds[3] = { GMSND_EXPLODE3, GMSND_EXPLODE4, GMSND_EXPLODE5 };
+	EMIT_SOUND( ENT(pev), CHAN_AUTO,
+		pszSounds[ RANDOM_LONG( 0, 2 ) ], 1.0f, ATTN_NORM );
+
+	// Trace down for a decal
+	TraceResult tr;
+	Vector vecSpot = pev->origin + Vector( 0, 0, 8 );
+	UTIL_TraceLine( vecSpot, vecSpot + Vector( 0, 0, -40 ), ignore_monsters, ENT(pev), &tr );
+	if ( tr.flFraction != 1.0f )
+		UTIL_DecalTrace( &tr, DECAL_SCORCH2 );
+
+	// Fireball visual (scaled)
+	int iSprScale = (int)( 15.0f * fScale );
+	if ( iSprScale < 5 ) iSprScale = 5;
+
+	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+		WRITE_BYTE( TE_EXPLOSION );
+		WRITE_COORD( pev->origin.x );
+		WRITE_COORD( pev->origin.y );
+		WRITE_COORD( pev->origin.z );
+		WRITE_SHORT( g_sModelIndexFireball );
+		WRITE_BYTE( (BYTE)iSprScale );
+		WRITE_BYTE( 15 );
+		WRITE_BYTE( TE_EXPLFLAG_NONE );
+	MESSAGE_END();
+
+	// Damage (radius scaled)
+	float flRadius = (float)GunmanEntityDamage::Explosions::Chem.radius * fScale;
+	::RadiusDamage( pev->origin, pev, pev,
+		(float)GunmanEntityDamage::Explosions::Chem.damage,
+		flRadius,
+		CLASS_NONE, DMG_BLAST );
+
+	UTIL_Remove( this );
+}
+
+/*static*/ CGunmanExplosionChem *CGunmanExplosionChem::Create(
+	const Vector &origin, CBaseEntity *pOwner, float fScale )
+{
+	CGunmanExplosionChem *p = GetClassPtr( (CGunmanExplosionChem *)NULL );
+	UTIL_SetOrigin( p->pev, origin );
+	p->pev->owner = pOwner ? pOwner->edict() : NULL;
+	p->pev->scale = fScale;
+	p->Spawn();
+	return p;
 }

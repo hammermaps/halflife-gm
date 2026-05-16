@@ -89,6 +89,7 @@ public:
 #define WEAPON_FISTS			22
 #define WEAPON_GCSHOTGUN		23
 #define WEAPON_AICORE			24
+#define WEAPON_GCGRENADE		25
 
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
 
@@ -126,6 +127,7 @@ public:
 #define FISTS_WEIGHT		0
 #define GCSHOTGUN_WEIGHT	15
 #define AICORE_WEIGHT		5
+#define GCGRENADE_WEIGHT	5
 
 
 // weapon clip/carry ammo capacities
@@ -150,6 +152,8 @@ public:
 #define BEAMGUN_MAX_CARRY		100
 #define M203_GRENADE_MAX_CARRY	10
 #define GC_BUCKSHOT_MAX_CARRY	90
+// GC Grenade uses dml_ammo (shared with DML) — max carry = DML_MAX_CARRY (8)
+#define GCGRENADE_MAX_CARRY		DML_MAX_CARRY
 
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP			-1
@@ -178,6 +182,7 @@ public:
 #define DML_MAX_CLIP			2
 #define BEAMGUN_MAX_CLIP		WEAPON_NOCLIP
 #define GCSHOTGUN_MAX_CLIP		WEAPON_NOCLIP
+#define GCGRENADE_MAX_CLIP		WEAPON_NOCLIP
 
 
 // the default amount of ammo that comes with each gun when it spawns
@@ -205,6 +210,7 @@ public:
 #define DML_DEFAULT_GIVE			2
 #define BEAMGUN_DEFAULT_GIVE		20
 #define GC_BUCKSHOT_GIVE			16
+#define GCGRENADE_DEFAULT_GIVE		1
 
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE	20
@@ -1496,6 +1502,55 @@ public:
 		return FALSE;
 #endif
 	}
+};
+
+// -----------------------------------------------------------------------
+// CGCGrenade -- Gunman Chronicles Grenade Core (weapon_gcgrenade)
+//
+// 2-axis customisation menu:
+//   Axis 1 — DetonationType : 1=Normal (timed), 2=OnImpact, 3=TripMine
+//   Axis 2 — PayloadType    : 1=Standard, 2=Cluster
+//
+// Uses dml_ammo (shared with the DML).
+// -----------------------------------------------------------------------
+class CGCGrenade : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 4; }
+	int GetItemInfo( ItemInfo *p );
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void WeaponIdle( void );
+
+	// menu-configurable axes (saved/restored)
+	int m_iDetonationType;  // 1=Normal(timed), 2=OnImpact, 3=TripMine
+	int m_iPayloadType;     // 1=Standard, 2=Cluster
+	int m_iMenuAxis;        // current SecondaryAttack axis (0=DetType, 1=PayloadType)
+
+	// throw state
+	float m_flStartThrow;
+	float m_flReleaseThrow;
+
+	virtual BOOL UseDecrement( void )
+	{
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+#ifndef CLIENT_DLL
+	virtual int	Save( CSave &save );
+	virtual int Restore( CRestore &restore );
+	static TYPEDESCRIPTION m_SaveData[];
+#endif
 };
 
 

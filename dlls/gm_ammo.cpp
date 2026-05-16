@@ -484,3 +484,54 @@ void CItemArmor::ArmorTouch( CBaseEntity *pOther )
 	SetTouch( NULL );
 	UTIL_Remove( this );
 }
+
+//=========================================================
+// ammo_rocketpack
+//
+// Rocket Pack pickup — gives DML ammo (6 rounds) and also
+// gives weapon_gcgrenade to the player if they don't already
+// carry one.  Matches gunman_ammo_rocketpack from the Lua
+// reference (ammoAmount=6, ammoType="gunman_ammo_dmlclip").
+//=========================================================
+#define AMMO_ROCKETPACK_GIVE  6
+
+class CRocketPackAmmo : public CBasePlayerAmmo
+{
+	void Spawn( void )
+	{
+		Precache();
+		SET_MODEL( ENT( pev ), "models/dmlammo.mdl" );
+		CBasePlayerAmmo::Spawn();
+	}
+	void Precache( void )
+	{
+		PRECACHE_MODEL( "models/dmlammo.mdl" );
+		PRECACHE_SOUND( "items/9mmclip1.wav" );
+	}
+	BOOL AddAmmo( CBaseEntity *pOther )
+	{
+		CBasePlayer *pPlayer = (CBasePlayer *)pOther;
+
+		// Give the grenade weapon if the player does not already have it.
+		// weapon_gcgrenade is registered via LINK_ENTITY_TO_CLASS in gm_grenade.cpp.
+		if ( pPlayer )
+		{
+			if ( !( pPlayer->pev->weapons & ( 1 << WEAPON_GCGRENADE ) ) )
+			{
+				CBaseEntity *pWeapon = CBaseEntity::Create( "weapon_gcgrenade",
+					pPlayer->pev->origin, pPlayer->pev->angles, NULL );
+				if ( pWeapon )
+					pWeapon->Touch( pPlayer );
+			}
+		}
+
+		if ( pOther->GiveAmmo( AMMO_ROCKETPACK_GIVE, "dml_ammo", DML_MAX_CARRY ) != -1 )
+		{
+			EMIT_SOUND( ENT( pev ), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM );
+			return TRUE;
+		}
+		return FALSE;
+	}
+};
+LINK_ENTITY_TO_CLASS( ammo_rocketpack, CRocketPackAmmo );
+

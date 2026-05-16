@@ -154,6 +154,7 @@ call ..\..\filecopy.bat $(TargetDir)\$(TargetName).pdb ..\..\..\game\mod\dlls\$(
     <ClCompile Include="..\..\dlls\gm_func_vehicle.cpp" />
     <ClCompile Include="..\..\dlls\gm_gcshotgun.cpp" />
     <ClCompile Include="..\..\dlls\gm_geneworm.cpp" />
+    <ClCompile Include="..\..\dlls\gm_grenade.cpp" />
     <ClCompile Include="..\..\dlls\gm_houndeye.cpp" />
     <ClCompile Include="..\..\dlls\gm_info.cpp" />
     <ClCompile Include="..\..\dlls\gm_mapents.cpp" />
@@ -250,6 +251,8 @@ call ..\..\filecopy.bat $(TargetDir)\$(TargetName).pdb ..\..\..\game\mod\dlls\$(
     <ClInclude Include="..\..\dlls\flyingmonster.h" />
     <ClInclude Include="..\..\dlls\func_break.h" />
     <ClInclude Include="..\..\dlls\gamerules.h" />
+    <ClInclude Include="..\..\dlls\gunman_damage.h" />
+    <ClInclude Include="..\..\dlls\gunman_sounds.h" />
     <ClInclude Include="..\..\dlls\hornet.h" />
     <ClInclude Include="..\..\dlls\items.h" />
     <ClInclude Include="..\..\dlls\monsterevent.h" />

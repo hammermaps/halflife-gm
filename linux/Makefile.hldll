@@ -81,6 +81,7 @@ HLDLL_OBJS = \
 	$(HLDLL_OBJ_DIR)/gm_func_vehicle.o \
 	$(HLDLL_OBJ_DIR)/gm_gcshotgun.o \
 	$(HLDLL_OBJ_DIR)/gm_geneworm.o \
+	$(HLDLL_OBJ_DIR)/gm_grenade.o \
 	$(HLDLL_OBJ_DIR)/gm_houndeye.o \
 	$(HLDLL_OBJ_DIR)/gm_info.o \
 	$(HLDLL_OBJ_DIR)/gm_mapents.o \
