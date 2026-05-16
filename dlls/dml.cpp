@@ -126,6 +126,10 @@ enum dml_anim_e
 
 #define DML_HOLSTER DML_DRAW
 
+// Smoke sprite index for missile trails — written by CDML::Precache()
+// so it is always valid for the current map (avoids stale index across level changes).
+static int g_iDMLSmokeSprite = 0;
+
 // -----------------------------------------------------------------------
 // CDMLClusterBomb -- sub-projectile spawned by Cluster payload
 //
@@ -187,6 +191,7 @@ void CDMLClusterBomb::BombTouch( CBaseEntity *pOther )
 	if ( pOther && !FClassnameIs( pOther->pev, "worldspawn" )
 		&& pOther->pev->solid != SOLID_BSP )
 	{
+		m_flDetonateTime = gpGlobals->time;  // force immediate detonation
 		BombThink();
 	}
 }
@@ -304,14 +309,10 @@ void CDMLMissile::Spawn( void )
 	m_bDetonated  = FALSE;
 
 	// smoke + flame trail
-	static int iSmokeSprite = 0;
-	if ( !iSmokeSprite )
-		iSmokeSprite = PRECACHE_MODEL( "sprites/smoke.spr" );
-
 	MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
 		WRITE_BYTE( TE_BEAMFOLLOW );
 		WRITE_SHORT( entindex() );
-		WRITE_SHORT( iSmokeSprite );
+		WRITE_SHORT( g_iDMLSmokeSprite );
 		WRITE_BYTE( 30 );   // life * 0.1
 		WRITE_BYTE( 4 );    // width
 		WRITE_BYTE( 224 );  // r
@@ -430,7 +431,7 @@ void CDMLMissile::MissileThink( void )
 		else if ( m_iFlightPathType == 2 )
 		{
 			// Homing: steer toward locked target
-			CBaseEntity *pTarget = (CBaseEntity *)(CBaseEntity *)m_hHomingTarget;
+			CBaseEntity *pTarget = (CBaseEntity *)m_hHomingTarget;
 			if ( pTarget && pTarget->IsAlive() )
 			{
 				Vector vecDir = ( pTarget->Center() - pev->origin ).Normalize();
@@ -450,15 +451,13 @@ void CDMLMissile::MissileThink( void )
 		{
 			// Spiral: sinusoidal offset around the forward axis
 			UTIL_MakeVectors( pev->angles );
-			float t     = gpGlobals->time * 8.0f + m_flSpiralPhase;
-			float dist  = ( pev->origin - pev->origin ).Length(); // travel dist approx
-			float frac  = 1.0f; // full amplitude throughout (Lua uses fraction vs 4096)
+			float t = gpGlobals->time * 8.0f + m_flSpiralPhase;
 
 			Vector vecUp    = gpGlobals->v_up;
 			Vector vecRight = CrossProduct( gpGlobals->v_forward, vecUp );
 
-			float sComp = (float)sin( t ) * 150.0f * frac;
-			float cComp = (float)cos( t ) * 150.0f * frac;
+			float sComp = (float)sin( t ) * 150.0f;
+			float cComp = (float)cos( t ) * 150.0f;
 
 			if ( m_bSpiralInvert )
 				cComp = -cComp;
@@ -572,7 +571,7 @@ void CDML::Precache( void )
 	PRECACHE_MODEL("models/p_crossbow.mdl");
 	PRECACHE_MODEL("models/dmlrocket.mdl");
 	PRECACHE_MODEL("models/dmlcluster.mdl");
-	PRECACHE_MODEL("sprites/smoke.spr");
+	g_iDMLSmokeSprite = PRECACHE_MODEL("sprites/smoke.spr");
 
 	PRECACHE_SOUND("gunmanchronicles/weapons/dml_fire.wav");
 	PRECACHE_SOUND("gunmanchronicles/weapons/dml_reload.wav");
@@ -668,17 +667,27 @@ void CDML::SecondaryAttack( void )
 static CBaseEntity *DML_FindHomingTarget( CBasePlayer *pPlayer )
 {
 	UTIL_MakeVectors( pPlayer->pev->v_angle );
-	Vector vecFwd = gpGlobals->v_forward;
+	Vector vecFwd    = gpGlobals->v_forward;
+	Vector vecGunPos = pPlayer->GetGunPosition();
 
-	CBaseEntity *pBest = NULL;
-	float flBestDist = DML_HOMING_RANGE;
+	CBaseEntity *pBest   = NULL;
+	float        flBestDist = DML_HOMING_RANGE;
 
-	CBaseEntity *pEnt = NULL;
-	while ( ( pEnt = UTIL_FindEntityByClassname( pEnt, "monster_*" ) ) != NULL )
+	// Iterate all edicts and filter by classname prefix "monster_".
+	// UTIL_FindEntityByClassname does not support wildcard patterns in
+	// the GoldSrc engine, so we do the prefix check ourselves.
+	for ( int i = 1; i < gpGlobals->maxEntities; i++ )
 	{
-		if ( !pEnt->IsAlive() ) continue;
+		edict_t *pEdict = INDEXENT( i );
+		if ( !pEdict || pEdict->free ) continue;
 
-		Vector vecToEnt = ( pEnt->Center() - pPlayer->GetGunPosition() );
+		CBaseEntity *pEnt = CBaseEntity::Instance( pEdict );
+		if ( !pEnt || !pEnt->IsAlive() ) continue;
+
+		const char *pszClass = STRING( pEnt->pev->classname );
+		if ( strncmp( pszClass, "monster_", 8 ) != 0 ) continue;
+
+		Vector vecToEnt = ( pEnt->Center() - vecGunPos );
 		float flDist = vecToEnt.Length();
 		if ( flDist > DML_HOMING_RANGE ) continue;
 
@@ -688,7 +697,7 @@ static CBaseEntity *DML_FindHomingTarget( CBasePlayer *pPlayer )
 
 		// Line-of-sight check
 		TraceResult tr;
-		UTIL_TraceLine( pPlayer->GetGunPosition(), pEnt->Center(),
+		UTIL_TraceLine( vecGunPos, pEnt->Center(),
 			dont_ignore_monsters, ENT(pPlayer->pev), &tr );
 		if ( tr.flFraction < 0.99f ) continue;
 
@@ -744,9 +753,10 @@ void CDML::PrimaryAttack( void )
 		return;
 	}
 
-	// LaunchType=2 (WhenTargeted): need a homing target
+	// LaunchType=2 (WhenTargeted): need a homing target regardless of flight path.
+	// Also populate for Homing flight path so the missile can track it.
 	CBaseEntity *pHomingTarget = NULL;
-	if ( m_iFlightPathType == 2 )
+	if ( m_iFlightPathType == 2 || m_iLaunchType == 2 )
 	{
 		pHomingTarget = DML_FindHomingTarget( m_pPlayer );
 	}
