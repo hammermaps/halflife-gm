@@ -1606,6 +1606,22 @@ TYPEDESCRIPTION	CShotgun::m_SaveData[] =
 };
 IMPLEMENT_SAVERESTORE( CShotgun, CBasePlayerWeapon );
 
+TYPEDESCRIPTION	CDML::m_SaveData[] =
+{
+	// 4-axis customisation menu state (persisted so configuration survives save/load)
+	DEFINE_FIELD( CDML, m_iLaunchType,     FIELD_INTEGER ),
+	DEFINE_FIELD( CDML, m_iFlightPathType, FIELD_INTEGER ),
+	DEFINE_FIELD( CDML, m_iDetonationType, FIELD_INTEGER ),
+	DEFINE_FIELD( CDML, m_iPayloadType,    FIELD_INTEGER ),
+	DEFINE_FIELD( CDML, m_iMenuAxis,       FIELD_INTEGER ),
+
+	// Reload tracking (persisted so a reload in progress isn't lost)
+	DEFINE_FIELD( CDML, m_iReloadFlipFlop,       FIELD_INTEGER ),
+	DEFINE_FIELD( CDML, m_iReloadState,          FIELD_INTEGER ),
+	DEFINE_FIELD( CDML, m_flReloadCompleteTime,  FIELD_TIME    ),
+};
+IMPLEMENT_SAVERESTORE( CDML, CBasePlayerWeapon );
+
 TYPEDESCRIPTION	CGaussPistol::m_SaveData[] =
 {
 	DEFINE_FIELD( CGaussPistol, m_iFireMode,      FIELD_INTEGER ),

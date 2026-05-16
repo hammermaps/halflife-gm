@@ -146,7 +146,7 @@ public:
 #define SHOTCYCLER_MAX_CARRY	100
 #define CHEMICAL_MAX_CARRY		150
 #define MINIGUN_MAX_CARRY		500
-#define DML_MAX_CARRY			30
+#define DML_MAX_CARRY			8
 #define BEAMGUN_MAX_CARRY		100
 #define M203_GRENADE_MAX_CARRY	10
 #define GC_BUCKSHOT_MAX_CARRY	90
@@ -175,7 +175,7 @@ public:
 #define SHOTCYCLER_MAX_CLIP		8
 #define CHEMICALGUN_MAX_CLIP	30
 #define MINIGUN_MAX_CLIP		100
-#define DML_MAX_CLIP			4
+#define DML_MAX_CLIP			2
 #define BEAMGUN_MAX_CLIP		WEAPON_NOCLIP
 #define GCSHOTGUN_MAX_CLIP		WEAPON_NOCLIP
 
@@ -202,7 +202,7 @@ public:
 #define SHOTCYCLER_DEFAULT_GIVE		8
 #define CHEMICALGUN_DEFAULT_GIVE	30
 #define MINIGUN_DEFAULT_GIVE		100
-#define DML_DEFAULT_GIVE			4
+#define DML_DEFAULT_GIVE			2
 #define BEAMGUN_DEFAULT_GIVE		20
 #define GC_BUCKSHOT_GIVE			16
 
@@ -1258,6 +1258,12 @@ private:
 class CDML : public CBasePlayerWeapon
 {
 public:
+#ifndef CLIENT_DLL
+	int		Save( CSave &save );
+	int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+#endif
+
 	void Spawn( void );
 	void Precache( void );
 	int iItemSlot( void ) { return 6; }
@@ -1270,6 +1276,20 @@ public:
 	void Holster( int skiplocal = 0 );
 	void Reload( void );
 	void WeaponIdle( void );
+
+	// 4-axis customisation menu state (persisted across save/load)
+	int  m_iLaunchType;      // 1=WhenFired, 2=WhenTargeted
+	int  m_iFlightPathType;  // 1=Guided, 2=Homing, 3=Spiral
+	int  m_iDetonationType;  // 1=OnImpact, 2=Timed, 3=TripMine
+	int  m_iPayloadType;     // 1=Explosive, 2=Cluster
+	int  m_iMenuAxis;        // current axis being configured (1-4)
+
+	// Reload-side tracker so single reloads alternate left/right
+	int  m_iReloadFlipFlop;
+
+	// In-reload state (0 = idle, 1 = reloading, 2 = reload complete)
+	int  m_iReloadState;
+	float m_flReloadCompleteTime;
 
 	virtual BOOL UseDecrement( void )
 	{ 
