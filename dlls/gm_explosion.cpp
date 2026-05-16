@@ -83,7 +83,11 @@ void CEnvExplosionGM::KeyValue( KeyValueData *pkvd )
 	}
 	else if ( FStrEq( pkvd->szKeyName, "spriteScale" ) )
 	{
-		m_spriteScale = atoi( pkvd->szValue );
+		int scale = atoi( pkvd->szValue );
+		// 0 = auto-compute (sentinel); clamp explicit values to valid byte range 1-255
+		if ( scale < 0 ) scale = 0;
+		if ( scale > 255 ) scale = 255;
+		m_spriteScale = scale;
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -107,6 +111,10 @@ void CEnvExplosionGM::Spawn( void )
 		if ( flSpriteScale < 10 )
 		{
 			flSpriteScale = 10;
+		}
+		else if ( flSpriteScale > 255 )
+		{
+			flSpriteScale = 255;
 		}
 
 		m_spriteScale = (int)flSpriteScale;

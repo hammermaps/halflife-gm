@@ -37,14 +37,14 @@
 //   Arthropods:
 //     monster_scorpion, monster_largescorpion
 //   Mechanical / special:
-//     monster_sentry, monster_sentry_mini
+//     monster_sentry_mini
 //   Worm/tube variants:
 //     monster_tube, monster_tubequeen
 //   Bosses and unique NPCs:
 //     monster_aigirl, monster_ourano, monster_renesaur,
 //     monster_endboss, monster_gator
-//   Environmental / furniture:
-//     monster_furniture, monster_targetrocket,
+//   Environmental / vehicles:
+//     monster_targetrocket,
 //     monster_trainingbot
 //   Small critters:
 //     monster_critter, monster_cricket, monster_dragonfly,
@@ -110,8 +110,8 @@ LINK_ENTITY_TO_CLASS( monster_largescorpion, CGMMonsterStub );
 
 //=========================================================
 // Mechanical / special
+// Note: monster_sentry is already CSentry in turret.cpp
 //=========================================================
-LINK_ENTITY_TO_CLASS( monster_sentry,      CGMMonsterStub );
 LINK_ENTITY_TO_CLASS( monster_sentry_mini, CGMMonsterStub );
 
 //=========================================================
@@ -130,9 +130,9 @@ LINK_ENTITY_TO_CLASS( monster_endboss,  CGMMonsterStub );
 LINK_ENTITY_TO_CLASS( monster_gator,    CGMMonsterStub );
 
 //=========================================================
-// Environmental / furniture / vehicles
+// Environmental / vehicles
+// Note: monster_furniture is CFurniture in scripted.cpp (real implementation)
 //=========================================================
-LINK_ENTITY_TO_CLASS( monster_furniture,     CGMMonsterStub );
 LINK_ENTITY_TO_CLASS( monster_targetrocket,  CGMMonsterStub );
 LINK_ENTITY_TO_CLASS( monster_trainingbot,   CGMMonsterStub );
 

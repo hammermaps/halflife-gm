@@ -283,7 +283,8 @@
 @PointClass base(Monster) size(-24 -24 0, 24 24 48) = monster_scorpion      : "Scorpion (stub)" []
 @PointClass base(Monster) size(-48 -48 0, 48 48 64) = monster_largescorpion : "Large Scorpion (stub)" []
 
-@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_sentry      : "Sentry (stub)" []
+// monster_sentry is the real Half-Life sentry turret (CSentry in turret.cpp)
+@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_sentry      : "Sentry Turret" []
 @PointClass base(Monster) size(-8 -8 0, 8 8 36)    = monster_sentry_mini : "Sentry Mini (stub)" []
 
 @PointClass base(Monster) size(-32 -32 0, 32 32 128) = monster_tube      : "Tube (stub)" []
@@ -295,7 +296,8 @@
 @PointClass base(Monster) size(-64 -64 0, 64 64 256) = monster_endboss : "End Boss (stub)" []
 @PointClass base(Monster) size(-32 -32 0, 32 32 48) = monster_gator    : "Gator (stub)" []
 
-@PointClass base(Monster) size(-32 -32 0, 32 32 72) = monster_furniture    : "Furniture (stub)" []
+// monster_furniture is the real Half-Life scripted sequence prop (CFurniture in scripted.cpp)
+@PointClass base(Monster) size(-32 -32 0, 32 32 72) = monster_furniture    : "Scripted Furniture Prop" []
 @PointClass base(Monster) size(-8 -8 0, 8 8 16)     = monster_targetrocket : "Target Rocket (stub)" []
 @PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_trainingbot  : "Training Bot (stub)" []
 
@@ -487,10 +489,10 @@
 	random(integer)         : "Random multiplier %" : 100
 	attenuation(choices)    : "Sound Attenuation" : 1 =
 	[
-		-1 : "Everywhere (no attenuation)"
-		 1 : "Normal"
-		 2 : "Idle (short range)"
-		 3 : "Static (very short range)"
+		0 : "Everywhere (ATTN_NONE, no attenuation)"
+		1 : "Normal (ATTN_NORM)"
+		2 : "Idle / Short range (ATTN_IDLE)"
+		3 : "Static / Very short range (ATTN_STATIC)"
 	]
 ]
 

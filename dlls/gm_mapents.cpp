@@ -76,15 +76,17 @@ private:
 	float	m_flVolume;        // playback volume
 	float	m_flWait;          // base interval between sounds (seconds)
 	int		m_iRandom;         // percentage randomness added to interval
-	float	m_flAttenuation;   // sound attenuation radius
+	int		m_iAttenuationSel; // FGD selector: -1=unset, 0=none, 1=norm, 2=idle, 3=static
+	float	m_flAttenuation;   // resolved ATTN_* float used during playback
 };
 
 TYPEDESCRIPTION CRandomSpeaker::m_SaveData[] =
 {
-	DEFINE_FIELD( CRandomSpeaker, m_flVolume,      FIELD_FLOAT   ),
-	DEFINE_FIELD( CRandomSpeaker, m_flWait,        FIELD_FLOAT   ),
-	DEFINE_FIELD( CRandomSpeaker, m_iRandom,       FIELD_INTEGER ),
-	DEFINE_FIELD( CRandomSpeaker, m_flAttenuation, FIELD_FLOAT   ),
+	DEFINE_FIELD( CRandomSpeaker, m_flVolume,        FIELD_FLOAT   ),
+	DEFINE_FIELD( CRandomSpeaker, m_flWait,          FIELD_FLOAT   ),
+	DEFINE_FIELD( CRandomSpeaker, m_iRandom,         FIELD_INTEGER ),
+	DEFINE_FIELD( CRandomSpeaker, m_iAttenuationSel, FIELD_INTEGER ),
+	DEFINE_FIELD( CRandomSpeaker, m_flAttenuation,   FIELD_FLOAT   ),
 };
 
 IMPLEMENT_SAVERESTORE( CRandomSpeaker, CBaseEntity );
@@ -115,7 +117,13 @@ void CRandomSpeaker::KeyValue( KeyValueData *pkvd )
 	}
 	else if ( FStrEq( pkvd->szKeyName, "attenuation" ) )
 	{
-		m_flAttenuation = (float)atof( pkvd->szValue );
+		// Store as integer selector; resolved to ATTN_* float in Spawn().
+		// Convention mirrors ambient_generic:
+		//   0 = ATTN_NONE (everywhere)
+		//   1 = ATTN_NORM (normal)
+		//   2 = ATTN_IDLE (idle / short-range)
+		//   3 = ATTN_STATIC (static / very short-range)
+		m_iAttenuationSel = atoi( pkvd->szValue );
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -148,10 +156,21 @@ void CRandomSpeaker::Spawn( void )
 		m_iRandom = 0;
 	if ( m_iRandom > 100 )
 		m_iRandom = 100;
-	// attenuation: 0=everywhere, 1=normal, 2=idle, 3=static; -1 means no attenuation
-	// map value to engine ATTN_* constant: store raw value (EMIT_AMBIENT_SOUND accepts float)
-	if ( m_flAttenuation == 0.0f )
-		m_flAttenuation = ATTN_NORM;  // default to normal attenuation
+	// Resolve integer attenuation selector → engine ATTN_* float.
+	// FGD choices: 1=ATTN_NORM (default), 2=ATTN_IDLE, 3=ATTN_STATIC,
+	//              0=ATTN_NONE (everywhere).
+	// m_iAttenuationSel is zero-initialized when the key is absent from the
+	// BSP, so case 0 doubles as the "not set" path, which maps to ATTN_NORM.
+	// (Hammer always writes the default value "1" to the BSP, so a zero here
+	//  only appears for old maps written without this FGD key.)
+	switch ( m_iAttenuationSel )
+	{
+	case 0: m_flAttenuation = ATTN_NORM;   break; // unset → default
+	case 1: m_flAttenuation = ATTN_NORM;   break;
+	case 2: m_flAttenuation = ATTN_IDLE;   break;
+	case 3: m_flAttenuation = ATTN_STATIC; break;
+	default: m_flAttenuation = ATTN_NONE;  break; // raw-BSP values ≤ -1
+	}
 
 	// Start active by default (consistent with ambient_generic behaviour)
 	SetThink( &CRandomSpeaker::SpeakerThink );
@@ -777,14 +796,16 @@ public:
 	virtual int ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 private:
-	BOOL	m_blStartOn;     // spritestartstate: start emitting on Spawn()
-	string_t m_iszTargetEnt; // targetent: follow another entity's origin
+	BOOL	m_blStartOn;       // spritestartstate: start emitting on Spawn()
+	string_t m_iszTargetEnt;  // targetent: follow another entity's origin
+	EHANDLE  m_hTargetEnt;    // resolved target entity handle (cached)
 };
 
 TYPEDESCRIPTION CEntitySpriteGod::m_SaveData[] =
 {
-	DEFINE_FIELD( CEntitySpriteGod, m_blStartOn,     FIELD_BOOLEAN ),
-	DEFINE_FIELD( CEntitySpriteGod, m_iszTargetEnt,  FIELD_STRING  ),
+	DEFINE_FIELD( CEntitySpriteGod, m_blStartOn,    FIELD_BOOLEAN ),
+	DEFINE_FIELD( CEntitySpriteGod, m_iszTargetEnt, FIELD_STRING  ),
+	DEFINE_FIELD( CEntitySpriteGod, m_hTargetEnt,   FIELD_EHANDLE ),
 };
 
 IMPLEMENT_SAVERESTORE( CEntitySpriteGod, CBaseEntity );
@@ -900,10 +921,16 @@ void CEntitySpriteGod::SpriteGodThink( void )
 
 	if ( !pev->model ) return;
 
-	// If a target entity is configured, snap our origin to theirs each tick
+	// If a target entity is configured, snap our origin to theirs each tick.
+	// The EHANDLE is cached; re-resolve via name search only when it is NULL.
 	if ( m_iszTargetEnt )
 	{
-		CBaseEntity *pTarget = UTIL_FindEntityByTargetname( NULL, STRING( m_iszTargetEnt ) );
+		CBaseEntity *pTarget = m_hTargetEnt;
+		if ( !pTarget )
+		{
+			pTarget = UTIL_FindEntityByTargetname( NULL, STRING( m_iszTargetEnt ) );
+			m_hTargetEnt = pTarget;
+		}
 		if ( pTarget )
 			UTIL_SetOrigin( pev, pTarget->pev->origin );
 	}
