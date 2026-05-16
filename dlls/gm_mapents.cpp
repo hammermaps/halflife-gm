@@ -1286,6 +1286,8 @@ void CDecoreExplodable::Precache( void )
 
 	const char *szGib = m_iszGibModel ? STRING( m_iszGibModel ) : "models/decoregibs2.mdl";
 	PRECACHE_MODEL( (char*)szGib );
+
+	PRECACHE_MODEL( "sprites/fexplo.spr" );
 }
 
 void CDecoreExplodable::Spawn( void )
@@ -1336,13 +1338,19 @@ void CDecoreExplodable::ExplodeAndRemove( CBaseEntity *pAttacker )
 {
 	const char *szGib = m_iszGibModel ? STRING( m_iszGibModel ) : "models/decoregibs2.mdl";
 
-	// Spawn a gib at the entity's origin
-	CBaseEntity *pGib = CBaseEntity::Create( "env_model", pev->origin, pev->angles, ENT(pev) );
+	// Spawn a visible gib at the entity's origin that flies out and fades
+	CGib *pGib = GetClassPtr( (CGib *)NULL );
 	if ( pGib )
 	{
-		pGib->pev->model   = ALLOC_STRING( szGib );
-		pGib->pev->effects = EF_NODRAW; // placeholder — real gib would use gibs system
-		UTIL_Remove( pGib );
+		pGib->Spawn( szGib );
+		pGib->pev->origin   = pev->origin;
+		pGib->pev->angles   = pev->angles;
+		pGib->pev->velocity = Vector(
+			RANDOM_FLOAT( -120.0f, 120.0f ),
+			RANDOM_FLOAT( -120.0f, 120.0f ),
+			RANDOM_FLOAT(   80.0f, 220.0f ) );
+		pGib->m_lifeTime    = 8;
+		pGib->m_bloodColor  = DONT_BLEED;
 	}
 
 	// Small explosion effect at origin
@@ -1563,12 +1571,13 @@ LINK_ENTITY_TO_CLASS( decore_sack, CDecoreSack );
 // Solid boulder prop used by scripted sequences (the model
 // can be knocked or used in scripted scene transitions).
 // Solid (blocks movement), does not drop to floor by default.
-// Default model: models/boulder.mdl
+// Default model: models/Rock.mdl (nearest shipping equivalent to
+// a scripted boulder — boulder.mdl is not present in the game directory)
 //=========================================================
 class CDecoreScriptedBoulder : public CDecoreSimple
 {
 public:
-	const char *DefaultModel( void )  { return "models/boulder.mdl"; }
+	const char *DefaultModel( void )  { return "models/Rock.mdl"; }
 	BOOL        ShouldBeSolid( void ) { return TRUE; }
 };
 

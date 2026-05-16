@@ -600,7 +600,7 @@
 
 @PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 64) = decore_sack : "Sack/bag decoration (Gunman)" []
 
-@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 16) = decore_scripted_boulder : "Scripted boulder — solid (Gunman)" []
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 16) = decore_scripted_boulder : "Scripted boulder — solid, models/Rock.mdl (Gunman)" []
 
 @PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 32) = decore_corpse : "Corpse prop — drops to floor; set 'model' key (Gunman)"
 [
