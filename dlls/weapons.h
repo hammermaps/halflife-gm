@@ -1168,6 +1168,7 @@ public:
 	void Holster( int skiplocal = 0 );
 	void Reload( void );
 	void WeaponIdle( void );
+	void ItemPostFrame( void );
 
 	virtual BOOL UseDecrement( void )
 	{ 
@@ -1437,6 +1438,7 @@ public:
 	BOOL Deploy( void );
 	void Holster( int skiplocal = 0 );
 	void WeaponIdle( void );
+	void ItemPostFrame( void );
 
 	void FireShotgun( void );
 	void ShotgunReconfigure( void );

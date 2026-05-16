@@ -167,11 +167,9 @@ void CGCShotgun::FireShotgun( void )
 {
 	int iShells = m_iShellCount;
 
-	// Can't fire more shells than we have
+	// Reject the shot (dry-fire) if ammo is insufficient for the configured shell count.
+	// This matches Lua: if Ammo1() < ammoCosts[CurrentShellCost] then DryFire() end
 	if ( m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] < iShells )
-		iShells = m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType];
-
-	if ( iShells <= 0 )
 	{
 		PlayEmptySound();
 		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.15f;
@@ -219,7 +217,7 @@ void CGCShotgun::FireShotgun( void )
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 
 	// Schedule per-shot cock sound (Lua: gunman_shotgunCock, CustomizeSoundDelay = 0.8 s)
-	m_flCockTime = UTIL_WeaponTimeBase() + 0.5f;
+	m_flCockTime = gpGlobals->time + 0.8f;
 
 	m_pPlayer->pev->punchangle.x = -5.0f * iShells;
 }
@@ -258,14 +256,6 @@ void CGCShotgun::WeaponIdle( void )
 	ResetEmptySound();
 	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 
-	// Per-shot cock sound (Lua: gunman_shotgunCock, CustomizeSoundDelay = 0.8 s)
-	if ( m_flCockTime > 0.0f && UTIL_WeaponTimeBase() >= m_flCockTime )
-	{
-		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,
-			"gunmanchronicles/weapons/shotgun_cock_heavy.wav", 0.8f, ATTN_NORM );
-		m_flCockTime = 0.0f;
-	}
-
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 
@@ -286,4 +276,18 @@ void CGCShotgun::WeaponIdle( void )
 
 	SendWeaponAnim( iAnim );
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + flNextIdle;
+}
+
+
+void CGCShotgun::ItemPostFrame( void )
+{
+	// Per-shot cock sound — polled every frame so it fires even while attack buttons are held
+	if ( m_flCockTime > 0.0f && gpGlobals->time >= m_flCockTime )
+	{
+		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,
+			"gunmanchronicles/weapons/shotgun_cock_heavy.wav", 0.8f, ATTN_NORM );
+		m_flCockTime = 0.0f;
+	}
+
+	CBasePlayerWeapon::ItemPostFrame();
 }

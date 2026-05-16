@@ -163,8 +163,8 @@ void CShotCycler::PrimaryAttack( void )
 
 	m_pPlayer->pev->punchangle.x = -5.0;
 
-	// Schedule per-shot cock sound
-	m_flCockTime = UTIL_WeaponTimeBase() + 0.5f;
+	// Schedule per-shot cock sound (Lua: gunman_shotgunCock)
+	m_flCockTime = gpGlobals->time + 0.8f;
 }
 
 
@@ -189,14 +189,6 @@ void CShotCycler::WeaponIdle( void )
 	ResetEmptySound( );
 
 	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
-
-	// Per-shot cock sound
-	if ( m_flCockTime > 0.0f && UTIL_WeaponTimeBase() >= m_flCockTime )
-	{
-		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,
-			"gunmanchronicles/weapons/shotgun_cock_heavy.wav", 0.8f, ATTN_NORM );
-		m_flCockTime = 0.0f;
-	}
 
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
@@ -228,4 +220,18 @@ void CShotCycler::Holster( int skiplocal /* = 0 */ )
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 
 	SendWeaponAnim( SHOTCYCLER_HOLSTER );
+}
+
+
+void CShotCycler::ItemPostFrame( void )
+{
+	// Per-shot cock sound — polled every frame so it fires even while attack buttons are held
+	if ( m_flCockTime > 0.0f && gpGlobals->time >= m_flCockTime )
+	{
+		EMIT_SOUND( ENT(m_pPlayer->pev), CHAN_ITEM,
+			"gunmanchronicles/weapons/shotgun_cock_heavy.wav", 0.8f, ATTN_NORM );
+		m_flCockTime = 0.0f;
+	}
+
+	CBasePlayerWeapon::ItemPostFrame();
 }
