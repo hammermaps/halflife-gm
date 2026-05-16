@@ -173,6 +173,24 @@ be picked up incrementally.
 | Aicore activation sounds precached | ✅ done | `Precache()` caches `mainframe/aiplug_activate_gs.wav`, `aiplug_deactivate_gs.wav`, `aiplug_loop_gs.wav`. |
 | FGD entry | ✅ done | `weapon_aicore` and `button_aiwallplug` added to `game/gunman/gunman.fgd`. |
 
+### 2.9 Grenade Core (`weapon_gcgrenade` / `CGCGrenade`)
+
+**Status: ✅ Phase-1 implemented** — see `dlls/gm_grenade.cpp` and `dlls/weapons.h`.
+
+| Lua feature | C++ status | Notes |
+|---|---|---|
+| 2-axis config menu (DetonationType 1-3 / PayloadType 1-2) | ✅ done | `m_iDetonationType`, `m_iPayloadType`, `m_iMenuAxis`; `SecondaryAttack()` cycles axes. |
+| DetonationType=1 (Normal): 3 s timed fuse throw | ✅ done | `WeaponIdle()` computes throw arc, spawns `CGCGrenadeArmed` with fuse. |
+| DetonationType=2 (OnImpact): detonates on first collision | ✅ done | `m_bDetonateOnImpact=TRUE` passed to `CGCGrenadeArmed::Create()`. |
+| DetonationType=3 (TripMine): place mine on surface | ✅ done | `PrimaryAttack()` traces 128 u, spawns `CGCGrenadeTripmine`. |
+| PayloadType=2 (Cluster): spawns 6 sub-bombs | ✅ done | `GCG_SpawnClusters()` helper used by armed + tripmine detonate paths. |
+| `CGCGrenadeArmed` projectile entity | ✅ done | `gunman_weapon_grenade_armed` — MOVETYPE_BOUNCE, timed + impact detonation. |
+| `CGCGrenadeCluster` sub-bomb entity | ✅ done | `gunman_weapon_grenade_cluster` — random 1–2.5 s fuse, small explosion. |
+| `CGCGrenadeTripmine` surface mine | ✅ done | `gunman_weapon_grenade_tripmine` — 3 s arm delay, tripwire detection, TakeDamage detonation. |
+| Uses `dml_ammo` (shared with Mule) | ✅ done | `GetItemInfo()` sets `pszAmmo1="dml_ammo"`, `iMaxAmmo1=DML_MAX_CARRY`. |
+| Save/restore for config fields | ✅ done | `CGCGrenade::m_SaveData[]` in `gm_grenade.cpp`. |
+| WEAPON_GCGRENADE = 25 | ✅ done | Added to `weapons.h`. |
+
 ## 3. Per-entity parity gap (server-side)
 
 The Lua `entities/` folder contains 24 entities. Mapping to existing
@@ -187,21 +205,21 @@ C++ stubs:
 | `gunman_ammo_beamgunclip`                   | `CBeamGunAmmo`                | ✅ |
 | `gunman_ammo_minigunclip`                   | `CMinigunAmmo`                | ✅ |
 | `gunman_ammo_dmlclip`                       | `CDMLAmmo`                    | ✅ |
-| `gunman_ammo_rocketpack`                    | *(none yet)*                  | ❌ — single-rocket pickup. |
+| `gunman_ammo_rocketpack`                    | `CRocketPackAmmo` / `ammo_rocketpack` in `dlls/gm_ammo.cpp` | ✅ — gives 6 DML ammo + auto-gives `weapon_gcgrenade` |
 | `gunman_explosion`                          | `CEnvExplosionGM` (standard variant) | ✅ |
-| `gunman_explosion_small`                    | *(none yet)*                  | ❌ — 60 dmg / 256 radius variant. |
-| `gunman_explosion_chem`                     | *(none yet)*                  | ❌ — chem-coloured 60/256 variant. |
+| `gunman_explosion_small`                    | `CGunmanExplosionSmall` / `gunman_explosion_small` in `dlls/gm_explosion.cpp` | ✅ — 60 dmg / 256 radius |
+| `gunman_explosion_chem`                     | `CGunmanExplosionChem` / `gunman_explosion_chem` in `dlls/gm_explosion.cpp` | ✅ — chem-coloured 60/256 (scaleable radius) |
 | `gunman_weapon_gausspistol_projectile`      | ✅ ported as `CGaussPistolProjectile` / `gausspistol_proj` in `dlls/gausspistol.cpp`. |
 | `gunman_weapon_beamgun_ball`                | ✅ ported as `CBeamGunBall` / `beamgun_ball` in `dlls/beamgun.cpp`. |
 | `gunman_weapon_beamgun_ball_small`          | ✅ ported as `CBeamGunBallSmall` / `beamgun_ball_small` in `dlls/beamgun.cpp`. |
 | `gunman_weapon_beamgun_chain`               | ✅ ported as `CBeamGunChain` / `beamgun_chain` in `dlls/beamgun.cpp`. |
-| `gunman_weapon_chembomb`                    | *(none yet)*                  | ❌ |
-| `gunman_weapon_grenade_base`                | *(none yet)*                  | ❌ |
-| `gunman_weapon_grenade_armed`               | *(none yet)*                  | ❌ |
-| `gunman_weapon_grenade_cluster`             | *(none yet)*                  | ❌ |
-| `gunman_weapon_grenade_tripmine`            | *(none yet)*                  | ❌ |
+| `gunman_weapon_chembomb`                    | `CChemBomb` / `chembomb` in `dlls/chemicalgun.cpp`; alias `gunman_weapon_chembomb` added | ✅ |
+| `gunman_weapon_grenade_base`                | shared logic via `GCG_SpawnClusters()` helper in `dlls/gm_grenade.cpp` | ✅ |
+| `gunman_weapon_grenade_armed`               | `CGCGrenadeArmed` / `gunman_weapon_grenade_armed` in `dlls/gm_grenade.cpp` | ✅ |
+| `gunman_weapon_grenade_cluster`             | `CGCGrenadeCluster` / `gunman_weapon_grenade_cluster` in `dlls/gm_grenade.cpp` | ✅ |
+| `gunman_weapon_grenade_tripmine`            | `CGCGrenadeTripmine` / `gunman_weapon_grenade_tripmine` in `dlls/gm_grenade.cpp` | ✅ |
 | `gunman_weapon_missile_armed`               | ✅ ported as `CDMLMissile` / `dml_missile` in `dlls/dml.cpp`. Guided / Homing / Spiral / OnImpact / Timed / TripMine modes. |
-| `gunman_weapon_grenade_cluster`             | ✅ partial — `CDMLClusterBomb` / `dml_clusterbomb` spawned by `CDMLMissile::Detonate()` when Payload=2. Full standalone entity pending. |
+| `gunman_weapon_grenade_cluster` (DML)       | ✅ `CDMLClusterBomb` / `dml_clusterbomb` in `dlls/dml.cpp`; standalone GC version is `gunman_weapon_grenade_cluster` above. |
 | `gunman_aiwallplug`                         | `CAIWallPlug` / `button_aiwallplug` in `dlls/aicore.cpp` | ✅ |
 | `gunman_physics_object`                     | uses HL pushable               | n/a |
 
@@ -213,9 +231,10 @@ weapon behaviour.
 
 These are not entity-bound and are needed by multiple weapons:
 
-### 4.1 Damage tables (`gunman_data.lua → WeaponDamage`)
+### 4.1 Damage tables (`gunman_data.lua → WeaponDamage`) ✅
 
-Currently scattered as magic numbers across the C++ stubs. Port to a
+Created `dlls/gunman_damage.h` with namespaces `GunmanDamage`, `GunmanEntityDamage`,
+and `GunmanAmmoUsage`. Currently scattered as magic numbers across the C++ stubs. Port to a
 single header `dlls/gunman_damage.h`:
 
 ```cpp
@@ -262,7 +281,9 @@ namespace GunmanEntityDamage {
 }
 ```
 
-### 4.2 Ammo-cost tables (`gunman_data.lua → WeaponAmmoUsage`)
+### 4.2 Ammo-cost tables (`gunman_data.lua → WeaponAmmoUsage`) ✅
+
+Included in `dlls/gunman_damage.h` under `GunmanAmmoUsage` namespace.
 
 | Weapon | Pulse / Std | Charge / PowerBall | Rapid | Sniper | SniperZoomed |
 |---|---|---|---|---|---|
@@ -274,13 +295,11 @@ namespace GunmanEntityDamage {
 | Mechagun | 1 | — | — | — | — |
 | Shotgun | shells per shot ∈ {1,2,3,4} | — | — | — | — |
 
-### 4.3 Sound channel definitions (`gunman_data.lua → AutoChannel / WeaponChannel / ItemChannel`)
+### 4.3 Sound channel definitions (`gunman_data.lua → AutoChannel / WeaponChannel / ItemChannel`) ✅
 
-The Lua file declares ~70 named sound entries with pitch ranges and
-volumes. These should be ported as constants in `dlls/gunman_sounds.h`
-and precached by the relevant weapon `Precache()` methods. Already
-referenced in some stubs (`weapons/dml_fire.wav` etc.) but **not in a
-centralized location**.
+Created `dlls/gunman_sounds.h` with ~70 named `GMSND_*` constants covering
+AutoChannel, WeaponChannel, and ItemChannel entries.  The Lua file declares ~70 named sound entries with pitch ranges and
+volumes.
 
 ### 4.4 Decals + killicons
 

@@ -229,6 +229,9 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( chembomb, CChemBomb );
+// Lua entity name alias so any code or map that references
+// "gunman_weapon_chembomb" resolves to the same class.
+LINK_ENTITY_TO_CLASS( gunman_weapon_chembomb, CChemBomb );
 
 TYPEDESCRIPTION CChemBomb::m_SaveData[] =
 {
