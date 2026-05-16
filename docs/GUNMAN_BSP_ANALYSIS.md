@@ -143,55 +143,69 @@ for this pass — see `GUNMAN_LUA_PORT_PLAN.md` for the staging plan.
 
 | Classname | Inst. | Maps | Notes |
 |---|---:|---:|---|
-| `decore_torch`            | 126 | 7  | static torch model with flame sprite |
-| `decore_swampplants`      |  89 | 6  | foliage; uses `body` keyvalue |
-| `decore_cactus`           |  64 | 12 | |
-| `decore_prickle`          |  61 | 10 | |
-| `decore_spacedebris`      |  42 | 1  | (already in our FGD; uses `debrislife` — see GUNMAN_FGD_VS_CPP.md) |
-| `decore_cam`              |  27 | 11 | rotating security camera |
-| `decore_ice`              |  19 | 1  | uses `beakinside` keyvalue |
-| `decore_labstuff`         |  18 | 4  | uses `body` keyvalue |
-| `decore_pteradon`         |  15 | 5  | flying pteradon decoration |
-| `decore_pipes`            |  10 | 8  | |
-| `decore_gutspile`         |   9 | 7  | (already in our FGD) |
-| `decore_explodable`       |   5 | 3  | `decoreaction`, `decoreidle`, `decoremodel`, `decoregib` |
-| `decore_sittingtubemortar`|   6 | 1  | |
-| `decore_eagle`            |   3 | 3  | |
-| `decore_nest`             |   3 | 3  | |
-| `decore_baboon`           |   4 | 2  | |
-| `decore_hatgib`           |   3 | 2  | |
-| `decore_bodygib`          |   3 | 2  | |
-| `decore_mushroom`         |   3 | 1  | |
-| `decore_mushroom2`        |   2 | 1  | |
-| `decore_foot`             |   1 | 1  | |
-| `decore_butterflyflock`   |   4 | 3  | (already in our FGD — see param gap) |
-| `decore_asteroid`         |  14 | 3  | (already in our FGD — see param gap)  |
+| `decore_torch`            | 126 | 7  | ✅ `CDecoreTorch` — `models/Torch.mdl` + `EF_BRIGHTLIGHT` |
+| `decore_swampplants`      |  89 | 6  | ✅ `CDecoreSwampplants` — `models/swampstuff.mdl`; `body` via engine |
+| `decore_cactus`           |  64 | 12 | ✅ `CDecoreCactus` — `models/cactus.mdl`; solid, drops to floor, touch dmg 1/1s |
+| `decore_prickle`          |  61 | 10 | ✅ `CDecorePrickle` — `models/prickle.mdl`; drops to floor |
+| `decore_spacedebris`      |  42 | 1  | ✅ (already in our FGD; uses `debrislife`) |
+| `decore_cam`              |  27 | 11 | ✅ `CDecoreCam` — `models/Camera.mdl`; sweeps ±45° on Y at 30°/s |
+| `decore_ice`              |  19 | 1  | ✅ `CDecoreIce` — `models/ice.mdl`; solid, additive render, drops to floor |
+| `decore_labstuff`         |  18 | 4  | ✅ `CDecoreLabstuff` — `models/labstuff.mdl`; `body` via engine |
+| `decore_pteradon`         |  15 | 5  | ✅ `CDecorePteradon` — `models/pteradon2.mdl`; MOVETYPE_FLY, symmetric bbox |
+| `decore_pipes`            |  10 | 8  | ✅ `CDecorePipes` — `models/pipes.mdl`; solid |
+| `decore_gutspile`         |   9 | 7  | ✅ `CDecoreGutspile` — `models/Gutspile.mdl`; drops to floor |
+| `decore_explodable`       |   5 | 3  | ✅ `CDecoreExplodable` — custom model/gib/sequences; damageable |
+| `decore_sittingtubemortar`|   6 | 1  | ✅ `CDecoreSittingTubeMortar` — `models/tubemortar.mdl`; solid, drops to floor, frame 1 |
+| `decore_eagle`            |   3 | 3  | ✅ `CDecoreEagle` — `models/eagle.mdl` |
+| `decore_nest`             |   3 | 3  | ✅ `CDecoreNest` — `models/ornest.mdl`; drops to floor |
+| `decore_baboon`           |   4 | 2  | ✅ `CDecoreBaboon` — `models/Baboon.mdl` |
+| `decore_hatgib`           |   3 | 2  | ✅ `CDecoreHatgib` — `models/Hatgib.mdl`; drops to floor |
+| `decore_bodygib`          |   3 | 2  | ✅ `CDecoreBodygib` — `models/Bodygib.mdl`; drops to floor |
+| `decore_mushroom`         |   3 | 1  | ✅ `CDecoreMushroom` — `models/Mushroom.mdl`; solid |
+| `decore_mushroom2`        |   2 | 1  | ✅ `CDecoreMushroom2` — `models/mushroom2.mdl`; solid |
+| `decore_foot`             |   1 | 1  | ✅ `CDecoreFoot` — `models/renesaurfoot.mdl` |
+| `decore_butterflyflock`   |   4 | 3  | ✅ (already in our FGD) |
+| `decore_asteroid`         |  14 | 3  | ✅ (already in our FGD) |
 
-All `decore_*` entities are essentially `gunman_cycler` variants with
-different default models. The simplest port is a single `CDecoreBase`
-template that dispatches on the classname and uses a sensible
-default model.
+Additional decore entities found in `eukara/freegunman` and `MisterCalvin/SvenCoop-GC` references:
+
+| Classname | Notes |
+|---|---|
+| `decore_aicore`            | ✅ `CDecoreAicore` — `models/W_aicore.mdl`; random spin (ShouldRotate) |
+| `decore_camflare`          | ✅ `CDecoreCamflare` — `models/cameracone.mdl` |
+| `decore_icebeak`           | ✅ `CDecoreIceBeak` — `models/icebeak.mdl`; solid, drops to floor |
+| `decore_torchflame`        | ✅ `CDecoreTorchFlame` — `sprites/flames.spr` additive animated sprite |
+| `decore_goldskull`         | ✅ `CDecoreGoldskull` — `models/goldskull.mdl` |
+| `decore_sack`              | ✅ `CDecoreSack` — `models/sack.mdl` |
+| `decore_scripted_boulder`  | ✅ `CDecoreScriptedBoulder` — `models/boulder.mdl`; solid |
+| `decore_corpse`            | ✅ `CDecoreCorpse` — model set by mapper; drops to floor |
+
+All `decore_*` entities are derived from `CGunmanCycler` (itself a `CBaseAnimating`).
+Simple props use the `CDecoreSimple` intermediate base class with virtual hooks for
+`ShouldDropToFloor()`, `ShouldBeSolid()`, `TouchDamage()`, `StartFrame()`, `ShouldRotate()`,
+and `DefaultRenderMode()`.  Entities with custom behaviour (cam sweep, explodable) retain
+their own `Spawn`/`KeyValue`/`Save`+`Restore` implementations.
 
 #### Triggers / map logic
 
 | Classname | Inst. | Maps | Notes |
 |---|---:|---:|---|
 | `trigger_gunmanteleport` | 8  | n/a | GC teleporter (replaces `trigger_teleport` with destination handling). |
-| `trigger_tank`           | 7  | 4 | (already in our FGD) |
-| `trigger_tankoutofgas`   | 3  | 3 | Fires when the tank runs out of fuel. |
-| `trigger_tankshell`      | 10 | 4 | Spawns a tank shell. |
-| `random_trigger`         | 77 | 13 | Similar to `random_speaker` but fires `target` at random intervals. Keys: `random_min`, `random_max`, `start_state`, `target`, `wait`. |
-| `meteor_god`             | 51 | n/a | Periodically spawns meteor projectiles. |
-| `meteor_target`          | 12 | n/a | Target of `meteor_god`. |
-| `lava_god`               |  8 | n/a | Lava-emitter god entity. |
-| `entity_clustergod`      |  3 | 1 | Cluster-bomb spawner. |
-| `sphere_explosion`       |  6 | n/a | Sphere-shaped explosion. |
-| `demoman_mine`           | 13 | n/a | Demoman tripmine. |
-| `button_aiwallplug`      |  5 | n/a | AI-core button. |
-| `hologram_beak`          |  3 | n/a | Holographic beak monster. |
-| `hologram_damage`        |  6 | n/a | Holographic damage trigger. |
-| `aiscripted_sequence`    | 24 | n/a | GC-specific scripted sequence (passes through schedules). |
-| `func_tanklaserrust`     |  1 | n/a | Tank-mounted rusting laser. |
+| `trigger_tank`           | 7  | 4 | ✅ Implemented — fires when `vehicle_tank_body` touches brush |
+| `trigger_tankoutofgas`   | 3  | 3 | ❌ Not yet implemented |
+| `trigger_tankshell`      | 10 | 4 | ❌ Not yet implemented |
+| `random_trigger`         | 77 | 13 | ✅ `CRandomTrigger` — fires target at random interval (random_min…random_max); toggleable via Use() |
+| `meteor_god`             | 51 | n/a | ❌ Not yet implemented |
+| `meteor_target`          | 12 | n/a | ❌ Not yet implemented |
+| `lava_god`               |  8 | n/a | ❌ Not yet implemented |
+| `entity_clustergod`      |  3 | 1 | ❌ Not yet implemented |
+| `sphere_explosion`       |  6 | n/a | ❌ Not yet implemented |
+| `demoman_mine`           | 13 | n/a | ❌ Not yet implemented |
+| `button_aiwallplug`      |  5 | n/a | ✅ Implemented in `dlls/aicore.cpp` |
+| `hologram_beak`          |  3 | n/a | ❌ Not yet implemented |
+| `hologram_damage`        |  6 | n/a | ❌ Not yet implemented |
+| `aiscripted_sequence`    | 24 | n/a | ❌ Not yet implemented |
+| `func_tanklaserrust`     |  1 | n/a | ❌ Not yet implemented |
 
 #### Vehicles (`vehicle_tank*`)
 
