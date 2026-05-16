@@ -19,8 +19,9 @@
 // coredraw=2).  Primary fire plays the coreplugin animation and, after
 // a 0.6-second delay, executes a 100-hp hitscan within 128 units
 // (matches WeaponDamage.AICore.Bullet = 100 from gunman_data.lua).
-// If the struck entity is button_aiwallplug the weapon is stripped from
-// the player, signalling that the puzzle interaction has completed.
+// If the struck entity is button_aiwallplug the weapon plays the
+// activation sound and calls DestroyItem() to strip it from the player,
+// signalling that the puzzle interaction has completed.
 // See docs/GUNMAN_LUA_PORT_PLAN.md (§2.8) for full design notes.
 //=========================================================
 
@@ -35,6 +36,49 @@
 #include "gamerules.h"
 
 LINK_ENTITY_TO_CLASS( weapon_aicore, CAICore );
+
+//=========================================================
+// CAIWallPlug — map entity `button_aiwallplug`.
+//
+// This is the wall outlet that accepts the AI Core weapon.  When the
+// player hits it with weapon_aicore, CAICore::PlugHit() handles all
+// game logic; this class merely exists so that GoldSrc can spawn the
+// entity from the map (unregistered classnames are silently removed at
+// load time) and fires its target on any damage so mappers can hook it
+// up to downstream logic.
+//=========================================================
+class CAIWallPlug : public CBaseEntity
+{
+public:
+	void Spawn( void );
+	int  ObjectCaps( void ) { return CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	int  TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker,
+	                 float flDamage, int bitsDamageType );
+};
+
+LINK_ENTITY_TO_CLASS( button_aiwallplug, CAIWallPlug );
+
+void CAIWallPlug::Spawn( void )
+{
+	pev->solid    = SOLID_BBOX;
+	pev->movetype = MOVETYPE_PUSH;
+
+	// Use the Lua model if available; fall back to nothing (invisible trigger).
+	if ( pev->model )
+		SET_MODEL( ENT( pev ), STRING( pev->model ) );
+
+	pev->takedamage = DAMAGE_YES;
+}
+
+int CAIWallPlug::TakeDamage( entvars_t * /*pevInflictor*/, entvars_t *pevAttacker,
+                              float /*flDamage*/, int /*bitsDamageType*/ )
+{
+	// Fire the mapper's target so downstream logic can react to the plug-in.
+	SUB_UseTargets( Instance( pevAttacker ), USE_TOGGLE, 0 );
+	return 1;
+}
+
+// ---------------------------------------------------------------------------
 
 // Animation indices for V_aicore.mdl
 // Sequence 0: coreidle  — idle loop
@@ -117,9 +161,12 @@ BOOL CAICore::Deploy( void )
 void CAICore::Holster( int /*skiplocal*/ )
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
-	// No separate holster sequence; play draw in reverse is not possible,
-	// so just return to idle pose and let the item system handle the switch.
+	// No separate holster sequence; return to idle pose.
 	SendWeaponAnim( AICORE_IDLE );
+	// Cancel any pending delayed plug-in hit so it does not fire
+	// after the player has already switched to a different weapon.
+	SetThink( NULL );
+	pev->nextthink = 0;
 }
 
 void CAICore::PrimaryAttack( void )
@@ -140,11 +187,13 @@ void CAICore::PrimaryAttack( void )
 //-----------------------------------------------------------------------------
 // PlugHit — called 0.6 s after PrimaryAttack.
 // Performs a 100-hp hitscan within 128 units (WeaponDamage.AICore.Bullet = 100).
-// If the struck entity is button_aiwallplug the weapon is stripped from the
-// player to signal that the puzzle plug-in interaction has completed.
+// If the struck entity is button_aiwallplug the weapon plays the activation
+// sound and is destroyed (stripped from player + entity removed), matching
+// the Lua behaviour of calling owner:StripWeapon(self:GetClass()).
 //-----------------------------------------------------------------------------
 void CAICore::PlugHit( void )
 {
+#ifndef CLIENT_DLL
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle );
 
 	Vector vecSrc = m_pPlayer->GetGunPosition();
@@ -169,14 +218,14 @@ void CAICore::PlugHit( void )
 				gpGlobals->v_forward, &tr, DMG_CLUB );
 			ApplyMultiDamage( m_pPlayer->pev, m_pPlayer->pev );
 
-			// button_aiwallplug interaction: plug successful → strip weapon
-			// to signal the puzzle completion, matching Lua:
-			//   owner:StripWeapon(self:GetClass())
+			// button_aiwallplug interaction: plug successful → destroy weapon
+			// (removes it from the player's inventory and deletes the entity),
+			// matching Lua: owner:StripWeapon(self:GetClass())
 			if ( FClassnameIs( pHit->pev, "button_aiwallplug" ) )
 			{
 				EMIT_SOUND( ENT( m_pPlayer->pev ), CHAN_ITEM,
 					"mainframe/aiplug_activate_gs.wav", 1.0f, ATTN_NORM );
-				m_pPlayer->RemovePlayerItem( this );
+				DestroyItem();
 			}
 		}
 	}
@@ -185,6 +234,7 @@ void CAICore::PlugHit( void )
 		EMIT_SOUND( ENT( m_pPlayer->pev ), CHAN_WEAPON,
 			"weapons/cbar_miss1.wav", 1.0, ATTN_NORM );
 	}
+#endif
 }
 
 void CAICore::WeaponIdle( void )

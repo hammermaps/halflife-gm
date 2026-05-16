@@ -1467,9 +1467,10 @@ public:
 
 // Gunman Chronicles "AI Core" / Wrench puzzle weapon.
 // Deploys with v_aicore.mdl, delivers a 100-hp delayed hitscan within 128 units.
-// When the hit entity is `button_aiwallplug` the weapon is stripped from the
-// player (puzzle solved).  Activation sounds (aiplug_activate_gs,
-// aiplug_deactivate_gs, aiplug_loop_gs) are precached and played on hit.
+// When the hit entity is `button_aiwallplug` the weapon plays `aiplug_activate_gs`
+// and calls DestroyItem() (strips from player + removes entity) to signal puzzle
+// completion.  `overheat.wav` is played on any hit.  `aiplug_deactivate_gs` and
+// `aiplug_loop_gs` are precached for use by map logic.
 // See docs/GUNMAN_LUA_PORT_PLAN.md (§2.8) for remaining Lua features.
 class CAICore : public CBasePlayerWeapon
 {

@@ -169,7 +169,7 @@ be picked up incrementally.
 | Primary fire: `coreplugin` animation + 0.6 s delayed hit | ✅ done | `PrimaryAttack()` plays `AICORE_ATTACK` (index 1 = coreplugin) and schedules `PlugHit()` via `SetThink` after 0.6 s — mirrors Lua `timer.Simple(0.6, ...)`. |
 | 100-hp hitscan within 128 units | ✅ done | `PlugHit()` traces 128 u forward; `RadiusDamage`-free direct hit — matches `WeaponDamage.AICore.Bullet = 100`. |
 | Taze sound (`gunman_beamgun_taze` = `overheat.wav`) | ✅ done | `PlugHit()` emits `weapons/overheat.wav` on any hit. |
-| Plug/unplug interaction (`button_aiwallplug`) | ✅ done | `PlugHit()` checks `FClassnameIs(pHit, "button_aiwallplug")`; plays `mainframe/aiplug_activate_gs.wav` and calls `RemovePlayerWeapon(this)`. |
+| Plug/unplug interaction (`button_aiwallplug`) | ✅ done | `PlugHit()` checks `FClassnameIs(pHit, "button_aiwallplug")`; plays `mainframe/aiplug_activate_gs.wav` and calls `DestroyItem()` (unhooks from inventory + schedules entity removal). |
 | Aicore activation sounds precached | ✅ done | `Precache()` caches `mainframe/aiplug_activate_gs.wav`, `aiplug_deactivate_gs.wav`, `aiplug_loop_gs.wav`. |
 | FGD entry | ✅ done | `weapon_aicore` and `button_aiwallplug` added to `game/gunman/gunman.fgd`. |
 
@@ -202,7 +202,7 @@ C++ stubs:
 | `gunman_weapon_grenade_tripmine`            | *(none yet)*                  | ❌ |
 | `gunman_weapon_missile_armed`               | ✅ ported as `CDMLMissile` / `dml_missile` in `dlls/dml.cpp`. Guided / Homing / Spiral / OnImpact / Timed / TripMine modes. |
 | `gunman_weapon_grenade_cluster`             | ✅ partial — `CDMLClusterBomb` / `dml_clusterbomb` spawned by `CDMLMissile::Detonate()` when Payload=2. Full standalone entity pending. |
-| `gunman_aiwallplug`                         | *(none yet — `button_aiwallplug` is the map entity)* | ❌ |
+| `gunman_aiwallplug`                         | `CAIWallPlug` / `button_aiwallplug` in `dlls/aicore.cpp` | ✅ |
 | `gunman_physics_object`                     | uses HL pushable               | n/a |
 
 The above gaps drive the next pass of C++ work. Note that none of
