@@ -507,6 +507,9 @@ class CRocketPackAmmo : public CBasePlayerAmmo
 	{
 		PRECACHE_MODEL( "models/dmlammo.mdl" );
 		PRECACHE_SOUND( "items/9mmclip1.wav" );
+		// Precache the grenade weapon so GoldSrc doesn't reject a late
+		// precache call when the weapon entity is created at touch time.
+		UTIL_PrecacheOther( "weapon_gcgrenade" );
 	}
 	BOOL AddAmmo( CBaseEntity *pOther )
 	{

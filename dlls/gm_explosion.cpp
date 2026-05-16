@@ -275,8 +275,9 @@ void CGunmanExplosionSmall::Spawn( void )
 		WRITE_BYTE( TE_EXPLFLAG_NONE );
 	MESSAGE_END();
 
-	// Damage
-	::RadiusDamage( pev->origin, pev, pev,
+	// Damage — attribute to the owner if set (e.g. a player who spawned this)
+	entvars_t *pevAttacker = pev->owner ? VARS(pev->owner) : pev;
+	::RadiusDamage( pev->origin, pev, pevAttacker,
 		(float)GunmanEntityDamage::Explosions::Small.damage,
 		(float)GunmanEntityDamage::Explosions::Small.radius,
 		CLASS_NONE, DMG_BLAST );
@@ -360,9 +361,10 @@ void CGunmanExplosionChem::Spawn( void )
 		WRITE_BYTE( TE_EXPLFLAG_NONE );
 	MESSAGE_END();
 
-	// Damage (radius scaled)
+	// Damage (radius scaled) — attribute to the owner if set
 	float flRadius = (float)GunmanEntityDamage::Explosions::Chem.radius * fScale;
-	::RadiusDamage( pev->origin, pev, pev,
+	entvars_t *pevAttacker = pev->owner ? VARS(pev->owner) : pev;
+	::RadiusDamage( pev->origin, pev, pevAttacker,
 		(float)GunmanEntityDamage::Explosions::Chem.damage,
 		flRadius,
 		CLASS_NONE, DMG_BLAST );

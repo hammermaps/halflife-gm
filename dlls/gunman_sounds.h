@@ -24,8 +24,9 @@
 // -----------------------------------------------------------------------
 // AutoChannel  (CHAN_AUTO — fire-and-forget ambient sounds)
 // -----------------------------------------------------------------------
-#define GMSND_HUDON                "weapons/wpn_hudon.wav"
-#define GMSND_HUDOFF               "weapons/wpn_hudoff.wav"
+// HUD sounds are in common/, not weapons/
+#define GMSND_HUDON                "common/wpn_hudon.wav"
+#define GMSND_HUDOFF               "common/wpn_hudoff.wav"
 
 // Debris impact (random 1-3)
 #define GMSND_DEBRIS1              "weapons/debris1.wav"
@@ -49,9 +50,12 @@
 
 // Misc
 #define GMSND_DML_LOCK             "weapons/dml_lock.wav"
-#define GMSND_MAINFRAME_HURT       "mainframe/mainframe_hurt02.wav"
-#define GMSND_MAINFRAME_FOUND      "mainframe/mainframe007.wav"
-#define GMSND_MAINFRAME_HIT        "mainframe/mainframe001.wav"
+// NOTE: mainframe_hurt02.wav / mainframe007.wav / mainframe001.wav are not present
+// in game/sound/mainframe/. These names are placeholders matching the Lua data file;
+// add the constants back once the assets land in game/sound/mainframe/.
+// #define GMSND_MAINFRAME_HURT    "mainframe/mainframe_hurt02.wav"
+// #define GMSND_MAINFRAME_FOUND   "mainframe/mainframe007.wav"
+// #define GMSND_MAINFRAME_HIT     "mainframe/mainframe001.wav"
 
 // -----------------------------------------------------------------------
 // WeaponChannel  (CHAN_WEAPON — primary weapon fire sounds)
@@ -85,9 +89,12 @@
 #define GMSND_BEAMGUN_WINDUP       "weapons/egon_windup2.wav"
 #define GMSND_BEAMGUN_WINDUP2      "weapons/egon_windup2_new.wav"
 #define GMSND_BEAMGUN_OFF          "weapons/egon_off1.wav"
+// Beam Gun electro: only weapons/electro4.wav exists in game/sound/weapons/.
+// electro5.wav and electro6.wav are referenced by the Lua data file but the
+// GoldSrc assets were not ported yet — all three aliases point at electro4 for now.
 #define GMSND_BEAMGUN_ELECTRO1     "weapons/electro4.wav"
-#define GMSND_BEAMGUN_ELECTRO2     "weapons/electro5.wav"
-#define GMSND_BEAMGUN_ELECTRO3     "weapons/electro6.wav"
+#define GMSND_BEAMGUN_ELECTRO2     "weapons/electro4.wav"
+#define GMSND_BEAMGUN_ELECTRO3     "weapons/electro4.wav"
 #define GMSND_BEAMGUN_CONFIG       "weapons/beamgun_config.wav"
 
 // Shared / UI
@@ -145,8 +152,8 @@
 #define GMSND_BEAMGUN_BALLFLY      "weapons/ball-fly.wav"
 #define GMSND_BEAMGUN_BALLDIE      "weapons/ball-die.wav"
 
-// Pickups
-#define GMSND_GUN_PICKUP           "weapons/gunpickup2.wav"
+// Pickups — gun pickup is under items/, not weapons/
+#define GMSND_GUN_PICKUP           "items/gunpickup2.wav"
 #define GMSND_AMMO_PICKUP          "items/9mmclip1.wav"
 
 // Shell casings (random 1-3)
@@ -161,6 +168,7 @@
 // AI Core / Mainframe
 #define GMSND_AICORE_DEACTIVATE    "mainframe/aiplug_deactivate_gs.wav"
 #define GMSND_AICORE_ACTIVATE      "mainframe/aiplug_activate_gs.wav"
-#define GMSND_AICORE_ACTIVATED     "mainframe/rebar_psychomotorstartup.wav"
+// rebar_psychomotorstartup.wav lives in ambience/, not mainframe/
+#define GMSND_AICORE_ACTIVATED     "ambience/rebar_psychomotorstartup.wav"
 
 #endif // GUNMAN_SOUNDS_H

@@ -69,9 +69,9 @@
 #define GCG_TRIPMINE_ARM_DELAY  3.0f
 #define GCG_TRIPMINE_TRACE_LEN  1024.0f
 
-// Explosion blast (WeaponDamage.Grenade / EntityDamage.Explosions.Standard)
-#define GCG_BLAST_DMG           ( (float)GunmanDamage::Grenade )
-#define GCG_BLAST_RADIUS        128.0f
+// Explosion blast — Lua uses gunman_explosion (EntityDamage.Explosions.Standard)
+#define GCG_BLAST_DMG           ( (float)GunmanEntityDamage::Explosions::Standard.damage )
+#define GCG_BLAST_RADIUS        ( (float)GunmanEntityDamage::Explosions::Standard.radius )
 
 // Animation indices (v_grenadecore.mdl)
 enum gcgrenade_e
