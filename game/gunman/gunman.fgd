@@ -537,6 +537,64 @@
 
 @PointClass base(Targetname, Angles) size(-32 -32 0, 32 32 32) = decore_gutspile : "Guts Pile (Gunman)" []
 
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 64) = decore_torch : "Torch decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-32 -32 0, 32 32 64) = decore_swampplants : "Swamp plants decoration (Gunman)"
+[
+	body(integer) : "Body variant (model sub-mesh)" : 0
+]
+
+@PointClass base(Targetname, Angles) size(-24 -24 0, 24 24 48) = decore_cactus : "Cactus decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 32) = decore_prickle : "Prickle plant decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-8 -8 -8, 8 8 8) = decore_cam : "Security camera decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-24 -24 0, 24 24 32) = decore_ice : "Ice block decoration (Gunman)"
+[
+	beakinside(choices) : "Beak frozen inside" : 0 =
+	[
+		0 : "Plain ice"
+		1 : "Beak inside"
+	]
+]
+
+@PointClass base(Targetname, Angles) size(-24 -24 0, 24 24 48) = decore_labstuff : "Lab equipment decoration (Gunman)"
+[
+	body(integer) : "Body variant (model sub-mesh)" : 0
+]
+
+@PointClass base(Targetname, Angles) size(-32 -32 0, 32 32 32) = decore_pteradon : "Pteradon decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 32) = decore_pipes : "Pipes decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-24 -24 0, 24 24 48) = decore_explodable : "Explodable decoration (Gunman)"
+[
+	decoremodel(studio)    : "Model (overrides 'model' key)"
+	decoreidle(integer)    : "Idle sequence index" : 0
+	decoreaction(integer)  : "Use()-triggered sequence index" : 0
+	decoregib(studio)      : "Gib model on death"
+	health(integer)        : "Health before exploding" : 50
+]
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 32) = decore_sittingtubemortar : "Sitting tube mortar decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 32) = decore_eagle : "Eagle decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-24 -24 0, 24 24 24) = decore_nest : "Nest decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-24 -24 0, 24 24 48) = decore_baboon : "Baboon decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-8 -8 0, 8 8 8) = decore_hatgib : "Hat gib decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 16) = decore_bodygib : "Body gib decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 32) = decore_mushroom : "Mushroom decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 32) = decore_mushroom2 : "Mushroom variant 2 decoration (Gunman)" []
+
+@PointClass base(Targetname, Angles) size(-16 -16 0, 16 16 32) = decore_foot : "Creature foot decoration (Gunman)" []
+
 @PointClass base(Targetname, Angles) size(-8 -8 -8, 8 8 8) = entity_spritegod : "Sprite Spray Emitter (Gunman)"
 [
 	spritename(sprite)       : "Sprite file"

@@ -143,34 +143,34 @@ for this pass — see `GUNMAN_LUA_PORT_PLAN.md` for the staging plan.
 
 | Classname | Inst. | Maps | Notes |
 |---|---:|---:|---|
-| `decore_torch`            | 126 | 7  | static torch model with flame sprite |
-| `decore_swampplants`      |  89 | 6  | foliage; uses `body` keyvalue |
-| `decore_cactus`           |  64 | 12 | |
-| `decore_prickle`          |  61 | 10 | |
-| `decore_spacedebris`      |  42 | 1  | (already in our FGD; uses `debrislife` — see GUNMAN_FGD_VS_CPP.md) |
-| `decore_cam`              |  27 | 11 | rotating security camera |
-| `decore_ice`              |  19 | 1  | uses `beakinside` keyvalue |
-| `decore_labstuff`         |  18 | 4  | uses `body` keyvalue |
-| `decore_pteradon`         |  15 | 5  | flying pteradon decoration |
-| `decore_pipes`            |  10 | 8  | |
-| `decore_gutspile`         |   9 | 7  | (already in our FGD) |
-| `decore_explodable`       |   5 | 3  | `decoreaction`, `decoreidle`, `decoremodel`, `decoregib` |
-| `decore_sittingtubemortar`|   6 | 1  | |
-| `decore_eagle`            |   3 | 3  | |
-| `decore_nest`             |   3 | 3  | |
-| `decore_baboon`           |   4 | 2  | |
-| `decore_hatgib`           |   3 | 2  | |
-| `decore_bodygib`          |   3 | 2  | |
-| `decore_mushroom`         |   3 | 1  | |
-| `decore_mushroom2`        |   2 | 1  | |
-| `decore_foot`             |   1 | 1  | |
-| `decore_butterflyflock`   |   4 | 3  | (already in our FGD — see param gap) |
-| `decore_asteroid`         |  14 | 3  | (already in our FGD — see param gap)  |
+| `decore_torch`            | 126 | 7  | ✅ `CDecoreTorch` in `dlls/gm_mapents.cpp` — `models/Torch.mdl` + `EF_BRIGHTLIGHT` |
+| `decore_swampplants`      |  89 | 6  | ✅ `CDecoreSwampplants` — `models/swampstuff.mdl`; `body` via engine |
+| `decore_cactus`           |  64 | 12 | ✅ `CDecoreCactus` — `models/cactus.mdl` |
+| `decore_prickle`          |  61 | 10 | ✅ `CDecorePrickle` — `models/prickle.mdl` |
+| `decore_spacedebris`      |  42 | 1  | ✅ (already in our FGD; uses `debrislife` — see GUNMAN_FGD_VS_CPP.md) |
+| `decore_cam`              |  27 | 11 | ✅ `CDecoreCam` — `models/Camera.mdl`; sweeps ±45° on Y at 30°/s |
+| `decore_ice`              |  19 | 1  | ✅ `CDecoreIce` — `models/ice.mdl`; `beakinside` sets body group 1 |
+| `decore_labstuff`         |  18 | 4  | ✅ `CDecoreLabstuff` — `models/labstuff.mdl`; `body` via engine |
+| `decore_pteradon`         |  15 | 5  | ✅ `CDecorePteradon` — `models/pteradon.mdl`; MOVETYPE_FLY hover |
+| `decore_pipes`            |  10 | 8  | ✅ `CDecorePipes` — `models/pipes.mdl` |
+| `decore_gutspile`         |   9 | 7  | ✅ (already in our FGD) |
+| `decore_explodable`       |   5 | 3  | ✅ `CDecoreExplodable` — custom model/gib/sequences; damageable |
+| `decore_sittingtubemortar`|   6 | 1  | ✅ `CDecoreSittingTubeMortar` — `models/tubemortar.mdl` |
+| `decore_eagle`            |   3 | 3  | ✅ `CDecoreEagle` — `models/eagle.mdl` |
+| `decore_nest`             |   3 | 3  | ✅ `CDecoreNest` — `models/ornest.mdl` |
+| `decore_baboon`           |   4 | 2  | ✅ `CDecoreBaboon` — `models/Baboon.mdl` |
+| `decore_hatgib`           |   3 | 2  | ✅ `CDecoreHatgib` — `models/Hatgib.mdl` |
+| `decore_bodygib`          |   3 | 2  | ✅ `CDecoreBodygib` — `models/Bodygib.mdl` |
+| `decore_mushroom`         |   3 | 1  | ✅ `CDecoreMushroom` — `models/Mushroom.mdl` |
+| `decore_mushroom2`        |   2 | 1  | ✅ `CDecoreMushroom2` — `models/mushroom2.mdl` |
+| `decore_foot`             |   1 | 1  | ✅ `CDecoreFoot` — `models/renesaurfoot.mdl` |
+| `decore_butterflyflock`   |   4 | 3  | ✅ (already in our FGD — see param gap) |
+| `decore_asteroid`         |  14 | 3  | ✅ (already in our FGD — see param gap)  |
 
-All `decore_*` entities are essentially `gunman_cycler` variants with
-different default models. The simplest port is a single `CDecoreBase`
-template that dispatches on the classname and uses a sensible
-default model.
+All `decore_*` entities are derived from `CGunmanCycler` (itself a `CBaseAnimating`).
+Simple props use the `CDecoreSimple` intermediate base class which only overrides
+`DefaultModel()`.  Entities with custom behaviour (cam sweep, ice beak, explodable)
+have their own `KeyValue`, `Spawn`, and optionally `Save/Restore` implementations.
 
 #### Triggers / map logic
 

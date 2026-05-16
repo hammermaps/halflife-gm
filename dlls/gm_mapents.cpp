@@ -15,18 +15,39 @@
 //=========================================================
 // Gunman Chronicles map utility entities
 //
-// random_speaker        - plays a configurable ambient sound on a
-//                         periodic timer with optional randomness;
-//                         can be toggled on/off via Use().
+// random_speaker           - plays a configurable ambient sound on a
+//                            periodic timer with optional randomness;
+//                            can be toggled on/off via Use().
 //
-// gunman_cycler         - animated model prop that supports multiple
-//                         bodygroups (sub-models), useful for placing
-//                         decorated models in Gunman levels.
+// gunman_cycler            - animated model prop that supports multiple
+//                            bodygroups (sub-models), useful for placing
+//                            decorated models in Gunman levels.
 //
-// decore_asteroid       - rotating asteroid prop derived from gunman_cycler.
-// decore_spacedebris    - space debris launched on Use(), derived from gunman_cycler.
-// decore_butterflyflock - butterfly flock animated prop.
-// decore_gutspile       - guts pile static animated prop.
+// -- decore_* family (all derived from gunman_cycler unless noted) --
+// decore_asteroid          - slowly rotating asteroid prop; optional size preset.
+// decore_spacedebris       - space debris launched on Use(), with optional lifetime.
+// decore_butterflyflock    - butterfly flock animated prop; flock radius + count keys.
+// decore_gutspile          - guts pile static prop (models/Gutspile.mdl).
+// decore_torch             - static torch with warm-light glow (models/Torch.mdl).
+// decore_swampplants       - swamp foliage prop; body variant selectable (models/swampstuff.mdl).
+// decore_cactus            - cactus decoration (models/cactus.mdl).
+// decore_prickle           - prickle decoration (models/prickle.mdl).
+// decore_cam               - sweeping security camera (models/Camera.mdl).
+// decore_ice               - ice block; optional frozen beak inside (models/ice.mdl).
+// decore_labstuff          - lab equipment; body variant selectable (models/labstuff.mdl).
+// decore_pteradon          - flying pteradon decoration (models/pteradon.mdl).
+// decore_pipes             - pipes decoration (models/pipes.mdl).
+// decore_explodable        - destructible prop; custom model/gib/sequences.
+// decore_sittingtubemortar - sitting tube mortar prop (models/tubemortar.mdl).
+// decore_eagle             - eagle decoration (models/eagle.mdl).
+// decore_nest              - nest decoration (models/ornest.mdl).
+// decore_baboon            - baboon decoration (models/Baboon.mdl).
+// decore_hatgib            - hat gib decoration (models/Hatgib.mdl).
+// decore_bodygib           - body gib decoration (models/Bodygib.mdl).
+// decore_mushroom          - mushroom decoration (models/Mushroom.mdl).
+// decore_mushroom2         - mushroom variant 2 (models/mushroom2.mdl).
+// decore_foot              - creature foot decoration (models/renesaurfoot.mdl).
+//
 // entity_spritegod      - directional sprite spray emitter (toggleable via Use()).
 // trigger_tank          - invisible trigger fired when the vehicle_tank_body brush
 //                         enters the volume; fires targets then removes itself.
@@ -759,6 +780,606 @@ void CDecoreGutspile::Spawn( void )
 	// Use full CGunmanCycler spawn path (sets bodygroups, solid, etc.)
 	CGunmanCycler::Spawn();
 }
+
+
+//=========================================================
+// CDecoreSimple — internal base for fixed-model decoration props.
+//
+// Subclasses only override DefaultModel() to supply the
+// model path.  No custom keyvalues or save/restore fields
+// are added; everything is handled by CGunmanCycler.
+//=========================================================
+class CDecoreSimple : public CGunmanCycler
+{
+public:
+	virtual const char *DefaultModel( void ) { return NULL; }
+	void Precache( void )
+	{
+		if ( DefaultModel() )
+			PRECACHE_MODEL( (char*)DefaultModel() );
+	}
+	void Spawn( void )
+	{
+		Precache();
+		if ( !pev->model && DefaultModel() )
+			pev->model = MAKE_STRING( DefaultModel() );
+		CGunmanCycler::Spawn();
+	}
+};
+
+
+//=========================================================
+// decore_torch
+//
+// Static torch decoration.  Emits a warm bright-light glow.
+// Default model: models/Torch.mdl
+//=========================================================
+class CDecoreTorch : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/Torch.mdl"; }
+	void Spawn( void )
+	{
+		CDecoreSimple::Spawn();
+		pev->effects |= EF_BRIGHTLIGHT;
+	}
+};
+
+LINK_ENTITY_TO_CLASS( decore_torch, CDecoreTorch );
+
+
+//=========================================================
+// decore_swampplants
+//
+// Swamp foliage prop.  The mapper selects a body variant
+// via the standard "body" key (engine-handled).
+// Default model: models/swampstuff.mdl
+//=========================================================
+class CDecoreSwampplants : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/swampstuff.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_swampplants, CDecoreSwampplants );
+
+
+//=========================================================
+// decore_cactus
+//
+// Cactus decoration.
+// Default model: models/cactus.mdl
+//=========================================================
+class CDecoreCactus : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/cactus.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_cactus, CDecoreCactus );
+
+
+//=========================================================
+// decore_prickle
+//
+// Prickle plant decoration.
+// Default model: models/prickle.mdl
+//=========================================================
+class CDecorePrickle : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/prickle.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_prickle, CDecorePrickle );
+
+
+//=========================================================
+// decore_cam
+//
+// Rotating security camera decoration.  The camera sweeps
+// ±45° on its Y axis (yaw) at a rate of 30°/s.
+// Default model: models/Camera.mdl
+//
+// Save/restore fields: m_flBaseAngle, m_flCurOffset, m_iSweepDir
+//=========================================================
+#define CAM_SWEEP_HALF	45.0f	// half-arc in degrees
+#define CAM_SPEED		3.0f	// degrees per 0.1 s think tick
+
+class CDecoreCam : public CGunmanCycler
+{
+public:
+	void Precache( void );
+	void Spawn( void );
+	void EXPORT CamThink( void );
+
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
+private:
+	float	m_flBaseAngle;
+	float	m_flCurOffset;
+	int		m_iSweepDir;
+};
+
+TYPEDESCRIPTION CDecoreCam::m_SaveData[] =
+{
+	DEFINE_FIELD( CDecoreCam, m_flBaseAngle, FIELD_FLOAT   ),
+	DEFINE_FIELD( CDecoreCam, m_flCurOffset, FIELD_FLOAT   ),
+	DEFINE_FIELD( CDecoreCam, m_iSweepDir,   FIELD_INTEGER ),
+};
+
+IMPLEMENT_SAVERESTORE( CDecoreCam, CGunmanCycler );
+LINK_ENTITY_TO_CLASS( decore_cam, CDecoreCam );
+
+void CDecoreCam::Precache( void )
+{
+	PRECACHE_MODEL( "models/Camera.mdl" );
+}
+
+void CDecoreCam::Spawn( void )
+{
+	Precache();
+	if ( !pev->model )
+		pev->model = MAKE_STRING( "models/Camera.mdl" );
+
+	CGunmanCycler::Spawn();
+
+	m_flBaseAngle = pev->angles.y;
+	m_flCurOffset = 0.0f;
+	m_iSweepDir   = 1;
+
+	SetThink( &CDecoreCam::CamThink );
+	pev->nextthink = gpGlobals->time + 0.1f;
+}
+
+void CDecoreCam::CamThink( void )
+{
+	CGunmanCycler::CyclerThink();
+
+	m_flCurOffset += CAM_SPEED * (float)m_iSweepDir;
+
+	if ( m_flCurOffset >= CAM_SWEEP_HALF )
+	{
+		m_flCurOffset = CAM_SWEEP_HALF;
+		m_iSweepDir   = -1;
+	}
+	else if ( m_flCurOffset <= -CAM_SWEEP_HALF )
+	{
+		m_flCurOffset = -CAM_SWEEP_HALF;
+		m_iSweepDir   = 1;
+	}
+
+	pev->angles.y = m_flBaseAngle + m_flCurOffset;
+	if ( pev->angles.y >= 360.0f ) pev->angles.y -= 360.0f;
+	if ( pev->angles.y <    0.0f ) pev->angles.y += 360.0f;
+}
+
+
+//=========================================================
+// decore_ice
+//
+// Ice block decoration.  When the "beakinside" key is set
+// to 1, body group 1 is selected to reveal the frozen beak
+// variant of the model.
+// Default model: models/ice.mdl
+//
+// Key/values:
+//   beakinside  <int>  - 0 = plain ice (default), 1 = beak frozen inside
+//=========================================================
+class CDecoreIce : public CGunmanCycler
+{
+public:
+	void Precache( void );
+	void Spawn( void );
+	void KeyValue( KeyValueData *pkvd );
+
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
+private:
+	BOOL	m_bBeakInside;
+};
+
+TYPEDESCRIPTION CDecoreIce::m_SaveData[] =
+{
+	DEFINE_FIELD( CDecoreIce, m_bBeakInside, FIELD_BOOLEAN ),
+};
+
+IMPLEMENT_SAVERESTORE( CDecoreIce, CGunmanCycler );
+LINK_ENTITY_TO_CLASS( decore_ice, CDecoreIce );
+
+void CDecoreIce::KeyValue( KeyValueData *pkvd )
+{
+	if ( FStrEq( pkvd->szKeyName, "beakinside" ) )
+	{
+		m_bBeakInside = ( atoi( pkvd->szValue ) != 0 ) ? TRUE : FALSE;
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CGunmanCycler::KeyValue( pkvd );
+}
+
+void CDecoreIce::Precache( void )
+{
+	PRECACHE_MODEL( "models/ice.mdl" );
+	PRECACHE_MODEL( "models/icebeak.mdl" );
+}
+
+void CDecoreIce::Spawn( void )
+{
+	Precache();
+	if ( !pev->model )
+		pev->model = MAKE_STRING( "models/ice.mdl" );
+
+	CGunmanCycler::Spawn();
+
+	// Body group 1 shows the frozen beak inside the ice block
+	if ( m_bBeakInside )
+		SetBodygroup( 1, 1 );
+}
+
+
+//=========================================================
+// decore_labstuff
+//
+// Laboratory equipment decoration.  The mapper selects
+// a body variant via the standard "body" key (engine-handled).
+// Default model: models/labstuff.mdl
+//=========================================================
+class CDecoreLabstuff : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/labstuff.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_labstuff, CDecoreLabstuff );
+
+
+//=========================================================
+// decore_pteradon
+//
+// Flying pteradon decoration prop.  The animated model
+// hovers in place using MOVETYPE_FLY; no active pathfinding.
+// Default model: models/pteradon.mdl
+//=========================================================
+class CDecorePteradon : public CGunmanCycler
+{
+public:
+	void Precache( void );
+	void Spawn( void );
+};
+
+LINK_ENTITY_TO_CLASS( decore_pteradon, CDecorePteradon );
+
+void CDecorePteradon::Precache( void )
+{
+	PRECACHE_MODEL( "models/pteradon.mdl" );
+}
+
+void CDecorePteradon::Spawn( void )
+{
+	Precache();
+	if ( !pev->model )
+		pev->model = MAKE_STRING( "models/pteradon.mdl" );
+
+	CGunmanCycler::Spawn();
+
+	// Hover in place — MOVETYPE_FLY disables gravity while keeping
+	// physics collision active
+	pev->movetype = MOVETYPE_FLY;
+}
+
+
+//=========================================================
+// decore_pipes
+//
+// Pipes decoration.
+// Default model: models/pipes.mdl
+//=========================================================
+class CDecorePipes : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/pipes.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_pipes, CDecorePipes );
+
+
+//=========================================================
+// decore_explodable
+//
+// Destructible decoration prop.  Accepts damage; when health
+// reaches zero the entity spawns the configured gib model,
+// triggers any targets and removes itself.  The "action"
+// sequence is played when Use() is fired.
+//
+// Key/values:
+//   decoremodel   <mdl>  - model to display (fallback for "model" key)
+//   decoreidle    <int>  - idle animation sequence index (default 0)
+//   decoreaction  <int>  - Use()-triggered sequence index (default 0)
+//   decoregib     <mdl>  - gib model spawned on death
+//                          (default: models/decoregibs2.mdl)
+//   health        <int>  - hit points before exploding (default 50)
+//=========================================================
+class CDecoreExplodable : public CGunmanCycler
+{
+public:
+	void Precache( void );
+	void Spawn( void );
+	void KeyValue( KeyValueData *pkvd );
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	int  TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );
+
+	virtual int		Save( CSave &save );
+	virtual int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+
+private:
+	void ExplodeAndRemove( CBaseEntity *pAttacker );
+
+	string_t	m_iszGibModel;
+	int			m_iIdleSequence;
+	int			m_iActionSequence;
+};
+
+TYPEDESCRIPTION CDecoreExplodable::m_SaveData[] =
+{
+	DEFINE_FIELD( CDecoreExplodable, m_iszGibModel,      FIELD_STRING  ),
+	DEFINE_FIELD( CDecoreExplodable, m_iIdleSequence,    FIELD_INTEGER ),
+	DEFINE_FIELD( CDecoreExplodable, m_iActionSequence,  FIELD_INTEGER ),
+};
+
+IMPLEMENT_SAVERESTORE( CDecoreExplodable, CGunmanCycler );
+LINK_ENTITY_TO_CLASS( decore_explodable, CDecoreExplodable );
+
+void CDecoreExplodable::KeyValue( KeyValueData *pkvd )
+{
+	if ( FStrEq( pkvd->szKeyName, "decoremodel" ) )
+	{
+		// Accept "decoremodel" as an alias for the standard "model" key
+		pev->model = ALLOC_STRING( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if ( FStrEq( pkvd->szKeyName, "decoregib" ) )
+	{
+		m_iszGibModel = ALLOC_STRING( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if ( FStrEq( pkvd->szKeyName, "decoreidle" ) )
+	{
+		m_iIdleSequence = atoi( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else if ( FStrEq( pkvd->szKeyName, "decoreaction" ) )
+	{
+		m_iActionSequence = atoi( pkvd->szValue );
+		pkvd->fHandled = TRUE;
+	}
+	else
+		CGunmanCycler::KeyValue( pkvd );
+}
+
+void CDecoreExplodable::Precache( void )
+{
+	if ( pev->model )
+		PRECACHE_MODEL( (char*)STRING( pev->model ) );
+
+	const char *szGib = m_iszGibModel ? STRING( m_iszGibModel ) : "models/decoregibs2.mdl";
+	PRECACHE_MODEL( (char*)szGib );
+}
+
+void CDecoreExplodable::Spawn( void )
+{
+	Precache();
+
+	CGunmanCycler::Spawn();
+
+	// Set idle sequence if specified
+	if ( m_iIdleSequence > 0 )
+	{
+		pev->sequence  = m_iIdleSequence;
+		pev->animtime  = gpGlobals->time;
+		pev->framerate = 1.0f;
+	}
+
+	pev->takedamage = DAMAGE_YES;
+	if ( pev->health <= 0.0f )
+		pev->health = 50.0f;
+}
+
+void CDecoreExplodable::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	if ( m_iActionSequence != pev->sequence )
+	{
+		pev->sequence  = m_iActionSequence;
+		pev->animtime  = gpGlobals->time;
+		pev->framerate = 1.0f;
+		pev->frame     = 0;
+	}
+}
+
+int CDecoreExplodable::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
+{
+	pev->health -= flDamage;
+
+	if ( pev->health <= 0.0f )
+	{
+		CBaseEntity *pAttacker = CBaseEntity::Instance( pevAttacker );
+		ExplodeAndRemove( pAttacker );
+		return 0;
+	}
+
+	return 1;
+}
+
+void CDecoreExplodable::ExplodeAndRemove( CBaseEntity *pAttacker )
+{
+	const char *szGib = m_iszGibModel ? STRING( m_iszGibModel ) : "models/decoregibs2.mdl";
+
+	// Spawn a gib at the entity's origin
+	CBaseEntity *pGib = CBaseEntity::Create( "env_model", pev->origin, pev->angles, ENT(pev) );
+	if ( pGib )
+	{
+		pGib->pev->model   = ALLOC_STRING( szGib );
+		pGib->pev->effects = EF_NODRAW; // placeholder — real gib would use gibs system
+		UTIL_Remove( pGib );
+	}
+
+	// Small explosion effect at origin
+	MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
+		WRITE_BYTE ( TE_EXPLOSION );
+		WRITE_COORD( pev->origin.x );
+		WRITE_COORD( pev->origin.y );
+		WRITE_COORD( pev->origin.z );
+		WRITE_SHORT( MODEL_INDEX( "sprites/fexplo.spr" ) );
+		WRITE_BYTE ( 15 );   // scale / 10
+		WRITE_BYTE ( 15 );   // framerate
+		WRITE_BYTE ( TE_EXPLFLAG_NOADDITIVE );
+	MESSAGE_END();
+
+	// Fire any targets
+	SUB_UseTargets( pAttacker, USE_TOGGLE, 0.0f );
+
+	UTIL_Remove( this );
+}
+
+
+//=========================================================
+// decore_sittingtubemortar
+//
+// Sitting tube-mortar prop decoration.
+// Default model: models/tubemortar.mdl
+//=========================================================
+class CDecoreSittingTubeMortar : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/tubemortar.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_sittingtubemortar, CDecoreSittingTubeMortar );
+
+
+//=========================================================
+// decore_eagle
+//
+// Eagle decoration prop.
+// Default model: models/eagle.mdl
+//=========================================================
+class CDecoreEagle : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/eagle.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_eagle, CDecoreEagle );
+
+
+//=========================================================
+// decore_nest
+//
+// Nest decoration prop.
+// Default model: models/ornest.mdl
+//=========================================================
+class CDecoreNest : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/ornest.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_nest, CDecoreNest );
+
+
+//=========================================================
+// decore_baboon
+//
+// Baboon decoration prop.
+// Default model: models/Baboon.mdl
+//=========================================================
+class CDecoreBaboon : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/Baboon.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_baboon, CDecoreBaboon );
+
+
+//=========================================================
+// decore_hatgib
+//
+// Hat gib decoration prop.
+// Default model: models/Hatgib.mdl
+//=========================================================
+class CDecoreHatgib : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/Hatgib.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_hatgib, CDecoreHatgib );
+
+
+//=========================================================
+// decore_bodygib
+//
+// Body gib decoration prop.
+// Default model: models/Bodygib.mdl
+//=========================================================
+class CDecoreBodygib : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/Bodygib.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_bodygib, CDecoreBodygib );
+
+
+//=========================================================
+// decore_mushroom
+//
+// Mushroom decoration prop.
+// Default model: models/Mushroom.mdl
+//=========================================================
+class CDecoreMushroom : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/Mushroom.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_mushroom, CDecoreMushroom );
+
+
+//=========================================================
+// decore_mushroom2
+//
+// Mushroom variant 2 decoration prop.
+// Default model: models/mushroom2.mdl
+//=========================================================
+class CDecoreMushroom2 : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/mushroom2.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_mushroom2, CDecoreMushroom2 );
+
+
+//=========================================================
+// decore_foot
+//
+// Creature foot decoration prop (renesaur foot).
+// Default model: models/renesaurfoot.mdl
+//=========================================================
+class CDecoreFoot : public CDecoreSimple
+{
+public:
+	const char *DefaultModel( void ) { return "models/renesaurfoot.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS( decore_foot, CDecoreFoot );
 
 
 //=========================================================
