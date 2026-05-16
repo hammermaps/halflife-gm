@@ -75,7 +75,7 @@ be picked up incrementally.
 
 ### 2.3 Chemical Gun (`weapon_chemicalgun` / `CChemicalGun`)
 
-**Status: ✅ Phase-3 implemented** — see `dlls/chemicalgun.cpp` and `dlls/weapons.h`.
+**Status: ✅ Phase-2 implemented** — see `dlls/chemicalgun.cpp` and `dlls/weapons.h`.
 
 | Lua feature | C++ status | Notes |
 |---|---|---|
@@ -95,7 +95,7 @@ be picked up incrementally.
 | Fire sound pitch varies with Pressure | ✅ done | `EMIT_SOUND_DYN` pitch = 90 + 4×P. |
 | `Changemixture` anim + `DryFire.wav` on axis change | ✅ done | `SendWeaponAnim(CHEMICALGUN_CUSTOMIZE)` + `DryFire.wav`. |
 | `CChemBomb` entity | ✅ done | `LINK_ENTITY_TO_CLASS(chembomb, …)` in `chemicalgun.cpp`. Model: `Tubeball.mdl`. |
-| Save/restore for new fields | ✅ done | `CChemicalGun::m_SaveData[]` in `weapons.cpp`: Acid, Neutral, Base, Pressure, MenuAxis. |
+| Save/restore for new fields | ✅ done | `CChemicalGun::m_SaveData[]` in `weapons.cpp`: Acid, Neutral, Base, Pressure, MenuAxis. `CChemBomb::m_SaveData[]` in `chemicalgun.cpp`: all gameplay flags, expire time, damage area. |
 | Per-axis HUD display / vial sprites | ❌ follow-up | Client-side HUD work scoped for Phase 3. |
 
 ### 2.4 Mule / DML (`weapon_dml` / `CDML`)

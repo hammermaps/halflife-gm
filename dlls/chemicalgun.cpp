@@ -22,7 +22,7 @@
 //   Acid     (0-4) : acidity of the mixture (default 4)
 //   Neutral  (0-4) : neutral stabiliser level (default 2)
 //   Base     (0-4) : base component level (default 3)
-//   Pressure (1-5) : launch force and ammo cost modifier (default 3)
+//   Pressure (1-5) : launch force modifier (default 3)
 //
 // SecondaryAttack cycles Acid -> Neutral -> Base -> Pressure -> Acid,
 // advancing the current axis value and playing the Changemixture anim.
@@ -76,16 +76,16 @@
 
 // -----------------------------------------------------------------------
 // Animation indices  (model: models/v_chemgun.mdl)
+//   draw=0, holster=1, Idle=2, Idlefidget=3, Changemixture=4, Shoot=5
 // -----------------------------------------------------------------------
 enum chemicalgun_e
 {
-CHEMICALGUN_IDLE      = 0,
-CHEMICALGUN_FIDGET,
-CHEMICALGUN_SHOOT,
-CHEMICALGUN_RELOAD,
-CHEMICALGUN_DRAW,
-CHEMICALGUN_HOLSTER,
-CHEMICALGUN_CUSTOMIZE// "Changemixture" anim
+    CHEMICALGUN_DRAW      = 0,  // draw
+    CHEMICALGUN_HOLSTER   = 1,  // holster
+    CHEMICALGUN_IDLE      = 2,  // Idle
+    CHEMICALGUN_FIDGET    = 3,  // Idlefidget
+    CHEMICALGUN_CUSTOMIZE = 4,  // Changemixture
+    CHEMICALGUN_SHOOT     = 5,  // Shoot
 };
 
 // -----------------------------------------------------------------------
@@ -203,28 +203,46 @@ return cfg;
 class CChemBomb : public CBaseEntity
 {
 public:
-void Spawn( void );
-void EXPORT BombTouch( CBaseEntity *pOther );
-void EXPORT BombThink( void );
-void Detonate( void );
+    int     Save( CSave &save );
+    int     Restore( CRestore &restore );
+    static  TYPEDESCRIPTION m_SaveData[];
 
-static CChemBomb *CreateBomb( const Vector &vecOrigin, const Vector &vecVelocity,
-CBaseEntity *pOwner, const ChemConfig_t &cfg );
+    void Spawn( void );
+    void EXPORT BombTouch( CBaseEntity *pOther );
+    void EXPORT BombThink( void );
+    void Detonate( void );
 
-// Chemistry-derived properties (set by CreateBomb before Spawn)
-BOOL  m_bExplode;
-BOOL  m_bBounce;
-BOOL  m_bStick;
-BOOL  m_bSmokeBurn;
-float m_flDamageArea;
+    static CChemBomb *CreateBomb( const Vector &vecOrigin, const Vector &vecVelocity,
+        CBaseEntity *pOwner, const ChemConfig_t &cfg );
 
-float m_flExpireTime;
-float m_flNextSmokeBurn;
-BOOL  m_bStuck;
-BOOL  m_bDetonated;// guard against re-entrant Detonate()
+    // Chemistry-derived properties (set by CreateBomb before Spawn)
+    BOOL  m_bExplode;
+    BOOL  m_bBounce;
+    BOOL  m_bStick;
+    BOOL  m_bSmokeBurn;
+    float m_flDamageArea;
+
+    float m_flExpireTime;
+    float m_flNextSmokeBurn;
+    BOOL  m_bStuck;
+    BOOL  m_bDetonated;	// guard against re-entrant Detonate()
 };
 
 LINK_ENTITY_TO_CLASS( chembomb, CChemBomb );
+
+TYPEDESCRIPTION CChemBomb::m_SaveData[] =
+{
+    DEFINE_FIELD( CChemBomb, m_bExplode,       FIELD_INTEGER ),
+    DEFINE_FIELD( CChemBomb, m_bBounce,        FIELD_INTEGER ),
+    DEFINE_FIELD( CChemBomb, m_bStick,         FIELD_INTEGER ),
+    DEFINE_FIELD( CChemBomb, m_bSmokeBurn,     FIELD_INTEGER ),
+    DEFINE_FIELD( CChemBomb, m_flDamageArea,   FIELD_FLOAT   ),
+    DEFINE_FIELD( CChemBomb, m_flExpireTime,   FIELD_TIME    ),
+    DEFINE_FIELD( CChemBomb, m_flNextSmokeBurn,FIELD_TIME    ),
+    DEFINE_FIELD( CChemBomb, m_bStuck,         FIELD_INTEGER ),
+    DEFINE_FIELD( CChemBomb, m_bDetonated,     FIELD_INTEGER ),
+};
+IMPLEMENT_SAVERESTORE( CChemBomb, CBaseEntity );
 
 void CChemBomb::Spawn( void )
 {
@@ -300,20 +318,22 @@ Detonate();
 }
 else
 {
-// Direct entity hit
-entvars_t *pevAttacker = pev->owner ? VARS( pev->owner ) : pev;
-pOther->TakeDamage( pev, pevAttacker, (float)CG_DMG_DIRECT, DMG_ACID );
+    // Direct entity hit
+    entvars_t *pevAttacker = pev->owner ? VARS( pev->owner ) : pev;
+    pOther->TakeDamage( pev, pevAttacker, (float)CG_DMG_DIRECT, DMG_ACID );
 
-if ( m_bStick && !m_bStuck )
-{
-m_bStuck      = TRUE;
-pev->movetype = MOVETYPE_NONE;
-pev->velocity = g_vecZero;
-}
-else
-{
-Detonate();
-}
+    if ( m_bStick && !m_bStuck )
+    {
+        // Parent the bomb to the entity so it follows its movement
+        m_bStuck      = TRUE;
+        pev->movetype = MOVETYPE_FOLLOW;
+        pev->aiment   = pOther->edict();
+        pev->velocity = g_vecZero;
+    }
+    else
+    {
+        Detonate();
+    }
 }
 }
 
@@ -401,13 +421,20 @@ LINK_ENTITY_TO_CLASS( weapon_chemicalgun, CChemicalGun );
 
 void CChemicalGun::Spawn( )
 {
-Precache( );
-m_iId = WEAPON_CHEMICALGUN;
-SET_MODEL( ENT(pev), "models/w_chemgun.mdl" );
+    Precache( );
+    m_iId = WEAPON_CHEMICALGUN;
+    SET_MODEL( ENT(pev), "models/w_chemgun.mdl" );
 
-m_iDefaultAmmo = CHEMICALGUN_DEFAULT_GIVE;
+    m_iDefaultAmmo = CHEMICALGUN_DEFAULT_GIVE;
 
-FallInit();
+    // Initialise chemistry defaults; save/restore will overwrite these on load.
+    m_iAcid     = CG_DEFAULT_ACID;
+    m_iNeutral  = CG_DEFAULT_NEUTRAL;
+    m_iBase     = CG_DEFAULT_BASE;
+    m_iPressure = CG_DEFAULT_PRESSURE;
+    m_iMenuAxis = 0;
+
+    FallInit();
 }
 
 void CChemicalGun::Precache( void )
@@ -458,18 +485,8 @@ return FALSE;
 
 BOOL CChemicalGun::Deploy( )
 {
-// Initialise chemistry defaults only on the very first deploy
-// (save/restore will have populated them on subsequent maps/loads).
-if ( m_iAcid == 0 && m_iNeutral == 0 && m_iBase == 0 && m_iPressure == 0 )
-{
-m_iAcid     = CG_DEFAULT_ACID;
-m_iNeutral  = CG_DEFAULT_NEUTRAL;
-m_iBase     = CG_DEFAULT_BASE;
-m_iPressure = CG_DEFAULT_PRESSURE;
-}
-
-return DefaultDeploy( "models/v_chemgun.mdl", "models/p_crossbow.mdl",
-CHEMICALGUN_DRAW, "mp5" );
+    return DefaultDeploy( "models/v_chemgun.mdl", "models/p_crossbow.mdl",
+        CHEMICALGUN_DRAW, "mp5" );
 }
 
 // -----------------------------------------------------------------------
