@@ -299,7 +299,21 @@
 // monster_furniture is the real Half-Life scripted sequence prop (CFurniture in scripted.cpp)
 @PointClass base(Monster) size(-32 -32 0, 32 32 72) = monster_furniture    : "Scripted Furniture Prop" []
 @PointClass base(Monster) size(-8 -8 0, 8 8 16)     = monster_targetrocket : "Target Rocket (stub)" []
-@PointClass base(Monster) size(-16 -16 0, 16 16 72) = monster_trainingbot  : "Training Bot (stub)" []
+@PointClass base(Monster) size(-32 -32 0, 32 32 64) = monster_trainingbot  : "Training Bot"
+[
+	model(studio) : "Model" : "models/batterybot.mdl"
+	netname(string) : "Display Name" : "Training Bot"
+	isUsingOspreyMovement(choices) : "Movement Mode" : 0 =
+	[
+		0 : "Linear (constant speed from entity pev->speed)"
+		1 : "Spline (osprey-style; speed taken from each path_corner, falls back to entity speed)"
+	]
+	spawnflags(flags) =
+	[
+		8    : "Not Solid (hologram)" : 0
+		1024 : "No Rings (disable beam/sparkball decoration)" : 0
+	]
+]
 
 @PointClass base(Monster) size(-8 -8 0, 8 8 16)  = monster_critter     : "Critter (stub)" []
 @PointClass base(Monster) size(-8 -8 0, 8 8 8)   = monster_cricket     : "Cricket (stub)" []
