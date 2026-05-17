@@ -30,7 +30,11 @@
 #include "explode.h"
 
 // Spawnflag: make non-solid so players walk through it (e.g. holograms)
-#define SF_TRAININGBOT_NOTSOLID		4
+// NOTE: bit 4 (value 4) is SF_MONSTER_HITMONSTERCLIP; use bit 3 (value 8) instead.
+#define SF_TRAININGBOT_NOTSOLID		8
+
+// Spawnflag: suppress leg beams + sparkball decoration
+#define SF_TRAININGBOT_NORINGS		1024
 
 // Number of decoration beams (one per leg attachment)
 #define TRAININGBOT_MAX_BEAMS		3
@@ -74,6 +78,7 @@ public:
 	// Think functions
 	void EXPORT StartThink( void );
 	void EXPORT LinearMove( void );
+	void EXPORT LinearMoveFrame( void );
 	void EXPORT LinearMoveDone( void );
 	void EXPORT FlyThink( void );
 	void Flight( void );
@@ -241,8 +246,12 @@ void CTrainingBot::Spawn( void )
 	InitBoneControllers();
 
 	IdleSound();
-	CreateBeams();
-	CreateSparkBall( TRAININGBOT_ATTACH_BODYSPIKE );
+
+	if( !( pev->spawnflags & SF_TRAININGBOT_NORINGS ) )
+	{
+		CreateBeams();
+		CreateSparkBall( TRAININGBOT_ATTACH_BODYSPIKE );
+	}
 
 	SetThink( &CTrainingBot::StartThink );
 	pev->nextthink = gpGlobals->time + 0.1f;
@@ -264,8 +273,9 @@ void CTrainingBot::StartThink( void )
 }
 
 //=========================================================
-// LinearMove — move toward the current goal entity, then
-// advance along the path_corner chain.
+// LinearMove — kick off movement toward the current goal.
+// Advances frames every 0.1 s via LinearMoveFrame so the
+// model and beam attachments animate smoothly during transit.
 //=========================================================
 void CTrainingBot::LinearMove( void )
 {
@@ -286,17 +296,40 @@ void CTrainingBot::LinearMove( void )
 			return;
 		}
 
-		Vector vecDelta  = m_vecFinalDest - pev->origin;
-		float  flTravel  = vecDelta.Length() / pev->speed;
+		Vector vecDelta = m_vecFinalDest - pev->origin;
+		float  flTravel = vecDelta.Length() / pev->speed;
 
-		SetThink( &CTrainingBot::LinearMoveDone );
-		pev->nextthink = gpGlobals->time + flTravel;
-		pev->velocity  = vecDelta / flTravel;
+		// Record start + duration so LinearMoveFrame can detect arrival.
+		m_startTime = gpGlobals->time;
+		m_dTime     = flTravel;
+
+		pev->velocity = vecDelta / flTravel;
+
+		SetThink( &CTrainingBot::LinearMoveFrame );
+		pev->nextthink = gpGlobals->time + 0.1f;
 	}
 	else
 	{
 		pev->nextthink = gpGlobals->time + 0.1f;
 	}
+}
+
+//=========================================================
+// LinearMoveFrame — called every 0.1 s during linear travel.
+// Advances the animation each frame, then checks whether the
+// full travel time has elapsed and switches to LinearMoveDone.
+//=========================================================
+void CTrainingBot::LinearMoveFrame( void )
+{
+	StudioFrameAdvance();
+
+	if( gpGlobals->time >= m_startTime + m_dTime )
+	{
+		LinearMoveDone();
+		return;
+	}
+
+	pev->nextthink = gpGlobals->time + 0.1f;
 }
 
 //=========================================================
@@ -317,7 +350,10 @@ void CTrainingBot::LinearMoveDone( void )
 }
 
 //=========================================================
-// UpdateGoal — refresh spline interpolation waypoint data
+// UpdateGoal — refresh spline interpolation waypoint data.
+// Uses the path_corner's own speed (pev->speed) per segment,
+// matching COsprey behaviour.  Falls back to the entity's
+// pev->speed if the corner has no speed set.
 //=========================================================
 void CTrainingBot::UpdateGoal( void )
 {
@@ -325,6 +361,8 @@ void CTrainingBot::UpdateGoal( void )
 
 	if( pGoal )
 	{
+		float flGoalSpeed = ( pGoal->pev->speed > 0.0f ) ? pGoal->pev->speed : pev->speed;
+
 		m_pos1 = m_pos2;
 		m_ang1 = m_ang2;
 		m_vel1 = m_vel2;
@@ -332,10 +370,10 @@ void CTrainingBot::UpdateGoal( void )
 		m_ang2 = pGoal->pev->angles;
 
 		UTIL_MakeAimVectors( Vector( 0, m_ang2.y, 0 ) );
-		m_vel2 = gpGlobals->v_forward * pev->speed;
+		m_vel2 = gpGlobals->v_forward * flGoalSpeed;
 
 		m_startTime = m_startTime + m_dTime;
-		m_dTime     = 2.0f * ( m_pos1 - m_pos2 ).Length() / ( m_vel1.Length() + pev->speed );
+		m_dTime     = 2.0f * ( m_pos1 - m_pos2 ).Length() / ( m_vel1.Length() + flGoalSpeed );
 
 		if( m_ang1.y - m_ang2.y < -180.0f )
 			m_ang1.y += 360.0f;
@@ -477,6 +515,9 @@ void CTrainingBot::Killed( entvars_t *pevAttacker, int iGib )
 
 	if( iGib != GIB_NEVER )
 	{
+		// Call base first with GIB_NEVER so it sets deadflag/health correctly
+		// without spawning a corpse or gibs, then apply our custom explosion.
+		CBaseMonster::Killed( pevAttacker, GIB_NEVER );
 		ExplodeDie();
 	}
 	else
@@ -495,9 +536,9 @@ void CTrainingBot::Killed( entvars_t *pevAttacker, int iGib )
 		pev->nextthink = gpGlobals->time + 0.1f;
 
 		m_startTime = gpGlobals->time + 6.0f;
-	}
 
-	CBaseMonster::Killed( pevAttacker, iGib );
+		CBaseMonster::Killed( pevAttacker, iGib );
+	}
 }
 
 //=========================================================

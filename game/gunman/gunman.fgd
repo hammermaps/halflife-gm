@@ -305,13 +305,13 @@
 	netname(string) : "Display Name" : "Training Bot"
 	isUsingOspreyMovement(choices) : "Movement Mode" : 0 =
 	[
-		0 : "Linear (path_corner chain)"
-		1 : "Spline (osprey-style, requires path_corner with speed)"
+		0 : "Linear (constant speed from entity pev->speed)"
+		1 : "Spline (osprey-style; speed taken from each path_corner, falls back to entity speed)"
 	]
 	spawnflags(flags) =
 	[
-		4  : "Not Solid (hologram)" : 0
-		1024 : "No Rings" : 0
+		8    : "Not Solid (hologram)" : 0
+		1024 : "No Rings (disable beam/sparkball decoration)" : 0
 	]
 ]
 
